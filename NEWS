@@ -1,3 +1,21 @@
+Release notes for GNU indent version 2.2.4, November 1999
+
+* When using numbered backup files, setting environment variable
+  VERSION_WIDTH now allows to use left zero padding (ie file.~001~).
+  (Patch by Chris F.A. Johnson <bq933@torfree.net>)
+
+* --braces-on-if-line (-br) caused a '{' brace on the same line as a '}'
+  not to be put automatically on the next line, as it should because
+  the following { block } is not related to the previous { block } in
+  any way.
+
+* Unpaired braces in `#if ..{.. #else/#elif ..{.. #endif }' constructs
+  was broken for #elif and when there were spaces after the #.
+
+* Spelling, typo and general little improvements of indent.texinfo.
+  Now using Texinfo 4.0 markup.
+  (Patch by Kragen Sittler <sittler@day.erim-int.com>)
+
 Release notes for GNU indent version 2.2.3, October 1999
 
 * Fixed bit-fields with types other then `int' (no type still won't work).

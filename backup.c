@@ -39,7 +39,12 @@
    equivalent to "numbered".
 
    Finally, if VERSION_CONTROL is "none" or "never", backups are not
-   made.  I suggest you avoid this behaviour. */
+   made.  I suggest you avoid this behaviour.
+
+   Added, october 1999 (by Chris F.A. Johnson):
+
+   If VERSION_WIDTH is set, then it controls zero padding of a numbered
+   suffix. */
 
 /* Written by jla, based on code from djm (see `patch') */
 
@@ -92,7 +97,7 @@
 #include "globs.h"
 #include "io.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.8 1999/08/07 12:54:31 carlo Exp $");
+RCSTAG_CC ("$Id: backup.c,v 1.9 1999/11/04 17:03:06 carlo Exp $");
 
 #ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
@@ -115,7 +120,7 @@ RCSTAG_CC ("$Id: backup.c,v 1.8 1999/08/07 12:54:31 carlo Exp $");
 #endif
 
 #ifndef BACKUP_SUFFIX_FORMAT
-#define BACKUP_SUFFIX_FORMAT "%s.~%d~"
+#define BACKUP_SUFFIX_FORMAT "%s.~%0*d~"
 #endif
 
 /* Default backup file suffix to use */
@@ -124,7 +129,7 @@ static char *simple_backup_suffix = BACKUP_SUFFIX_STR;
 /* What kinds of backup files to make -- see
    table `version_control_values' below. */
 enum backup_mode version_control = unknown;
-
+int version_width = 1;
 
 /* Construct a simple backup name for PATHNAME by appending
    the value of `simple_backup_suffix'. */
@@ -265,8 +270,9 @@ generate_backup_filename (version_control, pathname)
   if (!backup_name)
     return 0;
 
-  sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname,
+  sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname, version_width,
 	   (int) last_numbered_version);
+
   return backup_name;
 }
 
@@ -313,6 +319,16 @@ version_control_value ()
 /* Initialize information used in determining backup filenames. */
 
 void
+set_version_width(void)
+{
+  char *v = getenv ("VERSION_WIDTH");
+  if (v && ISDIGIT(*v))
+    version_width = atoi(v);
+  if (version_width > 16)
+    version_width = 16;
+}
+
+void
 initialize_backups ()
 {
   char *v = getenv ("SIMPLE_BACKUP_SUFFIX");
@@ -330,6 +346,7 @@ initialize_backups ()
       version_control = numbered_existing;
     }
 #endif /* !NODIR */
+  set_version_width ();
 }
 
 

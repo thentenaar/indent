@@ -44,7 +44,7 @@
 #include "io.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.24 1999/09/28 15:29:08 carlo Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.25 1999/11/04 23:09:33 carlo Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
@@ -125,7 +125,7 @@ struct buf_break_st
 {
   struct buf_break_st *next;	/* The first possible break point to the right, if any. */
   struct buf_break_st *prev;	/* The first possible break point to the left, if any. */
-  char *ptr;			/* The break point: the first character in the buffer that will
+  int offset;		/* The break point: the first character in the buffer that will
 				   not be put on this line any more. */
   char *corresponds_to;		/* If ptr equals s_code and this equals s_code_corresponds_to,
 				   then parser_state_toc->procname is valid. */
@@ -217,7 +217,7 @@ better_break (b1, b2)
       if (is_better)
 	{
 	  char *p;
-	  for (p = b2->ptr; p >= s_code; --p)
+	  for (p = &s_code[b2->offset]; p >= s_code; --p)
 	    {
 	      if (*p == '!')
 		--p;
@@ -291,7 +291,7 @@ set_buf_break (code)
 
   /* Store the position of `e_code' as the place to break this line. */
   bb = (struct buf_break_st *) xmalloc (sizeof (struct buf_break_st));
-  bb->ptr = e_code;
+  bb->offset = e_code - s_code;
   bb->level = level;
   bb->target_col = target_col;
   bb->corresponds_to = token;
@@ -430,7 +430,7 @@ set_next_buf_break (prev_code_target, new_code_target, offset)
       if (bb->target_col > buf_break->target_col)
 	bb->target_col -= ((prev_code_target + offset) - new_code_target);
       bb->col -= ((prev_code_target + offset) - new_code_target);
-      bb->ptr -= offset;
+      bb->offset -= offset;
       bb->priority_code_length -= offset;
       bb->first_level = buf_break->first_level;
       if (!buf_break->priority_newline)
@@ -732,7 +732,7 @@ dump_line (force_nl)
 	    {
 	      int offset, len;
 	      char c;
-	      char *ptr = buf_break->ptr;
+	      char *ptr = &s_code[buf_break->offset];
 
 	      if (*ptr != ' ')
 		--ptr;
@@ -756,13 +756,13 @@ dump_line (force_nl)
 		if (parser_state_tos->paren_indents[i] >= (ptr - s_code))
 		  parser_state_tos->paren_indents[i] -= offset;
 
-	      for (p = s_code; p < buf_break->ptr; p++)
+	      for (p = s_code; p < s_code + buf_break->offset; p++)
 		putc (*p, output);
 
-	      c = *buf_break->ptr;
-	      *buf_break->ptr = '\0';
+	      c = s_code[buf_break->offset];
+	      s_code[buf_break->offset] = '\0';
 	      cur_col = count_columns (cur_col, s_code, NULL_CHAR);
-	      *buf_break->ptr = c;
+	      s_code[buf_break->offset] = c;
 
 	      not_truncated = 0;
 	      len = (e_code - ptr - 1);
@@ -1229,7 +1229,7 @@ fill_buffer ()
 
   buf_ptr = cur_line;
   buf_end = in_prog_pos;
-  if (buf_break && (buf_break->ptr >= e_code || buf_break->ptr <= s_code))
+  if (buf_break && (buf_break->offset >= e_code - s_code || buf_break->offset <= 0))
     clear_buf_break_list ();
 }
 

@@ -1,3 +1,96 @@
+1999-11-04  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: O well, lets release it.
+
+	* io.c:
+	Bug fix: When the s_code buffer needed to be realloc-ed, bufbreak `ptr'
+	were pointing into cyber space.  Now using an offset relative to the
+	start of the buffer for the break points.
+
+	* NEWS: Update of NEWS
+
+	* backup.c, indent.texinfo: Date: Sun, 24 Oct 1999 23:03:30 -0400
+	From: "Chris F.A. Johnson" <bq933@torfree.net>
+	Subject: "GNU indent"
+
+	I have made a modification (included as the output of "diff -c" which
+	allows zero padding of numbered backup suffixes, controled by an
+	environment variable, VERSION_WIDTH.
+
+	If the variable is set to a positive integer, that width will be used to
+	zero-pad the backup suffix, e.g. if VERSION_WIDTH=2 the suffix would be
+	~01~ instead of ~1~.
+
+	This improves alphabetical listing (with ls or a file requestor) when
+	there are more than 10 backup versions. It may sound like overkill, but
+	I have my text editor set to create a numbered backup with every save,
+	and often there are more than 10 (even 20 or 30).
+
+	--
+
+	two bug fixes and update of documentation by Carlo Wood
+
+1999-10-30  Carlo Wood, Runaway  <carlo@jolan>
+
+	* configure.in: Bumped version number to 2.2.4
+
+	* regression/standard/no-newline2.c, indent.c:
+	Ignore requests for (extra) blank lines prior to #else, #elif and #endif.
+
+1999-10-29  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS, indent.texinfo, texinfo2man.c:
+	Date: Wed, 27 Oct 1999 18:16:38 -0400 (EDT)
+	From: Kragen Sittler <sittler@day.erim-int.com>
+	To: carlo@runaway.xs4all.nl
+	Subject: update for 'info' texinfo file
+
+	This patch updates the info file in a number of ways:
+	- corrects incorrect indentation in one example (TeX doesn't like <tab>
+	  in @example);
+	- corrects incorrect spellings of words;
+	- corrects some usages of words and punctuation that I think might be
+	  incorrect; some of the punctuation corrections may actually be
+	  incorrect.
+	- changes (c) to @copyright{};
+	- uses more specific markup, including the new Texinfo 4.0 markup:
+	  @file, @option, @command, @env, etc., in preference to @samp and
+	  @code, where applicable;
+	- changes spacing and page breaks to be a little more readable in the
+	  printed version -- IMHO; you may disagree;
+	- modification of dashes -- one en dash became an em dash, and another
+	  became a hyphen;
+	- modification of quotes in a couple of places;
+	- corrected minor factual errors probably due to typos;
+	- added a couple of things to the index;
+	- added markup in a couple of places where it seemed to be missing;
+	- tried and failed to fix the "cross-key"'s formatting.
+
+1999-10-26  Carlo Wood, Runaway  <carlo@jolan>
+
+	* comments.c, indent.c, parse.c:
+	Removed a few compiler warnings (mostly unused variables) reported to me
+	by Nelson H. F. Beebe.
+
+	* regression/standard/embedded-cuddle1.c, NEWS, indent.c:
+	Fixed bug causing --braces-on-if-line not to put a '{' brace on the same
+	line as a '}' automatically on the next line.  Bug reported by David Luyer.
+
+1999-10-19  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Update
+
+1999-10-11  Carlo Wood, Runaway  <carlo@jolan>
+
+	* regression/standard/elif.c, regression/TEST, regression/elif.c, indent.c:
+	Treat #elif correctly. Thanks to Stuart Kemp for the bug report.
+
+1999-10-10  Carlo Wood, Runaway  <carlo@jolan>
+
+	* indent.c:
+	indent didn't recognize "# else" and "# endif" for what they are due
+	to the space(s). Thanks to Stuart Kemp for the bug report.
+
 1999-10-01  Carlo Wood, Runaway  <carlo@jolan>
 
 	* NEWS: Update for release of 2.2.3

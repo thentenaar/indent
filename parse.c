@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.16 1999/09/28 15:29:08 carlo Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.17 1999/10/26 00:20:56 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -217,7 +217,6 @@ parse (tk)
      enum codes tk;		/* the code for the construct scanned */
 {
   int i;
-  enum exit_values my_value = total_success;
 
 #ifdef DEBUG
   if (debug)
@@ -378,7 +377,6 @@ parse (tk)
       if (parser_state_tos->p_stack[parser_state_tos->tos] != ifhead)
 	{
 	  ERROR ("Unmatched 'else'", 0, 0);
-	  my_value = indent_error;
 	}
       else
 	{
@@ -406,7 +404,6 @@ parse (tk)
       else
 	{
 	  ERROR ("Stmt nesting error.", 0, 0);
-	  my_value = indent_error;
 	}
       break;
 

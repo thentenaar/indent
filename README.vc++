@@ -1,4 +1,4 @@
-README.VC++ for GNU `indent' 2.2.3
+README.VC++ for GNU `indent' 2.2.4
 ----------------------------------
 
 This file contains instructions for compiling GNU indent on the Win32 platform, and, in particular, Microsoft Visual C++ version 6.0 (though it may compile happily on earlier releases, this has not been tested)

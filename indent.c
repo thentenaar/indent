@@ -41,7 +41,7 @@
 #include "comments.h"
 #include "args.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.34 1999/09/30 19:09:31 carlo Exp $");
+RCSTAG_CC ("$Id: indent.c,v 1.39 1999/10/30 01:56:08 carlo Exp $");
 
 void
 usage ()
@@ -323,7 +323,7 @@ indent (this_file)
 		}
 
 	      /* We need to put the '{' back into save_com somewhere.  */
-	      if (btype_2)
+	      if (btype_2 && parser_state_tos->last_token != rbrace)
 		{
 		  /* Kludge to get my newline back */
 		  if (parser_state_tos->last_token == sp_else
@@ -537,7 +537,8 @@ indent (this_file)
 	      (type_code != semicolon) &&
 	      (type_code != lbrace ||
 	       (!parser_state_tos->in_decl && !btype_2) ||
-	       (parser_state_tos->in_decl && !braces_on_struct_decl_line)))
+	       (parser_state_tos->in_decl && !braces_on_struct_decl_line) ||
+	       parser_state_tos->last_token == rbrace))
 	    {
 	      if (verbose && !flushed_nl)
 		WARNING ("Line broken", 0, 0);
@@ -1569,6 +1570,8 @@ indent (this_file)
 	  break;
 
 	case preesc:		/* got the character '#' */
+	{
+	  char *p;
 	  if ((s_com != e_com) || (s_lab != e_lab) || (s_code != e_code))
 	    dump_line (true);
 	  {
@@ -1689,16 +1692,20 @@ indent (this_file)
 	    parser_state_tos->pcase = false;
 	  }
 
-	  if (strncmp (s_lab + 1, "if", 2) == 0)
+	  p = s_lab + 1;
+	  while (*p == ' ' || *p == TAB)
+	    ++p;
+
+	  if (strncmp (p, "if", 2) == 0)
 	    {
 	      if (blanklines_around_conditional_compilation)
 		{
-		  int c;
 		  prefix_blankline_requested++;
 		  prefix_blankline_requested_code = preesc;
-		  while ((c = *in_prog_pos++) == EOL);
+		  while (*in_prog_pos++ == EOL);
 		  in_prog_pos--;
 		}
+
 	      {
 		/* Push a copy of the parser_state onto the stack. All
 		   manipulations will use the copy at the top of stack, and
@@ -1744,7 +1751,7 @@ indent (this_file)
 		/* GDB_HOOK_parser_state_tos */
 	      }
 	    }
-	  else if (strncmp (s_lab + 1, "else", 4) == 0)
+	  else if (strncmp (p, "else", 4) == 0 || strncmp (p, "elif", 4) == 0)
 	    {
 	      /* When we get #else, we want to restore the parser state to
 	         what it was before the matching #if, so that things get
@@ -1752,7 +1759,8 @@ indent (this_file)
 	         want to pop the stack; we just want to copy the second to
 	         top elt of the stack because when we encounter the #endif,
 	         it will pop the stack.  */
-	      else_or_endif = true;
+	      else_or_endif = (strncmp (p, "else", 4) == 0);
+	      prefix_blankline_requested = 0;
 	      if (parser_state_tos->next)
 		{
 		  /* First save the addresses of the arrays for the top of
@@ -1797,13 +1805,14 @@ indent (this_file)
 		}
 	      else
 		{
-		  ERROR ("Unmatched #else", 0, 0);
+		  ERROR (else_or_endif ? "Unmatched #else" : "Unmatched #elif", 0, 0);
 		  file_exit_value = indent_error;
 		}
 	    }
-	  else if (strncmp (s_lab + 1, "endif", 5) == 0)
+	  else if (strncmp (p, "endif", 5) == 0)
 	    {
 	      else_or_endif = true;
+	      prefix_blankline_requested = 0;
 	      /* We want to remove the second to top elt on the stack, which
 	         was put there by #if and was used to restore the stack at
 	         the #else (if there was one). We want to leave the top of
@@ -1852,7 +1861,7 @@ indent (this_file)
 	      parser_state_tos->want_blank = false;
 	    }
 	  break;
-
+	}
 	  /* A C or C++ comment. */
 	case comment:
 	case cplus_comment:

@@ -20,7 +20,7 @@
 
 #include <string.h>
 
-RCSTAG_CC ("$Id: comments.c,v 1.12 1999/07/22 12:55:08 carlo Exp $");
+RCSTAG_CC ("$Id: comments.c,v 1.13 1999/10/26 00:20:56 carlo Exp $");
 
 /* Check the limits of the comment buffer, and expand as neccessary. */
 
@@ -91,7 +91,7 @@ print_comment ()
   char *save_ptr = 0;
   char *text_on_line = 0;
   char *line_break_ptr = 0;
-  char *start_delim, *end_delim;
+  char *start_delim;
 
   char *line_preamble;
   int line_preamble_length, visible_preamble;
@@ -205,7 +205,6 @@ print_comment ()
   else
     {
       start_delim = "/*";
-      end_delim = "*/";
       line_preamble = 0;
       line_preamble_length = 0;
       visible_preamble = 0;
@@ -355,8 +354,6 @@ print_comment ()
   /* Iterate through the lines of the comment */
   while (!had_eof)
     {
-      int whitespace_character;	/* Mark if we've just seen whitespace or not */
-
       /* Iterate through the characters on one line */
       while (!had_eof)
 	{
@@ -366,8 +363,6 @@ print_comment ()
 	    {
 	    case ' ':
 	    case TAB:
-	      whitespace_character = 1;
-
 	      /* If formatting, and previous break marker is
 	         nonexistant, or before text on line, reset
 	         it to here. */
@@ -395,8 +390,6 @@ print_comment ()
 
 
 	    case EOL:
-	      whitespace_character = 1;
-
 	      /* We may be at the end of a C++ comment */
 	      if (comment_type == cplus_comment)
 		{
@@ -442,11 +435,10 @@ print_comment ()
 		  column++;
 		  continue;
 		}
-	      else
-		/* We are printing this line "as is", so output it
-		   and continue on to the next line. */
-		goto end_line;
-	      break;
+
+	      /* We are printing this line "as is", so output it
+		 and continue on to the next line. */
+	      goto end_line;
 
 	    case '*':
 	      /* Check if we've reached the end of the comment. */
@@ -538,7 +530,6 @@ print_comment ()
 
 	    default:
 	      /* Some textual character. */
-	      whitespace_character = 0;
 	      text_on_line = e_com;
 	      *e_com++ = *buf_ptr;
 	      column++;
