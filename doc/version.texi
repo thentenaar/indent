@@ -1,0 +1,4 @@
+@set UPDATED 20 November 2001
+@set UPDATED-MONTH November 2001
+@set EDITION 2.2.7
+@set VERSION 2.2.7

@@ -1,0 +1,11 @@
+src/args.c
+src/backup.c
+src/globs.c
+src/globs.h
+src/indent.c
+src/indent.h
+src/io.c
+src/lexi.c
+src/parse.c
+src/sys.h
+src/wildexp.c

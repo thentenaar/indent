@@ -1,3 +1,14 @@
+Release notes for GNU indent version 2.2.7, November 2001
+
+* Compilation under cygwin should be fixed.
+
+* Added support for i18n. Note for non GNU Linux/UNIX  users, this 
+  requires buildingthe code in the intl directory. For GNU Linux and
+  other UNIX-like systems this will happen automatically, but for other 
+  platforms the make files in the miscel directory have not been updated 
+  to handle this. Versions of these make files will be made available 
+  once a generous soul provides an update.
+
 Release notes for GNU indent version 2.2.6, November 2000
 
 * New option --break-function-decl-args (-bfda).
