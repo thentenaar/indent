@@ -18,11 +18,11 @@
 #ifndef INDENT_ARGS_H
 #define INDENT_ARGS_H
 
-RCSTAG_H (args, "$Id: args.h,v 1.6 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (args, "$Id: args.h,v 1.7 2002/03/15 07:48:45 david Exp $");
 
 extern void set_defaults (void);
 extern void set_defaults_after (void);
-extern int set_option (char *option, char *param, int explicit);
+extern int set_option (const char *option, const char *param, int explicit);
 extern char *set_profile (void);
 
 #endif /* INDENT_ARGS_H */

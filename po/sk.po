@@ -1,242 +1,243 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# indent sk.po
+# Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+# Marcel Telka <marcel@telka.sk>, 2002.
+# Miroslav Vasko <vasko@debian.cz>, 1999.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: indent 2.2.7\n"
 "POT-Creation-Date: 2002-03-21 21:44+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2002-01-17 09:49+0100\n"
+"Last-Translator: Marcel Telka <marcel@telka.sk>\n"
+"Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Transfer-Encoding: 8-bit\n"
 
 #: src/args.c:518
 msgid "usage: indent file [-o outfile ] [ options ]\n"
-msgstr ""
+msgstr "pou¾itie: indent súbor [-o výstupný_súbor ] [ voµby ]\n"
 
 #: src/args.c:519
 msgid "       indent file1 file2 ... fileN [ options ]\n"
-msgstr ""
+msgstr "       indent súbor1 súbor2 ... súborN [ voµby ]\n"
 
 #: src/args.c:583
 #, c-format
 msgid "indent: missing argument to parameter %s\n"
-msgstr ""
+msgstr "indent: chýbajúci argument k parametru %s\n"
 
 #: src/args.c:682
 #, c-format
 msgid "indent: unknown option \"%s\"\n"
-msgstr ""
+msgstr "indent: neznáma voµba \"%s\"\n"
 
 #: src/args.c:693
 #, c-format
 msgid "option: %s\n"
-msgstr ""
+msgstr "voµba: %s\n"
 
 #. This is not really an error, but zero exit values are
 #. returned only when code has been successfully formatted.
 #: src/args.c:709
 #, c-format
 msgid "GNU indent %s\n"
-msgstr ""
+msgstr "GNU indent: %s\n"
 
 #: src/args.c:786
 #, c-format
 msgid "indent: option ``%s'' requires a numeric parameter\n"
-msgstr ""
+msgstr "indent: voµba ``%s'' vy¾aduje ako parameter èíslo\n"
 
 #: src/args.c:796
 #, c-format
 msgid "indent: set_option: internal error: p_type %d\n"
-msgstr ""
+msgstr "indent: set_option: interná chyba: p_type %d\n"
 
 #: src/args.c:852
+#, fuzzy
 msgid "Profile contains an unterminated comment"
-msgstr ""
+msgstr "Profil obsahuje nechutné znaky"
 
 #: src/args.c:889
 msgid "Profile contains unpalatable characters"
-msgstr ""
+msgstr "Profil obsahuje nechutné znaky"
 
 #: src/backup.c:381
 msgid "indent:  Strange version-control value\n"
-msgstr ""
+msgstr "indent:  Divná hodnota version-control\n"
 
 #: src/backup.c:382
 msgid "indent:  Using numbered-existing\n"
-msgstr ""
+msgstr "indent:  Pou¾ijú sa existujúce oèíslované\n"
 
 #: src/backup.c:410
 #, c-format
 msgid "indent: Can't make backup filename of %s\n"
-msgstr ""
+msgstr "indent: Nemô¾em vytvori» zálo¾nú kópiu súboru %s\n"
 
 #: src/backup.c:418
 #, c-format
 msgid "Can't open backup file %s"
-msgstr ""
+msgstr "Nemô¾em otvori» zálo¾ný súbor %s"
 
 #: src/backup.c:425
 #, c-format
 msgid "Can't write to backup file %s"
-msgstr ""
+msgstr "Nemô¾em zapísa» do zálo¾ného súboru %s"
 
 #: src/backup.c:439
 #, c-format
 msgid "Can't preserve modification time on backup file %s"
-msgstr ""
+msgstr "Nemô¾em zachova» èas zmeny zálo¾ného súboru %s"
 
 #: src/globs.c:41 src/globs.c:64
 msgid "indent: Virtual memory exhausted.\n"
-msgstr ""
+msgstr "indent: Vyèerpaná virtuálna pamä».\n"
 
 #: src/globs.c:79
 #, c-format
 msgid "indent: %s:%d: %s:"
-msgstr ""
+msgstr "indent: %s:%d: %s:"
 
 #: src/globs.c:93
 msgid "indent: Fatal Error: "
-msgstr ""
+msgstr "indent: Záva¾ná chyba: "
 
 #: src/globs.c:103
 msgid "indent: System Error: "
-msgstr ""
+msgstr "indent: Systémová chyba: "
 
 #. Warning messages:  indent continues
 #: src/globs.h:25
 msgid "Warning"
-msgstr ""
+msgstr "Upozornenie"
 
 #. Error messages: indent stops processing the current file.
 #: src/globs.h:29
 msgid "Error"
-msgstr ""
+msgstr "Chyba"
 
 #: src/indent.c:141
 msgid "Ran out of memory"
-msgstr ""
+msgstr "Beh vyèerpal pamä»"
 
 #: src/indent.c:444
 msgid "EOF encountered in comment"
-msgstr ""
+msgstr "V komentári sa vyskytol koniec súboru"
 
 #: src/indent.c:500 src/indent.c:1562 src/indent.c:1584
 msgid "Line broken"
-msgstr ""
+msgstr "Riadok rozdelený"
 
 #: src/indent.c:581
 msgid "Unexpected end of file"
-msgstr ""
+msgstr "Neoèakávaný koniec súboru"
 
 #: src/indent.c:587
 #, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
-msgstr ""
+msgstr "Spracovaných %d neprázdnych výstupných riadkov a %d komentárov\n"
 
 #: src/indent.c:591
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
-msgstr ""
+msgstr "(Riadkov s komentármi)/(Riadkov s kódom): %6.3f\n"
 
 #: src/indent.c:612
 msgid "Line broken 2"
-msgstr ""
+msgstr "Riadok rozdelený 2"
 
 #: src/indent.c:909 src/indent.c:1486
 #, c-format
 msgid "Extra %c"
-msgstr ""
+msgstr "Extra %c"
 
 #: src/indent.c:2205
 msgid "Unmatched #else"
-msgstr ""
+msgstr "Nezodpovedajúce #else"
 
 #: src/indent.c:2206
 msgid "Unmatched #elif"
-msgstr ""
+msgstr "Nezodpovedajúce #elif"
 
 #: src/indent.c:2233
 msgid "Unmatched #endif"
-msgstr ""
+msgstr "Nezodpovedajúce #endif"
 
 #: src/indent.c:2385
 #, c-format
 msgid "indent: only one output file (2nd was %s)\n"
-msgstr ""
+msgstr "indent: iba jeden výstupný súbor (druhý bol %s)\n"
 
 #: src/indent.c:2394 src/indent.c:2420
 msgid "indent: only one input file when output file is specified\n"
-msgstr ""
+msgstr "indent: iba jeden vstupný súbor, keï je zadaný výstupný súbor\n"
 
 #: src/indent.c:2408 src/indent.c:2455
 msgid "indent: can't have filenames when specifying standard input\n"
-msgstr ""
+msgstr "indent: nemo¾no zada» súbory, ak ste zadali ¹tandardný vstup\n"
 
 #: src/indent.c:2428
 msgid "indent: only one input file when stdout is used\n"
-msgstr ""
+msgstr "indent: iba jeden vstupný súbor, keï je pou¾itý ¹tandardný výstup\n"
 
 #: src/indent.c:2617
 #, c-format
 msgid "Read profile %s\n"
-msgstr ""
+msgstr "Èita» profil %s\n"
 
 #: src/io.c:139
 msgid "Internal buffering error"
-msgstr ""
+msgstr "Interná chyba vyrovnávacej pamäte"
 
 #: src/io.c:300
 #, c-format
 msgid "Can't open input file %s"
-msgstr ""
+msgstr "Nemô¾em otvori» vstupný súbor %s"
 
 #: src/io.c:305
 #, c-format
 msgid "Can't stat input file %s"
-msgstr ""
+msgstr "Nemô¾em zisti» stav vstupného súboru %s"
 
 #: src/io.c:310
 #, c-format
 msgid "Warning: Zero-length file %s"
-msgstr ""
+msgstr "Varovanie: Súbor %s má nulovú då¾ku"
 
 #: src/io.c:318
 #, c-format
 msgid "File %s is too big to read"
-msgstr ""
+msgstr "Súbor %s je príli¹ veµký na èítanie"
 
 #: src/io.c:326
 #, c-format
 msgid "System problem reading file %s"
-msgstr ""
+msgstr "Systémový problém pri èítaní súboru %s"
 
 #: src/io.c:350
 #, c-format
 msgid "Error reading input file %s"
-msgstr ""
+msgstr "Chyba pri èítaní vstupného súboru %s"
 
 #: src/io.c:355
 #, c-format
 msgid "Error closeing input file %s"
-msgstr ""
+msgstr "Chyba pri zatváraní vstupného súboru %s"
 
 #: src/io.c:541
 #, c-format
 msgid "Warning: File %s contains NULL-characters\n"
-msgstr ""
+msgstr "Upozornenie: Súbor %s obsahuje nulové znaky\n"
 
 #: src/lexi.c:767
 msgid "Unterminated character constant"
-msgstr ""
+msgstr "Neukonèená znaková kon¹tanta"
 
 #: src/lexi.c:768
 msgid "Unterminated string constant"
-msgstr ""
+msgstr "Neukonèená re»azcová kon¹tanta"
 
 #. Something like x=-1, which can mean x -= 1 ("old style" in K&R1)
 #. * or x = -1 (ANSI).  Note that this is only an ambiguity if the
@@ -249,44 +250,47 @@ msgstr ""
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr ""
+"nejednoznaènos» priradenia starého ¹týlu v \"=%c\". Predpokladá sa \"= %c\"\n"
 
 #: src/output.c:1067
 #, c-format
 msgid "indent: can't create %s\n"
-msgstr ""
+msgstr "indent: nemô¾em vytvori» %s\n"
 
 #: src/output.c:1106
 #, c-format
 msgid "Can't close output file %s"
-msgstr ""
+msgstr "Nemô¾em zatvori» výstupný súbor %s"
 
 #: src/output.c:1119
 #, c-format
 msgid "Can't preserve modification time on output file %s"
-msgstr ""
+msgstr "Nemô¾em zachova» èas zmeny výstupného súboru %s"
 
 #: src/parse.c:397
 msgid "Unmatched 'else'"
-msgstr ""
+msgstr "Nezodpovedajúce 'else'"
 
 #: src/parse.c:423
 msgid "Stmt nesting error."
-msgstr ""
+msgstr "Chyba vnorenia stmt."
 
 #: src/parse.c:465
 msgid "Unknown code to parser"
-msgstr ""
+msgstr "Analyzátor nepozná tento kód"
 
 #: src/parse.c:475
-#, c-format
+#, fuzzy, c-format
 msgid "ParseStack [%d]:\n"
 msgstr ""
+"\n"
+"Zásobník analyzátora [%d]:\n"
 
 #: src/parse.c:479
 #, c-format
 msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
-msgstr ""
+msgstr "  zásobník[%d] =>   zásobník: %d   ind_úroveò: %d\n"
 
 #: src/wildexp.c:90
 msgid "CANNOT FIND '@' FILE!"
-msgstr ""
+msgstr "NEMÔ®EM NÁJS« SÚBOR '@'!"

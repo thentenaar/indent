@@ -6,6 +6,7 @@ src/indent.c
 src/indent.h
 src/io.c
 src/lexi.c
+src/output.c
 src/parse.c
 src/sys.h
 src/wildexp.c

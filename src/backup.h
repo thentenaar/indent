@@ -15,46 +15,49 @@
 #ifndef INDENT_BACKUP_H
 #define INDENT_BACKUP_H
 
-RCSTAG_H (backup, "$Id: backup.h,v 1.9 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (backup, "$Id: backup.h,v 1.10 2002/02/26 20:38:27 david Exp $");
 
+#include <sys/stat.h>
 #include "io.h"
 
 /* When to make backup files.  Analagous to 'version-control' in Emacs. */
-enum backup_mode
+typedef enum backup_mode
 {
-  /* Uninitialized or indeterminate value */
-  unknown,
+    /* Uninitialized or indeterminate value */
+    unknown,
 
-  /* Never make backups. */
-  none,
+    /* Never make backups. */
+    none,
 
-  /* Make simple backups of every file. */
-  simple,
+    /* Make simple backups of every file. */
+    simple,
 
-  /* Make numbered backups of files that already have numbered backups,
-     and simple backups of the others. */
-  numbered_existing,
+    /* Make numbered backups of files that already have numbered backups,
+       and simple backups of the others. */
+    numbered_existing,
 
-  /* Make numbered backups of every file. */
-  numbered
-};
+    /* Make numbered backups of every file. */
+    numbered
+} backup_mode_ty;
 
-struct version_control_values
+typedef struct version_control_values
 {
-  enum backup_mode value;
-  char *name;
-};
+    backup_mode_ty value;
+    char *name;
+} version_control_values_ty;
 
 /* Determine the value of `version_control' by looking in the environment
-   variable "VERSION_CONTROL".  Defaults to numbered_existing. */
-extern enum backup_mode version_control_value (void);
+ * variable "VERSION_CONTROL".  Defaults to numbered_existing. */
+
+extern backup_mode_ty version_control_value (void);
 
 /* Initialize information used in determining backup filenames. */
+
 extern void initialize_backups (void);
 
 /* Make a backup copy of FILE, taking into account version-control.
-   See the description at the beginning of the file for details. */
-struct stat;
-extern void make_backup (struct file_buffer * file, const struct stat * file_stats);
+ * See the description at the beginning of the file for details. */
+
+extern void make_backup (file_buffer_ty * file, const struct stat * file_stats);
 
 #endif /* INDENT_BACKUP_H */

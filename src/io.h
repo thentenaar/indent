@@ -18,16 +18,17 @@
 #ifndef INDENT_IO_H
 #define INDENT_IO_H
 
-RCSTAG_H (io, "$Id: io.h,v 1.8 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (io, "$Id: io.h,v 1.10 2002/03/15 07:48:46 david Exp $");
+#include <sys/stat.h>
 
-struct file_buffer
+typedef struct file_buffer
 {
   char *name;
   unsigned long size;
   char *data;
-};
+} file_buffer_ty;
 
-enum bb_code
+typedef enum bb_code
 {
   bb_none,
   bb_comma,
@@ -58,21 +59,17 @@ enum bb_code
   bb_operator6,			/* add or subtract */
   bb_doublecolon,
   bb_cast
-};
+} bb_code_ty;
 
-extern struct buf_break_st *buf_break;
+extern char   * cur_line;
 
-struct stat;
-extern struct file_buffer *read_file (char *filename, struct stat *);
-extern struct file_buffer *read_stdin (void);
+extern file_buffer_ty *read_file (char *filename, struct stat *);
+extern file_buffer_ty *read_stdin (void);
 extern int count_columns (int column, char *bp, int stop_char);
 extern int current_column (void);
 extern void fill_buffer (void);
 extern void dump_line (int force_nl);
 extern int compute_code_target (void);
 extern int compute_label_target (void);
-extern void clear_buf_break_list (void);
-extern void set_buf_break (enum bb_code code);
-extern int buf_break_used;
 
 #endif /* INDENT_IO_H */

@@ -18,7 +18,7 @@
 #ifndef INDENT_GLOBS_H
 #define INDENT_GLOBS_H
 
-RCSTAG_H (globs, "$Id: globs.h,v 1.7 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (globs, "$Id: globs.h,v 1.8 2002/03/15 07:48:45 david Exp $");
 
 /* Warning messages:  indent continues */
 #define WARNING(s,a,b) \
@@ -30,7 +30,7 @@ RCSTAG_H (globs, "$Id: globs.h,v 1.7 2001/12/03 20:25:00 david Exp $");
 
 extern char *xmalloc (unsigned int size);
 extern char *xrealloc (char *ptr, unsigned int size);
-extern void fatal (char *string, char *a0);
+extern void fatal (const char *string, const char *a0);
 extern void message (char *kind, char *string, unsigned int *a0, unsigned int *a1);
 
 #endif /* INDENT_GLOBS_H */

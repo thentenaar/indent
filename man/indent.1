@@ -527,8 +527,11 @@ indent +braces-on-if-line +line-length185 test/metabolism.c
 
 If you find that you often use \fBindent\fR with the same options, you
 may put those options into a file named \`.indent.pro\'.
-.B indent\fR will first look for \`.indent.pro\' in the current
-directory and use that if found.  Otherwise, \fBindent\fR will search
+.B indent\fR will look for a profile file in three places. First it will check
+the environment variable \fBINDENT_PROFILE\fR. If that exists its value 
+is expected to name the file that is to be used. If the environment variable does 
+not exist, indent looks for \`.indent.pro\' in the current directory
+ and use that if found.  Finally \fBindent\fR will search
 your home directory for \`.indent.pro\' and use that file if it is
 found.  This behaviour is different from that of other versions of
 .B indent\fR, which load both files if they both exist.
@@ -1491,11 +1494,11 @@ POSIX \fButime(2)\fR function.
 
 .SH "BUGS"
 
-Please report any bugs to bug-indent@@gnu.org.
+Please report any bugs to bug-indent@gnu.org.
 
 When \fBindent\fR is run twice on a file, with the same profile,
 it should \fInever\fR change that file the second time.  With the
-current design of \fBindent\fR, this can not be guaranteed, however,
+current design of \fBindent\fR, this can not be guaranteed,
 and it has not been extensively tested.
 
 .B indent\fR does not understand C.  In some cases this leads to
@@ -1504,8 +1507,8 @@ through \fBindent\fR is \fIirreversible\fR, even if the used input
 file was the result of running \fBindent\fR with a given profile
 (\`.indent.pro\').
 
-While an attempt was made to get \fBindent\fR working for C++, is
-will not do a good job on any C++ source except the very simple.
+While an attempt was made to get \fBindent\fR working for C++, it
+will not do a good job on any C++ source except the very simplest.
 
 .B indent\fR does not look at the given \`--line-length\' option
 when writing comments to the output file.  This results often in comments

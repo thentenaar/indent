@@ -18,13 +18,13 @@
 #ifndef INDENT_PARSE_H
 #define INDENT_PARSE_H
 
-RCSTAG_H (parse, "$Id: parse.h,v 1.5 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (parse, "$Id: parse.h,v 1.6 2002/02/26 20:38:27 david Exp $");
 
 #include "indent.h"
 
 extern int inc_pstack (void);
 extern void parse_lparen_in_decl (void);
-extern enum exit_values parse (enum codes tk);
+extern exit_values_ty parse (codes_ty tk);
 extern void init_parser (void);
 extern void reset_parser (void);
 extern void reduce (void);

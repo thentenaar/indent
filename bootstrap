@@ -1,0 +1,23 @@
+#!/bin/sh
+aclocal --version
+autoheader --version
+automake --version
+autoconf --version
+echo
+cd aclocal
+ln -sf /usr/share/aclocal/codeset.m4   .
+ln -sf /usr/share/aclocal/gettext.m4   .
+ln -sf /usr/share/aclocal/glibc21.m4   .
+ln -sf /usr/share/aclocal/iconv.m4   .
+ln -sf /usr/share/aclocal/isc-posix.m4   .
+ln -sf /usr/share/aclocal/lcmessage.m4  .
+ln -sf /usr/share/aclocal/progtest.m4  .
+cd ..
+touch README
+aclocal -I aclocal
+gettextize -c -f
+autoheader
+automake --add-missing
+rm README
+autoconf
+./configure --enable-maintainer-mode

@@ -1,9 +1,20 @@
+Release notes for GNU indent version 2.2.8, March 2002
+
+* Fixed bug where file got truncated if backup file was not writable.
+
+* Cleaned up several problems of building with the gettext package.
+
+* Added lots of internationalisation translations.
+
+* The indent profile file (normally in ./.indent.pro or ~/.indent.pro) 
+  can now be specified by the environment variable $INDENT_PROFILE
+
 Release notes for GNU indent version 2.2.7, November 2001
 
 * Compilation under cygwin should be fixed.
 
 * Added support for i18n. Note for non GNU Linux/UNIX  users, this 
-  requires buildingthe code in the intl directory. For GNU Linux and
+  requires building the code in the intl directory. For GNU Linux and
   other UNIX-like systems this will happen automatically, but for other 
   platforms the make files in the miscel directory have not been updated 
   to handle this. Versions of these make files will be made available 

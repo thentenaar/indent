@@ -1,58 +1,59 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Danske tekststrenge til GNU indent
+# Copyright (C) 1997 Free Software Foundation, Inc.
+# Anders Wegge Jakobsen <wegge@daimi.aau.dk>, 1997.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: indent 1.9.1a\n"
 "POT-Creation-Date: 2002-03-21 21:44+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 1997-03-11 19:07-01:00\n"
+"Last-Translator: Anders Wegge Jakobsen <wegge@daimi.aau.dk>\n"
+"Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=ISO-Latin-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/args.c:518
+#, fuzzy
 msgid "usage: indent file [-o outfile ] [ options ]\n"
-msgstr ""
+msgstr "anvendelse: %s fil [-o outputfil ] [ tilvalg ]\n"
 
 #: src/args.c:519
+#, fuzzy
 msgid "       indent file1 file2 ... fileN [ options ]\n"
-msgstr ""
+msgstr "       %s fil1 fil2 ... filN [ tilvalg ]\n"
 
 #: src/args.c:583
 #, c-format
 msgid "indent: missing argument to parameter %s\n"
-msgstr ""
+msgstr "indent: argument mangler til parametren %s\n"
 
 #: src/args.c:682
 #, c-format
 msgid "indent: unknown option \"%s\"\n"
-msgstr ""
+msgstr "indent: ukendt tilvalg \"%s\"\n"
 
 #: src/args.c:693
 #, c-format
 msgid "option: %s\n"
-msgstr ""
+msgstr "tilvalg: %s\n"
 
 #. This is not really an error, but zero exit values are
 #. returned only when code has been successfully formatted.
 #: src/args.c:709
-#, c-format
+#, fuzzy, c-format
 msgid "GNU indent %s\n"
-msgstr ""
+msgstr "indent: %s"
 
 #: src/args.c:786
 #, c-format
 msgid "indent: option ``%s'' requires a numeric parameter\n"
-msgstr ""
+msgstr "indent: tilvalg ``%s'' kræver en numerisk parameter\n"
 
 #: src/args.c:796
 #, c-format
 msgid "indent: set_option: internal error: p_type %d\n"
-msgstr ""
+msgstr "indent: set_option: intern fejl: p_type %d\n"
 
 #: src/args.c:852
 msgid "Profile contains an unterminated comment"
@@ -64,26 +65,26 @@ msgstr ""
 
 #: src/backup.c:381
 msgid "indent:  Strange version-control value\n"
-msgstr ""
+msgstr "indent:  Ukendt versionskontrol-værdi\n"
 
 #: src/backup.c:382
 msgid "indent:  Using numbered-existing\n"
-msgstr ""
+msgstr "indent:  Anvender nummereret sikkerhedskopiering\n"
 
 #: src/backup.c:410
-#, c-format
+#, fuzzy, c-format
 msgid "indent: Can't make backup filename of %s\n"
-msgstr ""
+msgstr "indent: Kan ikke sikkerhedskopiere %s"
 
 #: src/backup.c:418
-#, c-format
+#, fuzzy, c-format
 msgid "Can't open backup file %s"
-msgstr ""
+msgstr "indent: Kan ikke sikkerhedskopiere %s"
 
 #: src/backup.c:425
-#, c-format
+#, fuzzy, c-format
 msgid "Can't write to backup file %s"
-msgstr ""
+msgstr "indent: Kan ikke sikkerhedskopiere %s"
 
 #: src/backup.c:439
 #, c-format
@@ -92,12 +93,12 @@ msgstr ""
 
 #: src/globs.c:41 src/globs.c:64
 msgid "indent: Virtual memory exhausted.\n"
-msgstr ""
+msgstr "indent: Virtuel hukommelse opbrugt.\n"
 
 #: src/globs.c:79
-#, c-format
+#, fuzzy, c-format
 msgid "indent: %s:%d: %s:"
-msgstr ""
+msgstr "indent:%s:%d: %s: "
 
 #: src/globs.c:93
 msgid "indent: Fatal Error: "
@@ -122,73 +123,77 @@ msgid "Ran out of memory"
 msgstr ""
 
 #: src/indent.c:444
+#, fuzzy
 msgid "EOF encountered in comment"
-msgstr ""
+msgstr "Uafsluttet kommentar"
 
 #: src/indent.c:500 src/indent.c:1562 src/indent.c:1584
 msgid "Line broken"
-msgstr ""
+msgstr "Linie delt"
 
 #: src/indent.c:581
 msgid "Unexpected end of file"
 msgstr ""
 
 #: src/indent.c:587
-#, c-format
+#, fuzzy, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
-msgstr ""
+msgstr "Ialt %d outputlinier og %d kommentarer\n"
 
 #: src/indent.c:591
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
-msgstr ""
+msgstr "Kommentarlinier/Kodelinier: %6.3f\n"
 
 #: src/indent.c:612
+#, fuzzy
 msgid "Line broken 2"
-msgstr ""
+msgstr "Linie delt"
 
 #: src/indent.c:909 src/indent.c:1486
 #, c-format
 msgid "Extra %c"
-msgstr ""
+msgstr "Overskydende %c"
 
 #: src/indent.c:2205
 msgid "Unmatched #else"
-msgstr ""
+msgstr "Ubalanceret #else"
 
 #: src/indent.c:2206
+#, fuzzy
 msgid "Unmatched #elif"
-msgstr ""
+msgstr "Ubalanceret #endif"
 
 #: src/indent.c:2233
 msgid "Unmatched #endif"
-msgstr ""
+msgstr "Ubalanceret #endif"
 
 #: src/indent.c:2385
-#, c-format
+#, fuzzy, c-format
 msgid "indent: only one output file (2nd was %s)\n"
-msgstr ""
+msgstr "%s: netop én output fil (nummer 2 var %s)\n"
 
 #: src/indent.c:2394 src/indent.c:2420
+#, fuzzy
 msgid "indent: only one input file when output file is specified\n"
-msgstr ""
+msgstr "%s: netop én input fil, når en outputfil er angivet\n"
 
 #: src/indent.c:2408 src/indent.c:2455
 msgid "indent: can't have filenames when specifying standard input\n"
-msgstr ""
+msgstr "indent: ingen filnavne, når standard input angives\n"
 
 #: src/indent.c:2428
 msgid "indent: only one input file when stdout is used\n"
-msgstr ""
+msgstr "indent: netop én input fil, når standard oputput angives\n"
 
 #: src/indent.c:2617
 #, c-format
 msgid "Read profile %s\n"
-msgstr ""
+msgstr "Læste profilen %s\n"
 
 #: src/io.c:139
 msgid "Internal buffering error"
-msgstr ""
+msgstr "Intern buffer fejl"
 
 #: src/io.c:300
 #, c-format
@@ -203,7 +208,7 @@ msgstr ""
 #: src/io.c:310
 #, c-format
 msgid "Warning: Zero-length file %s"
-msgstr ""
+msgstr "Advarsel: tom fil %s"
 
 #: src/io.c:318
 #, c-format
@@ -228,7 +233,7 @@ msgstr ""
 #: src/io.c:541
 #, c-format
 msgid "Warning: File %s contains NULL-characters\n"
-msgstr ""
+msgstr "Advarsel: Filen %s indeholder NULL-tegn\n"
 
 #: src/lexi.c:767
 msgid "Unterminated character constant"
@@ -248,12 +253,12 @@ msgstr ""
 #: src/lexi.c:1001
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
-msgstr ""
+msgstr "tildeling i gammel stil er flertydig: \"=%c\". Antager \"= %c\"\n"
 
 #: src/output.c:1067
 #, c-format
 msgid "indent: can't create %s\n"
-msgstr ""
+msgstr "indent: kan ikke danne %s\n"
 
 #: src/output.c:1106
 #, c-format
@@ -267,15 +272,15 @@ msgstr ""
 
 #: src/parse.c:397
 msgid "Unmatched 'else'"
-msgstr ""
+msgstr "Ubalanceret 'else'"
 
 #: src/parse.c:423
 msgid "Stmt nesting error."
-msgstr ""
+msgstr "Fejl i lagdelt erklæring."
 
 #: src/parse.c:465
 msgid "Unknown code to parser"
-msgstr ""
+msgstr "Parser fandt en uventet værdi"
 
 #: src/parse.c:475
 #, c-format
@@ -285,8 +290,33 @@ msgstr ""
 #: src/parse.c:479
 #, c-format
 msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
-msgstr ""
+msgstr "  stak[%d] =>   stak: %d   indrykning: %d\n"
 
 #: src/wildexp.c:90
 msgid "CANNOT FIND '@' FILE!"
 msgstr ""
+
+#~ msgid "Stuff missing from end of file."
+#~ msgstr "Uventet filafslutning."
+
+#~ msgid "Unbalanced parens"
+#~ msgstr "Ubalancerede parenteser"
+
+#~ msgid "%s: can't have filenames when specifying standard input\n"
+#~ msgstr "%s: ingen filnavne, når standard input angives\n"
+
+#~ msgid "Standard input"
+#~ msgstr "Standard input"
+
+#~ msgid "indent: bad font specification: %s\n"
+#~ msgstr "indent: fejlagtig angivelse af skriftsnit: %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "*** Debug output marker line ***\n"
+#~ msgstr ""
+#~ "\n"
+#~ "*** Debug output markørlinie ***\n"
+
+#~ msgid "Parse: Unknown code: %d for %s\n"
+#~ msgstr "Parse: Ukendt kode: %d for %s\n"

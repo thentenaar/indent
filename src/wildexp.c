@@ -26,7 +26,10 @@
 #include <direct.h>
 #include <malloc.h>
 #include <ctype.h>
-#include <io.h>
+
+#include "sys.h"
+#include "io.h"
+#include "indent.h"
 
 #define MAX_PATH 1024
 
@@ -46,8 +49,8 @@ myabort (char *str)
   exit (1);
 }
 
-void fparms (struct arginfo *arg, char *fname);
-void chkparm (struct arginfo *arg, char *str);
+static void fparms (struct arginfo *arg, char *fname);
+static void chkparm (struct arginfo *arg, char *str);
 
 static void
 addarg (struct arginfo *arg, char *str)
@@ -75,15 +78,17 @@ addarg (struct arginfo *arg, char *str)
 static void
 fparms (struct arginfo *arg, char *fname)
 {
-  char *buf;
-  char *cp, *ecp;
-  FILE *fs;
-  unsigned int cnt;
-  short quoted = 0;
+  char         * buf    = NULL;
+  char         * cp     = NULL;
+  char         * ecp    = NULL;
+  unsigned int   cnt;
+  short          quoted = 0;
+  FILE         * fs     = fopen (fname, "rb");
 
-  fs = fopen (fname, "rb");
   if (!fs)
-    myabort (_("CANNOT FIND '@' FILE!"));
+  {
+      myabort (_("CANNOT FIND '@' FILE!"));
+  }
 
   fseek (fs, 0l, 2);
   cnt = ftell (fs);
@@ -131,7 +136,7 @@ fparms (struct arginfo *arg, char *fname)
 }
 
 static int
-wildmatch (char *s1, char *s2)
+wildmatch (const char *s1, const char *s2)
 {
   if (s1 == NULL)
     s1 = "";
@@ -172,7 +177,7 @@ wildmatch (char *s1, char *s2)
 static short
 removearg (struct arginfo *arg, char *str)
 {
-  char *cp;
+  char *cp    = NULL;
   int i;
   int cnt;
 
@@ -199,19 +204,19 @@ removearg (struct arginfo *arg, char *str)
 static void
 chkparm (struct arginfo *arg, char *str)
 {
-  char tmpstr[MAX_PATH + 1];
-  char *cp;
-  char *pnt2;
-  short remarg;
-  long hFile;
-  struct _finddata_t c_file;
+  char                 tmpstr[MAX_PATH + 1];
+  char               * cp     = NULL;
+  char               * pnt2   = NULL;
+  short                remarg = 0;
+  long                 hFile;
+  struct _finddata_t   c_file;
 
-  remarg = 0;
   if (*str == '!')
     {
       remarg = 1;
       ++str;
     }
+  
   if (strchr (str, '?') || strchr (str, '*'))
     {
       if (remarg)
@@ -222,9 +227,16 @@ chkparm (struct arginfo *arg, char *str)
 	{
 	  strcpy (tmpstr, str);
 	  if (!(cp = strrchr (tmpstr, '\\')))
-	    if (!(cp = strrchr (tmpstr, '/')))
-	      if (!(cp = strrchr (tmpstr, ':')))
-		cp = tmpstr - 1;
+          {
+              if (!(cp = strrchr (tmpstr, '/')))
+              {
+                if (!(cp = strrchr (tmpstr, ':')))
+                {
+                    cp = tmpstr - 1;
+                }
+              }
+          }
+          
 	  pnt2 = cp + 1;
 	  hFile = _findfirst (str, &c_file);
 	  while (hFile > 0)
@@ -265,28 +277,36 @@ chkparm (struct arginfo *arg, char *str)
 void
 wildexp (int *argc, char ***argv)
 {
-  char *cp;
-  char **pnt;
-  char **nargv;
-  struct arginfo arg;
-  int i;
+  char           * cp = NULL;
+  char          ** pnt;
+  char          ** nargv;
+  struct arginfo   arg;
+  int              i;
 
   arg.bufsize = 8192;
-  arg.argpos = 0;
-  arg.argbuf = malloc (arg.bufsize);
-  arg.nargc = 0;
+  arg.argpos  = 0;
+  arg.argbuf  = malloc (arg.bufsize);
+  arg.nargc   = 0;
+  
   i = *argc;
   pnt = *argv;
 
   while (i--)
-    chkparm (&arg, *pnt++);
+  {
+      chkparm (&arg, *pnt++);
+  }
 
   arg.argbuf = realloc (arg.argbuf, arg.argpos);
   cp = arg.argbuf;
   i = *argc = arg.nargc;
+  
   if (arg.nargc < 32)
-    arg.nargc = 32;
+  {
+      arg.nargc = 32;
+  }
+  
   *argv = nargv = malloc (arg.nargc * sizeof (nargv[0]));
+
   while (i--)
     {
       *nargv++ = cp;

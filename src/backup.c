@@ -99,7 +99,7 @@
 #include "globs.h"
 #include "io.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.17 2001/10/16 18:23:48 david Exp $");
+RCSTAG_CC ("$Id: backup.c,v 1.19 2002/02/26 20:38:27 david Exp $");
 
 #ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
@@ -129,15 +129,15 @@ RCSTAG_CC ("$Id: backup.c,v 1.17 2001/10/16 18:23:48 david Exp $");
 static char *simple_backup_suffix = BACKUP_SUFFIX_STR;
 
 /* What kinds of backup files to make -- see
-   table `version_control_values' below. */
-enum backup_mode version_control = unknown;
+ * table `version_control_values' below. */
+
+backup_mode_ty version_control = unknown;
 int version_width = 1;
 
 /* Construct a simple backup name for PATHNAME by appending
    the value of `simple_backup_suffix'. */
 
-static char *
-simple_backup_name (
+static char * simple_backup_name (
                     char *pathname)
 {
   char *backup_name;
@@ -149,18 +149,18 @@ simple_backup_name (
 
 #ifndef NODIR
 /* If DIRENTRY is a numbered backup version of file BASE, return
-   that number.  BASE_LENGTH is the string length of BASE. */
+ * that number.  BASE_LENGTH is the string length of BASE. */
 
-static int
-version_number (
-                char *base,
-                char *direntry,
-                int base_length)
+static int version_number(
+    char * base,
+    char * direntry,
+    int    base_length)
 {
-  int version;
-  char *p;
+  int    version;
+  char * p = NULL;
 
   version = 0;
+  
   if (!strncmp (base, direntry, base_length) && ISDIGIT (direntry[base_length + 2]))
     {
         for (p = &direntry[base_length + 2]; ISDIGIT (*p); ++p)
@@ -179,29 +179,29 @@ version_number (
 
 
 /* Return the highest version of file FILENAME in directory
-   DIRNAME.  Return 0 if there are no numbered versions. */
+ * DIRNAME.  Return 0 if there are no numbered versions. */
 
-static int
-highest_version (
-     char *filename,
-     char *dirname)
+static int highest_version (
+     char * filename,
+     char * dirname)
 {
-  DIR *dirp;
-  struct dirent *dp;
-  int highest_version;
-  int this_version;
-  int file_name_length;
+    DIR           * dirp = NULL;
+    struct dirent * dp = NULL;
+    int             highest_version;
+    int             this_version;
+    int             file_name_length;
+    
+    dirp = opendir (dirname);
+    
+    if (!dirp)
+    {
+        return 0;
+    }
 
-  dirp = opendir (dirname);
-  if (!dirp)
-  {
-      return 0;
-  }
+    highest_version = 0;
+    file_name_length = strlen (filename);
 
-  highest_version = 0;
-  file_name_length = strlen (filename);
-
-  while ((dp = readdir (dirp)) != 0)
+    while ((dp = readdir (dirp)) != 0)
     {
         if (!REAL_DIR_ENTRY (dp) || NAMLEN (dp) <= file_name_length + 2)
         {
@@ -209,62 +209,63 @@ highest_version (
         }
         
 
-      this_version = version_number (filename, dp->d_name, file_name_length);
-      if (this_version > highest_version)
-      {
-          highest_version = this_version;
-      }
+        this_version = version_number (filename, dp->d_name, file_name_length);
+      
+        if (this_version > highest_version)
+        {
+            highest_version = this_version;
+        }
     }
 
-  closedir (dirp);
-  return highest_version;
+    closedir (dirp);
+    return highest_version;
 }
 
 
 /* Return the highest version number for file PATHNAME.  If there
    are no backups, or only a simple backup, return 0. */
 
-static int
-max_version (
-             char *pathname)
+static int max_version (
+    char *pathname)
 {
-  char *p;
-  char *filename;
-  int pathlen = strlen (pathname);
-  int version;
+    char * p;
+    char * filename;
+    int    pathlen = strlen (pathname);
+    int    version;
 
-  p = pathname + pathlen - 1;
-  while (p > pathname && *p != '/')
-  {
-      p--;
-  }
-
-  if (*p == '/')
+    p = pathname + pathlen - 1;
+    
+    while ((p > pathname) && (*p != '/'))
     {
-      int dirlen = p - pathname;
-      char *dirname;
-
-      filename = p + 1;
-      dirname = xmalloc (dirlen + 1);
-      strncpy (dirname, pathname, (dirlen));
-      dirname[dirlen] = '\0';
-      version = highest_version (filename, dirname);
-      free (dirname);
-      return version;
+        p--;
     }
 
-  filename = pathname;
-  version = highest_version (filename, ".");
-  return version;
+    if (*p == '/')
+    {
+        int dirlen = p - pathname;
+        char *dirname;
+
+        filename = p + 1;
+        dirname = xmalloc (dirlen + 1);
+        strncpy (dirname, pathname, (dirlen));
+        dirname[dirlen] = '\0';
+        version = highest_version (filename, dirname);
+        free (dirname);
+        return version;
+    }
+
+    filename = pathname;
+    version = highest_version (filename, ".");
+    return version;
 }
 
 
 /* Generate a backup filename for PATHNAME, dependent on the
-   value of VERSION_CONTROL. */
+ * value of VERSION_CONTROL. */
 
 static char *
 generate_backup_filename (
-                          enum backup_mode version_control,
+                          backup_mode_ty version_control,
                           char *pathname)
 {
   int last_numbered_version;
@@ -281,7 +282,7 @@ generate_backup_filename (
   }
 
   last_numbered_version = max_version (pathname);
-  if (version_control == numbered_existing && last_numbered_version == 0)
+  if ((version_control == numbered_existing) && (last_numbered_version == 0))
   {
       return simple_backup_name (pathname);
   }
@@ -301,15 +302,16 @@ generate_backup_filename (
 
 #endif /* !NODIR */
 
-static struct version_control_values values[] = {
-  {none, "never"},		/* Don't make backups. */
-  {none, "none"},		/* Ditto */
-  {simple, "simple"},		/* Only simple backups */
-  {numbered_existing, "existing"},	/* Numbered if they already exist */
-  {numbered_existing, "nil"},	/* Ditto */
-  {numbered, "numbered"},	/* Numbered backups */
-  {numbered, "t"},		/* Ditto */
-  {unknown, 0}			/* Initial, undefined value. */
+static version_control_values_ty values[] =
+{
+    {none, "never"},		/* Don't make backups. */
+    {none, "none"},		/* Ditto */
+    {simple, "simple"},		/* Only simple backups */
+    {numbered_existing, "existing"},	/* Numbered if they already exist */
+    {numbered_existing, "nil"},	/* Ditto */
+    {numbered, "numbered"},	/* Numbered backups */
+    {numbered, "t"},		/* Ditto */
+    {unknown, 0}			/* Initial, undefined value. */
 };
 
 
@@ -317,19 +319,18 @@ static struct version_control_values values[] = {
    environment variable "VERSION_CONTROL".  Defaults to
    numbered_existing. */
 
-enum backup_mode
-version_control_value (void)
+backup_mode_ty version_control_value (void)
 {
-    char *version;
-    struct version_control_values *v;
+    char                         * version = getenv ("VERSION_CONTROL");
+    version_control_values_ty * v;
 
-    version = getenv ("VERSION_CONTROL");
     if (version == 0 || *version == 0)
     {
         return numbered_existing;
     }
 
     v = &values[0];
+    
     while (v->name)
     {
         if (strcmp (version, v->name) == 0)
@@ -346,19 +347,22 @@ version_control_value (void)
 
 /* Initialize information used in determining backup filenames. */
 
-void
-set_version_width (void)
+void set_version_width (void)
 {
-  char *v = getenv ("VERSION_WIDTH");
+    char *v = getenv ("VERSION_WIDTH");
 
-  if (v && ISDIGIT (*v))
-    version_width = atoi (v);
-  if (version_width > 16)
-    version_width = 16;
+    if (v && ISDIGIT (*v))
+    {
+        version_width = atoi (v);
+    }
+  
+    if (version_width > 16)
+    {
+        version_width = 16;
+    }
 }
 
-void
-initialize_backups (void)
+void initialize_backups (void)
 {
     char *v = getenv ("SIMPLE_BACKUP_SUFFIX");
 
@@ -371,6 +375,7 @@ initialize_backups (void)
     version_control = simple;
 #else /* !NODIR */
     version_control = version_control_value ();
+    
     if (version_control == unknown)
     {
         fprintf (stderr, _("indent:  Strange version-control value\n"));
@@ -385,14 +390,13 @@ initialize_backups (void)
 /* Make a backup copy of FILE, taking into account version-control.
    See the description at the beginning of the file for details. */
 
-void
-make_backup (
-             struct file_buffer *file,
-             const struct stat *file_stats)
+void make_backup (
+    file_buffer_ty     * file,
+    const struct stat  * file_stats)
 {
-    FILE *bf;
-    char *backup_filename;
-    unsigned int size;
+    FILE         * bf;
+    char         * backup_filename;
+    unsigned int   size;
 
     if (version_control == none)
     {
@@ -400,6 +404,7 @@ make_backup (
     }
 
     backup_filename = generate_backup_filename (version_control, file->name);
+    
     if (!backup_filename)
     {
         fprintf (stderr, _("indent: Can't make backup filename of %s\n"), file->name);
@@ -407,12 +412,14 @@ make_backup (
     }
 
     bf = fopen (backup_filename, "w");
+    
     if (!bf)
     {
         fatal (_("Can't open backup file %s"), backup_filename);
     }
   
     size = fwrite (file->data, file->size, 1, bf);
+    
     if (size != 1)
     {
         fatal (_("Can't write to backup file %s"), backup_filename);
@@ -426,11 +433,11 @@ make_backup (
 
         buf.actime = time (NULL);
         buf.modtime = file_stats->st_mtime;
+        
         if (utime (backup_filename, &buf) != 0)
         {
             WARNING (_("Can't preserve modification time on backup file %s"), backup_filename, 0);
         }
-    
     }
 #endif
     free (backup_filename);

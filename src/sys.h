@@ -11,6 +11,8 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
+#ifndef SYS_H
+#define SYS_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -38,6 +40,7 @@ char *strchr (), *strrchr ();
 /* Values of special characters. */
 #define TAB '\t'
 #define EOL '\n'
+#define EOS '\0'
 #define BACKSLASH '\\'
 #define NULL_CHAR '\0'
 
@@ -79,10 +82,15 @@ extern int debug;
 #if !defined(__GNUC__) || (__GNUC__ < 2) || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
 #define __attribute__(x)
 #endif
+
 #define RCSTAG_CC(string) static char rcs_ident[] __attribute__ ((unused)) = string
+
 #ifdef __STDC__
 #define RCSTAG_H(name, string) static const char rcs_ident_##name##_h[] __attribute__ ((unused)) = string
 #else
 #define RCSTAG_H(name, string) /**/
 #endif
-  RCSTAG_H (sys, "$Id: sys.h,v 1.18 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (sys, "$Id: sys.h,v 1.20 2002/03/15 07:48:46 david Exp $");
+
+
+#endif

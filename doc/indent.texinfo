@@ -262,8 +262,11 @@ indent +braces-on-if-line +line-length185 test/metabolism.c
 @kindex --ignore-profile
 If you find that you often use @command{indent} with the same options, you
 may put those options into a file named @file{.indent.pro}.
-@command{indent} will first look for @file{.indent.pro} in the current
-directory and use that if found.  Otherwise, @command{indent} will search
+@command{indent} will look for a profile file in three places. First it will check
+the environment variable @env{INDENT_PROFILE}. If that exists its value 
+is expected to name the file that is to be used. If the environment variable does 
+not exist, indent looks for @file{.indent.pro} in the current directory
+ and use that if found.  Finally @command{indent} will search
 your home directory for @file{.indent.pro} and use that file if it is
 found.  This behaviour is different from that of other versions of
 @command{indent}, which load both files if they both exist.
@@ -1355,7 +1358,7 @@ Please report any bugs to @email{bug-indent@@gnu.org}.
 
 When @command{indent} is run twice on a file, with the same profile,
 it should @emph{never} change that file the second time.  With the
-current design of @command{indent}, this can not be guaranteed, however,
+current design of @command{indent}, this can not be guaranteed,
 and it has not been extensively tested.
 
 @command{indent} does not understand C.  In some cases this leads to
@@ -1364,8 +1367,8 @@ through @command{indent} is @emph{irreversible}, even if the used input
 file was the result of running @command{indent} with a given profile
 (@file{.indent.pro}).
 
-While an attempt was made to get @command{indent} working for C++, is
-will not do a good job on any C++ source except the very simple.
+While an attempt was made to get @command{indent} working for C++, it
+will not do a good job on any C++ source except the very simplest.
 
 @command{indent} does not look at the given @option{--line-length} option
 when writing comments to the output file.  This results often in comments

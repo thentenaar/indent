@@ -18,9 +18,9 @@
 #ifndef INDENT_LEXI_H
 #define INDENT_LEXI_H
 
-RCSTAG_H (lexi, "$Id: lexi.h,v 1.6 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (lexi, "$Id: lexi.h,v 1.7 2002/02/26 20:38:27 david Exp $");
 
-enum rwcodes
+typedef enum rwcodes
 {
   rw_none,
   rw_operator,			/* For C++ operator overloading. */
@@ -35,9 +35,9 @@ enum rwcodes
   rw_sp_else,			/* else */
   rw_sizeof,
   rw_return
-};
+} rwcodes_ty;
 
-enum codes
+typedef enum codes
 {
   code_eof = 0,			/* end of file */
   newline,
@@ -94,9 +94,9 @@ enum codes
 
   attribute,			/* The '__attribute__' qualifier */
   number_of_codes
-};
+} codes_ty;
 
-extern void addkey (char *key, enum rwcodes val);
-extern enum codes lexi (void);
+extern void addkey (char *key, rwcodes_ty val);
+extern codes_ty lexi (void);
 
 #endif /* INDENT_LEXI_H */

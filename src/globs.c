@@ -25,17 +25,16 @@
 #include <stdlib.h>
 #include <errno.h>
 
-RCSTAG_CC ("$Id: globs.c,v 1.11 2001/10/16 18:23:48 david Exp $");
+RCSTAG_CC ("$Id: globs.c,v 1.13 2002/03/15 07:48:45 david Exp $");
 
 /* Like malloc but get error if no storage available.  size really should be
  * size_t, but not all systems have size_t, so I hope "unsigned" will work.
  * It works for GNU style machines, where it is 32 bits, and works on
  * MS-DOS.  */
 
-char *
-xmalloc (unsigned size)
+char * xmalloc (unsigned size)
 {
-    char *val = (char *) malloc (size);
+    char *val = (char *) calloc (1, size);
 
     if (!val)
     {
@@ -55,8 +54,8 @@ xmalloc (unsigned size)
 /* Like realloc but get error if no storage available.  */
 
 char *xrealloc (
-                char *ptr,
-                unsigned size)
+   char *ptr,
+   unsigned size)
 {
     char *val = (char *) realloc (ptr, size);
 
@@ -69,12 +68,11 @@ char *xrealloc (
     return val;
 }
 
-void
-message (
-         char     * kind,
-         char     * string,
-         unsigned * a0,
-         unsigned * a1)
+void message (
+    char     * kind,
+    char     * string,
+    unsigned * a0,
+    unsigned * a1)
 {
     if (kind)
     {
@@ -89,8 +87,8 @@ message (
    "DEBUG" defined, abort (). */
 
 void fatal (
-            char *string,
-            char *a0)
+    const char *string,
+    const char *a0)
 {
     fprintf (stderr, _("indent: Fatal Error: "));
     fprintf (stderr, string, a0);

@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = 1.2 gnits
 
 bin_PROGRAMS = indent
-indent_SOURCES = args.c comments.c indent.c lexi.c parse.c backup.c globs.c io.c
-noinst_HEADERS = backup.h indent.h sys.h lexi.h args.h comments.h globs.h io.h parse.h
+indent_SOURCES = indent.c args.c backup.c comments.c lexi.c parse.c globs.c io.c output.c
+noinst_HEADERS = indent.h args.h backup.h comments.h lexi.h parse.h globs.h io.h output.h sys.h 
 indent_LDADD =  $(INTLLIBS)
 EXTRA_DIST = @PACKAGE@.gperf @PACKAGE@-cc.gperf wildexp.c gperf.c gperf-cc.c \
 	     @PACKAGE@.dsp \

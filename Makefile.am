@@ -9,17 +9,19 @@ EXTRA_DIST = ChangeLog-1990 ChangeLog-1998 ChangeLog-2001 \
 		miscel/make-decc.com miscel/vaxc-make.com miscel/gnuc-make.com \
 		aclocal/UTIMBUF.m4 \
 		miscel/Makefile.mingw32 \
+		miscel/makefile.watcom \
 		miscel/README.vc++ \
 		miscel/README.VMS \
-		README
+		README \
+		bootstrap
 
 DISTCLEANFILES=config/config.cache config/config.log config.h
 
 ps:
-	cd doc && $(MAKE) ps
+	cd doc && $(MAKE) @PACKAGE@.ps
 
 pdf:
-	cd doc && $(MAKE) pdf
+	cd doc && $(MAKE) @PACKAGE@.pdf
 
 html:
 	cd doc && $(MAKE) html
@@ -46,10 +48,10 @@ README: Makefile miscel/README.in configure.ac
 	sed -e 's%!VERSION!%@VERSION@%g'  miscel/$@.in > $@
 
 
-miscel/Makefile.mingw32: miscel/Makefile.mingw32.in
-	cat $< | perl -e 'while (<>) {chomp; print "$$_\015\012"; }'  > $@
+miscel/Makefile.mingw32 miscel/makefile.watcom :%: %.in
+	cat $@.in | perl -e 'while (<>) {chomp; print "$$_\015\012"; }'  > $@
 
-README.vc++ miscel/README.VMS @PACKAGE@.lsm :%: Makefile %.in
+miscel/README.vc++ miscel/README.VMS @PACKAGE@.lsm :%: Makefile %.in
 	sed -e 's%!VERSION!%@VERSION@%g' $@.in > $@
 
 tar:
