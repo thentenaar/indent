@@ -115,6 +115,10 @@ SOURCE=.\lexi.c
 
 SOURCE=.\parse.c
 # End Source File
+# Begin Source File
+
+SOURCE=.\wildexp.c
+# End Source File
 # End Group
 # Begin Group "Header Files"
 

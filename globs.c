@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-RCSTAG_CC ("$Id: globs.c,v 1.7 1999/08/04 16:01:22 carlo Exp $");
+RCSTAG_CC ("$Id: globs.c,v 1.8 2000/11/17 03:01:04 carlo Exp $");
 
 /* Like malloc but get error if no storage available.  size really should be
    size_t, but not all systems have size_t, so I hope "unsigned" will work.
@@ -36,6 +36,7 @@ xmalloc (size)
      unsigned size;
 {
   char *val = (char *) malloc (size);
+
   if (!val)
     {
       fprintf (stderr, "indent: Virtual memory exhausted.\n");
@@ -59,6 +60,7 @@ xrealloc (ptr, size)
      unsigned size;
 {
   char *val = (char *) realloc (ptr, size);
+
   if (!val)
     {
       fprintf (stderr, "indent: Virtual memory exhausted.\n");

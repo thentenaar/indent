@@ -1,4 +1,4 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
    Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
    Copyright (c) 1992 Free Software Foundation, Inc.  All rights reserved.
 
@@ -44,7 +44,7 @@
 #include "io.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.29 2000/01/16 15:21:33 carlo Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.38 2000/11/17 03:01:04 carlo Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
@@ -125,7 +125,7 @@ struct buf_break_st
 {
   struct buf_break_st *next;	/* The first possible break point to the right, if any. */
   struct buf_break_st *prev;	/* The first possible break point to the left, if any. */
-  int offset;		/* The break point: the first character in the buffer that will
+  int offset;			/* The break point: the first character in the buffer that will
 				   not be put on this line any more. */
   char *corresponds_to;		/* If ptr equals s_code and this equals s_code_corresponds_to,
 				   then parser_state_toc->procname is valid. */
@@ -153,11 +153,9 @@ set_priority (bb)
   if (bb->priority_code == bb_semicolon)
     bb->priority += 6000;
   if (bb->priority_code == bb_before_boolean_binary_op
-      || (bb->priority_code == bb_after_boolean_binary_op
-	  && bb->priority_code_length > 2))
+      || (bb->priority_code == bb_after_boolean_binary_op && bb->priority_code_length > 2))
     bb->priority += 5000;
-  if (bb->priority_code == bb_after_boolean_binary_op
-      && break_before_boolean_operator)
+  if (bb->priority_code == bb_after_boolean_binary_op && break_before_boolean_operator)
     bb->priority -= 3;
   if (bb->priority_code == bb_after_equal_sign)
     bb->priority += 4000;
@@ -202,23 +200,28 @@ better_break (b1, b2)
 {
   static int first_level;
   int is_better;
+
   if (!b2)
     {
       first_level = b1->level;
       b1->first_level = first_level;
       return 1;
     }
-  if (honour_newlines && b2->priority_newline)
+  if (b2->target_col >= b2->col + 1)
+    is_better = true;
+  else if (honour_newlines && b2->priority_newline)
     is_better = false;
   else if (honour_newlines && b1->priority_newline)
     is_better = true;
   else
     {
       int only_parens_till_b2 = 0;
+
       is_better = (b1->priority > b2->priority);
       if (is_better)
 	{
 	  char *p;
+
 	  for (p = &s_code[b2->offset]; p >= s_code; --p)
 	    {
 	      if (*p == '!')
@@ -229,10 +232,8 @@ better_break (b1, b2)
 	  if (p < s_code)
 	    only_parens_till_b2 = 1;
 	}
-      if (lineup_to_parens
-	  && b1->level > first_level + 1
-	  && !(only_parens_till_b2
-	       && b1->target_col <= b2->col + (1 + 2 * b1->level)))
+      if (lineup_to_parens && b1->level > first_level + 1
+	  && !(only_parens_till_b2 && b1->target_col <= b2->col + (1 + 2 * b1->level)) && b1->level > b2->level)
 	is_better = false;
     }
   if (is_better)
@@ -302,38 +303,24 @@ set_buf_break (code)
 
   /* Calculate default priority. */
   bb->priority_code_length = (e_code - s_code);
-  bb->priority_newline = (parser_state_tos->last_saw_nl
-			  && !parser_state_tos->broken_at_non_nl);
+  bb->priority_newline = (parser_state_tos->last_saw_nl && !parser_state_tos->broken_at_non_nl);
   if (buf_break)
     bb->first_level = buf_break->first_level;
   switch (parser_state_tos->last_token)
     {
     case binary_op:
       if ((e_code - s_code) >= 3 && e_code[-3] == ' '
-	  && ((e_code[-1] == '&' && e_code[-2] == '&')
-	      || (e_code[-1] == '|' && e_code[-2] == '|')))
+	  && ((e_code[-1] == '&' && e_code[-2] == '&') || (e_code[-1] == '|' && e_code[-2] == '|')))
 	bb->priority_code = bb_after_boolean_binary_op;
-      else if (e_code - s_code >= 2
-	       && e_code[-1] == '='
+      else if (e_code - s_code >= 2 && e_code[-1] == '='
 	       && (e_code[-2] == ' '
-		   || (e_code - s_code >= 3
-		       && e_code[-3] == ' '
-		       && (e_code[-2] == '%'
-			   || e_code[-2] == '^'
-			   || e_code[-2] == '&'
-			   || e_code[-2] == '*'
-			   || e_code[-2] == '-' || e_code[-2] == '+'
-			   || e_code[-2] == '|'))))
+		   || (e_code - s_code >= 3 && e_code[-3] == ' '
+		       && (e_code[-2] == '%' || e_code[-2] == '^' || e_code[-2] == '&' || e_code[-2] == '*'
+			   || e_code[-2] == '-' || e_code[-2] == '+' || e_code[-2] == '|'))))
 	bb->priority_code = bb_after_equal_sign;
-      else if (((e_code - s_code) >= 2
-		&& e_code[-2] == ' '
-		&& (e_code[-1] == '<' || e_code[-1] == '>'))
-	       || ((e_code - s_code) >= 3
-		   && e_code[-3] == ' '
-		   && e_code[-1] == '='
-		   && (e_code[-2] == '='
-		       || e_code[-2] == '!' || e_code[-2] == '<'
-		       || e_code[-2] == '>')))
+      else if (((e_code - s_code) >= 2 && e_code[-2] == ' ' && (e_code[-1] == '<' || e_code[-1] == '>'))
+	       || ((e_code - s_code) >= 3 && e_code[-3] == ' ' && e_code[-1] == '='
+		   && (e_code[-2] == '=' || e_code[-2] == '!' || e_code[-2] == '<' || e_code[-2] == '>')))
 	bb->priority_code = bb_comparisation;
       else if (e_code[-1] == '+' || e_code[-1] == '-')
 	bb->priority_code = bb_operator6;
@@ -346,8 +333,7 @@ set_buf_break (code)
       bb->priority_code = bb_comma;
       break;
     default:
-      if (code == bb_binary_op
-	  && (*token == '&' || *token == '|') && *token == token[1])
+      if (code == bb_binary_op && (*token == '&' || *token == '|') && *token == token[1])
 	bb->priority_code = bb_before_boolean_binary_op;
       else if (e_code[-1] == ';')
 	bb->priority_code = bb_semicolon;
@@ -383,6 +369,7 @@ set_buf_break (code)
   for (bb = bb->prev; bb;)
     {
       struct buf_break_st *obb = bb;
+
       bb = bb->prev;
       free (obb);
     }
@@ -393,9 +380,11 @@ void
 clear_buf_break_list ()
 {
   struct buf_break_st *bb;
+
   for (bb = buf_break_list; bb;)
     {
       struct buf_break_st *obb = bb;
+
       bb = bb->prev;
       free (obb);
     }
@@ -429,7 +418,7 @@ set_next_buf_break (prev_code_target, new_code_target, offset)
   /* Correct all elements of the remaining buf breaks: */
   for (bb = buf_break_list; bb; bb = bb->prev)
     {
-      if (bb->target_col > buf_break->target_col)
+      if (bb->target_col > buf_break->target_col && lineup_to_parens)
 	bb->target_col -= ((prev_code_target + offset) - new_code_target);
       bb->col -= ((prev_code_target + offset) - new_code_target);
       bb->offset -= offset;
@@ -460,6 +449,7 @@ set_next_buf_break (prev_code_target, new_code_target, offset)
 	  for (bb = bb->prev; bb;)
 	    {
 	      struct buf_break_st *obb = bb;
+
 	      bb = bb->prev;
 	      free (obb);
 	    }
@@ -562,7 +552,7 @@ pad_output (current_column, target_column)
   if (current_column >= target_column)
     return current_column;
 
-  if (tabsize > 1)
+  if (use_tabs && tabsize > 1)
     {
       int offset;
 
@@ -665,33 +655,41 @@ dump_line (force_nl)
 	  while (e_lab > s_lab && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
 	    e_lab--;
 	  cur_col = pad_output (1, compute_label_target ());
-	  if (s_lab[0] == '#' && (strncmp (s_lab, "#else", 5) == 0
-				  || strncmp (s_lab, "#endif", 6) == 0))
+	  if (s_lab[0] == '#' && (strncmp (s_lab, "#else", 5) == 0 || strncmp (s_lab, "#endif", 6) == 0))
 	    {
 	      /* Treat #else and #endif as a special case because any text
 	         after #else or #endif should be converted to a comment.  */
 	      char *s = s_lab;
-	      if (e_lab[-1] == EOL)
+
+	      if (e_lab[-1] == EOL)	/* Don't include EOL in the comment */
 		e_lab--;
 	      do
-		putc (*s++, output);
+		{
+		  putc (*s++, output);
+		  ++cur_col;
+		}
 	      while (s < e_lab && 'a' <= *s && *s <= 'z');
 	      while ((*s == ' ' || *s == TAB) && s < e_lab)
 		s++;
 	      if (s < e_lab)
 		{
-		  if (s[0] == '/' && (s[1] == '*' || s[1] == '/'))
-		    fprintf (output, (tabsize > 1 ? "\t%.*s" : "  %.*s"),
-			     e_lab - s, s);
+		  if (tabsize > 1)
+		    cur_col = pad_output (cur_col, cur_col + tabsize - (cur_col - 1) % tabsize);
 		  else
-		    fprintf (output,
-			     (tabsize > 1 ? "\t/* %.*s */" : "  /* %.*s */"),
-			     e_lab - s, s);
+		    cur_col = pad_output (cur_col, cur_col + 2);
+		  if (s[0] == '/' && (s[1] == '*' || s[1] == '/'))
+		    fprintf (output, "%.*s", e_lab - s, s);
+		  else
+		    fprintf (output, "/* %.*s */", e_lab - s, s);
+		  /* no need to update cur_col: the very next thing will
+		     be a new-line (or end of file) */
 		}
 	    }
 	  else
-	    fprintf (output, "%.*s", (int) (e_lab - s_lab), s_lab);
-	  cur_col = count_columns (cur_col, s_lab, NULL_CHAR);
+	    {
+	      fprintf (output, "%.*s", (int) (e_lab - s_lab), s_lab);
+	      cur_col = count_columns (cur_col, s_lab, NULL_CHAR);
+	    }
 	}
       else
 	cur_col = 1;		/* there is no label section */
@@ -727,13 +725,12 @@ dump_line (force_nl)
 	     usual amount.  */
 	  if (parser_state_tos->last_token == lparen)
 	    {
-	      parser_state_tos->paren_indents[parser_state_tos->p_l_follow -
-					      1] += ind_size - 1;
+	      parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1] += ind_size - 1;
 	    }
 
 	  cur_col = pad_output (cur_col, target_col);
 
-	  if (break_line && s_com == e_com)
+	  if (break_line && s_com == e_com && buf_break->target_col <= buf_break->col)
 	    {
 	      int offset, len;
 	      char c;
@@ -751,13 +748,11 @@ dump_line (force_nl)
 		if (parser_state_tos->paren_indents[i] >= 0)
 		  {
 		    if (parser_state_tos->paren_indents[i] < ptr - s_code)
-		      parser_state_tos->paren_indents[i]
-			= -(parser_state_tos->paren_indents[i] + target_col);
+		      parser_state_tos->paren_indents[i] = -(parser_state_tos->paren_indents[i] + target_col);
 		    else
 		      parser_state_tos->paren_indents[i] -= offset;
 		  }
-	      for (i = parser_state_tos->p_l_follow;
-		   i < parser_state_tos->paren_indents_size; ++i)
+	      for (i = parser_state_tos->p_l_follow; i < parser_state_tos->paren_indents_size; ++i)
 		if (parser_state_tos->paren_indents[i] >= (ptr - s_code))
 		  parser_state_tos->paren_indents[i] -= offset;
 
@@ -786,15 +781,13 @@ dump_line (force_nl)
 		parser_state_tos->broken_at_non_nl = true;
 	      set_next_buf_break (target_col, buf_break->target_col, offset);
 	      buf_break_used = 1;
-	      break_line = (buf_break != NULL)
-		&& (output_line_length () > max_col);
+	      break_line = (buf_break != NULL) && (output_line_length () > max_col);
 	    }
 	  else
 	    {
 	      for (i = 0; i < parser_state_tos->p_l_follow; i++)
 		if (parser_state_tos->paren_indents[i] >= 0)
-		  parser_state_tos->paren_indents[i]
-		    = -(parser_state_tos->paren_indents[i] + target_col);
+		  parser_state_tos->paren_indents[i] = -(parser_state_tos->paren_indents[i] + target_col);
 
 	      for (p = s_code; p < e_code; p++)
 		putc (*p, output);
@@ -836,8 +829,7 @@ dump_line (force_nl)
 	putc (EOL, output);
 
       ++out_lines;
-      if (parser_state_tos->just_saw_decl == 1
-	  && blanklines_after_declarations)
+      if (parser_state_tos->just_saw_decl == 1 && blanklines_after_declarations)
 	{
 	  prefix_blankline_requested = 1;
 	  prefix_blankline_requested_code = decl;
@@ -875,16 +867,12 @@ dump_line (force_nl)
          begin with a rparen, the indentation is set for
          the column of the rparen *before* the break - reset
          the column to the position after the break. */
-      if (!not_truncated && (*s_code == '(' || *s_code == '[')
-	  && parser_state_tos->paren_level >= 2)
+      if (!not_truncated && (*s_code == '(' || *s_code == '[') && parser_state_tos->paren_level >= 2)
 	{
-	  paren_target =
-	    -parser_state_tos->paren_indents[parser_state_tos->paren_level -
-					     2];
+	  paren_target = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 2];
 	}
       else
-	paren_target =
-	  -parser_state_tos->paren_indents[parser_state_tos->paren_level - 1];
+	paren_target = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 1];
     }
   else
     paren_target = 0;
@@ -901,7 +889,7 @@ dump_line (force_nl)
 	{
 	  while (*p != '\0' && *p != EOL)
 	    putc (*p++, output);
-	  if (*p == '\0' && (p - current_input->data) == current_input->size)
+	  if (*p == '\0' && (unsigned long) (p - current_input->data) == current_input->size)
 	    {
 	      buf_ptr = buf_end = in_prog_pos = p;
 	      had_eof = 1;
@@ -930,8 +918,7 @@ dump_line (force_nl)
 		    {
 		      while (*p != '\0' && *p != EOL)
 			putc (*p++, output);
-		      if (*p == '\0' && ((p - current_input->data)
-					 == current_input->size))
+		      if (*p == '\0' && ((unsigned long) (p - current_input->data) == current_input->size))
 			{
 			  buf_ptr = buf_end = in_prog_pos = p;
 			  had_eof = 1;
@@ -960,7 +947,10 @@ dump_line (force_nl)
 
   /* Output the rest already if we really wanted a new-line after this code. */
   if (buf_break_used && s_code != e_code && force_nl)
-    dump_line (true);
+    {
+      prefix_blankline_requested = 0;
+      dump_line (true);
+    }
 
   return;
 }
@@ -975,8 +965,7 @@ compute_code_target ()
   if (buf_break_used)
     return prev_target_col_break;
 
-  if (parser_state_tos->procname[0]
-      && s_code_corresponds_to == parser_state_tos->procname)
+  if (parser_state_tos->procname[0] && s_code_corresponds_to == parser_state_tos->procname)
     {
       target_col = 1;
       if (!parser_state_tos->paren_level)
@@ -993,8 +982,7 @@ compute_code_target ()
     }
 
   if (!lineup_to_parens)
-    return target_col + continuation_indent
-      + (paren_indent * (parser_state_tos->paren_level - 1));
+    return target_col + continuation_indent + (paren_indent * (parser_state_tos->paren_level - 1));
 
   return paren_target;
 }
@@ -1004,17 +992,17 @@ compute_label_target ()
 {
   /* maybe there should be some option to tell indent where to put public:,
      private: etc. ? */
-  if (*s_lab == '#') 
-      return 1;
+  if (*s_lab == '#')
+    return 1;
   if (parser_state_tos->pcase)
-      return parser_state_tos->cstk[parser_state_tos->tos] + 1;
+    return parser_state_tos->cstk[parser_state_tos->tos] + 1;
   if (c_plus_plus && parser_state_tos->in_decl)
-  {
+    {
       /* FIXME: does this belong here at all? */
       return 1;
-  }
-  else 
-      return parser_state_tos->ind_level - LABEL_OFFSET + 1;
+    }
+  else
+    return parser_state_tos->ind_level - LABEL_OFFSET + 1;
 }
 
 /* VMS defines it's own read routine, `vms_read' */
@@ -1033,6 +1021,7 @@ read_file (filename, file_stats)
      struct stat *file_stats;
 {
   int fd;
+
   /* Required for MSDOS, in order to read files larger than 32767
      bytes in a 16-bit world... */
   unsigned int size;
@@ -1049,26 +1038,25 @@ read_file (filename, file_stats)
   if (file_stats->st_size == 0)
     ERROR ("Warning: Zero-length file %s", filename, 0);
 
-#if defined(__MSDOS__) && !defined(__DJGPP__)
-  if (file_stats->st_size < 0 || file_stats->st_size > (0xffff - 1))
-    fatal ("File %s is too big to read", filename);
-#else
+#if !defined(__DJGPP__)
+  if (sizeof (int) == 2)	/* Old MSDOS */
+    {
+      if (file_stats->st_size < 0 || file_stats->st_size > (0xffff - 1))
+	fatal ("File %s is too big to read", filename);
+    }
+  else
+#endif
   if (file_stats->st_size < 0)
     fatal ("System problem reading file %s", filename);
-#endif
+
   fileptr.size = file_stats->st_size;
   if (fileptr.data != 0)
-    fileptr.data = (char *) xrealloc (fileptr.data,
-				      (unsigned) file_stats->st_size + 1);
+    fileptr.data = (char *) xrealloc (fileptr.data, (unsigned) file_stats->st_size + 1);
   else
     fileptr.data = (char *) xmalloc ((unsigned) file_stats->st_size + 1);
 
   size = INDENT_SYS_READ (fd, fileptr.data, fileptr.size);
-#if defined(__MSDOS__) && !defined(__DJGPP__)
-  if (size == 0xffff)		/* -1 = 0xffff in 16-bit world */
-#else
-  if (size == (unsigned int)-1)
-#endif
+  if (size == (unsigned int) -1)
     fatal ("Error reading input file %s", filename);
   if (close (fd) < 0)
     fatal ("Error closeing input file %s", filename);
@@ -1219,8 +1207,7 @@ fill_buffer ()
       /* Here for embedded NULLs */
       else if ((unsigned int) (p - current_input->data) < current_input->size)
 	{
-	  WARNING ("Warning: File %s contains NULL-characters\n",
-		   current_input->name, 0);
+	  WARNING ("Warning: File %s contains NULL-characters\n", current_input->name, 0);
 	  p++;
 	}
       /* Here for EOF with no terminating newline char. */
@@ -1237,12 +1224,3 @@ fill_buffer ()
   if (buf_break && (buf_break->offset >= e_code - s_code || buf_break->offset <= 0))
     clear_buf_break_list ();
 }
-
-#ifdef DEBUG
-void
-dump_debug_line ()
-{
-  fprintf (output, "\n*** Debug output marker line ***\n");
-}
-
-#endif

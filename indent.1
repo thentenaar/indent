@@ -29,173 +29,323 @@ the default.
 .TP 4
 .B -bad\fR, \fB--blank-lines-after-declarations\fR
 Force blank lines after the declarations.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -bap\fR, \fB--blank-lines-after-procedures\fR
 Force blank lines after procedure bodies.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
-.B -bbb\fR, \fB--blank-lines-after-block-comments\fR
-Force blank lines after block comments.
+.B -bbb\fR, \fB--blank-lines-before-block-comments\fR
+Force blank lines before block comments.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -bbo\fR, \fB--break-before-boolean-operator\fR
 Prefer to break long lines before boolean operators.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -bc\fR, \fB--blank-lines-after-commas\fR
 Force newline after comma in declaration.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -bl\fR, \fB--braces-after-if-line\fR
 Put braces on line after \fBif\fR, etc.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -bli\fIn\fB\fR, \fB--brace-indent\fIn\fB\fR
 Indent braces \fIn\fR spaces.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -bls\fR, \fB--braces-after-struct-decl-line\fR
 Put braces on the line after \fBstruct\fR declaration lines.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -br\fR, \fB--braces-on-if-line\fR
 Put braces on line with \fBif\fR, etc.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -brs\fR, \fB--braces-on-struct-decl-line\fR
 Put braces on \fBstruct\fR declaration line.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -bs\fR, \fB--Bill-Shannon\fR, \fB--blank-before-sizeof\fR
 Put a space between \fBsizeof\fR and its argument.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -c\fIn\fB\fR, \fB--comment-indentation\fIn\fB\fR
 Put comments to the right of code in column \fIn\fR.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -cbi\fIn\fB\fR, \fB--case-brace-indentation\fIn\fB\fR
 Indent braces after a case label N spaces.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -cd\fIn\fB\fR, \fB--declaration-comment-column\fIn\fB\fR
 Put comments to the right of the declarations in column \fIn\fR.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -cdb\fR, \fB--comment-delimiters-on-blank-lines\fR
 Put comment delimiters on blank lines.
+.br
+See \fB\ COMMENTS\fR.
+.TP
+.B -cdw\fR, \fB--cuddle-do-while\fR
+Cuddle while of \fBdo {} while;\fR and preceeding \`}\'.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -ce\fR, \fB--cuddle-else\fR
 Cuddle else and preceeding \`}\'.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -ci\fIn\fB\fR, \fB--continuation-indentation\fIn\fB\fR
 Continuation indent of \fIn\fR spaces.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -cli\fIn\fB\fR, \fB--case-indentation\fIn\fB\fR
 Case label indent of \fIn\fR spaces.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -cp\fIn\fB\fR, \fB--else-endif-column\fIn\fB\fR
 Put comments to the right of \fB#else\fR and \fB
 #endif\fR statements in column \fIn\fR.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -cs\fR, \fB--space-after-cast\fR
 Put a space after a cast operator.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -d\fIn\fB\fR, \fB--line-comments-indentation\fIn\fB\fR
 Set indentation of comments not to the right 
 of code to \fIn\fR spaces.
+.br
+See \fB\ COMMENTS\fR.
+.TP
+.B -bfda\fR, \fB--break-function-decl-args\fR
+Align all arguments in a declaration with opening paren.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -di\fIn\fB\fR, \fB--declaration-indentation\fIn\fB\fR
 Put variables in column \fIn\fR.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -fc1\fR, \fB--format-first-column-comments\fR
 Format comments in the first column.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -fca\fR, \fB--format-all-comments\fR
 Do not disable all formatting of comments.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -gnu\fR, \fB--gnu-style\fR
 Use GNU coding style.  This is the default.
+.br
+See \fB\ COMMON\ STYLES\fR.
 .TP
 .B -hnl\fR, \fB--honour-newlines\fR
 Prefer to break long lines at the position of newlines in the input.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -i\fIn\fB\fR, \fB--indent-level\fIn\fB\fR
 Set indentation level to \fIn\fR spaces.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -ip\fIn\fB\fR, \fB--parameter-indentation\fIn\fB\fR
 Indent parameter types in old-style function 
 definitions by \fIn\fR spaces.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -kr\fR, \fB--k-and-r-style\fR
 Use Kernighan & Ritchie coding style.
+.br
+See \fB\ COMMON\ STYLES\fR.
 .TP
 .B -l\fIn\fB\fR, \fB--line-length\fIn\fB\fR
 Set maximum line length for non-comment lines to \fIn\fR.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -lc\fIn\fB\fR, \fB--comment-line-length\fIn\fB\fR
 Set maximum line length for comment formatting to \fIn\fR.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -lp\fR, \fB--continue-at-parentheses\fR
 Line up continued lines at parentheses.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -lps\fR, \fB--leave-preprocessor-space\fR
 Leave space between \`#\' and preprocessor directive.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -nbad\fR, \fB--no-blank-lines-after-declarations\fR
 Do not force blank lines after declarations.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -nbap\fR, \fB--no-blank-lines-after-procedures\fR
 Do not force blank lines after procedure bodies.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -nbbo\fR, \fB--break-after-boolean-operator\fR
 Do not prefer to break long lines before boolean operators.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -nbc\fR, \fB--no-blank-lines-after-commas\fR
 Do not force newlines after commas in declarations.
+.br
+See \fB\ DECLARATIONS\fR.
+.TP
+.B -nbfda\fR, \fB--dont-break-function-decl-args\fR
+Don\'t put each argument in a function declaration on a seperate line.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -ncdb\fR, \fB--no-comment-delimiters-on-blank-lines\fR
 Do not put comment delimiters on blank lines.
+.br
+See \fB\ COMMENTS\fR.
+.TP
+.B -ncdw\fR, \fB--dont-cuddle-do-while\fR
+Do not cuddle \fB}\fR and the \fBwhile\fR of a \fBdo {} while;\fR.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -nce\fR, \fB--dont-cuddle-else\fR
 Do not cuddle \fB}\fR and \fBelse\fR.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -ncs\fR, \fB--no-space-after-casts\fR
 Do not put a space after cast operators.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -nfc1\fR, \fB--dont-format-first-column-comments\fR
 Do not format comments in the first column as normal.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -nfca\fR, \fB--dont-format-comments\fR
 Do not format any comments.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -nhnl\fR, \fB--ignore-newlines\fR
 Do not prefer to break long lines at the position of newlines in the input.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -nip\fR, \fB--no-parameter-indentation\fR
 Zero width indentation for parameters.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -nlp\fR, \fB--dont-line-up-parentheses\fR
 Do not line up parentheses.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -npcs\fR, \fB--no-space-after-function-call-names\fR
 Do not put space after the function in function calls.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -nprs\fR, \fB--no-space-after-parentheses\fR
 Do not put a space after every \'(\' and before every \')\'.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -npsl\fR, \fB--dont-break-procedure-type\fR
 Put the type of a procedure on the same line as its name.
+.br
+See \fB\ DECLARATIONS\fR.
+.TP
+.B -nsaf\fR, \fB--no-space-after-for\fR
+Do not put a space after every \fBfor\fR.
+.br
+See \fB\ STATEMENTS\fR.
+.TP
+.B -nsai\fR, \fB--no-space-after-if\fR
+Do not put a space after every \fBif\fR.
+.br
+See \fB\ STATEMENTS\fR.
+.TP
+.B -nsaw\fR, \fB--no-space-after-while\fR
+Do not put a space after every \fBwhile\fR.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -nsc\fR, \fB--dont-star-comments\fR
 Do not put the \`*\' character at the left of comments.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -nsob\fR, \fB--leave-optional-blank-lines\fR
 Do not swallow optional blank lines.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -nss\fR, \fB--dont-space-special-semicolon\fR
 Do not force a space before the semicolon after certain statements.
 Disables \`-ss\'.
+.br
+See \fB\ STATEMENTS\fR.
+.TP
+.B -nut\fR, \fB--no-tabs\fR
+Use spaces instead of tabs.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -nv\fR, \fB--no-verbosity\fR
 Disable verbose mode.
+.br
+See \fB\ MISCELLANEOUS\ OPTIONS\fR.
 .TP
 .B -orig\fR, \fB--original\fR
 Use the original Berkeley coding style.
+.br
+See \fB\ COMMON\ STYLES\fR.
 .TP
 .B -npro\fR, \fB--ignore-profile\fR
 Do not read \`.indent.pro\' files.
+.br
+See \fB\ INVOKING\ INDENT\fR.
 .TP
 .B -pcs\fR, \fB--space-after-procedure-calls\fR
 Insert a space between the name of the 
 procedure being called and the \`(\'.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -pi\fIn\fB\fR, \fB--paren-indentation\fIn\fB\fR
 Specify the extra indentation per open parentheses \'(\' when a
@@ -206,37 +356,79 @@ Preserve access and modification times on output files.See \fB\ MISCELLANEOUS\ O
 .TP
 .B -prs\fR, \fB--space-after-parentheses\fR
 Put a space after every \'(\' and before every \')\'.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -psl\fR, \fB--procnames-start-lines\fR
 Put the type of a procedure on the line before its name.
+.br
+See \fB\ DECLARATIONS\fR.
+.TP
+.B -saf\fR, \fB--space-after-for\fR
+Put a space after each \fBfor\fR.
+.br
+See \fB\ STATEMENTS\fR.
+.TP
+.B -sai\fR, \fB--space-after-if\fR
+Put a space after each \fBif\fR.
+.br
+See \fB\ STATEMENTS\fR.
+.TP
+.B -saw\fR, \fB--space-after-while\fR
+Put a space after each \fBwhile\fR.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -sbi\fIn\fB\fR, \fB--struct-brace-indentation\fIn\fB\fR
 Indent braces of a struct, union or enum N spaces.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -sc\fR, \fB--start-left-side-of-comments\fR
 Put the \`*\' character at the left of comments.
+.br
+See \fB\ COMMENTS\fR.
 .TP
 .B -sob\fR, \fB--swallow-optional-blank-lines\fR
 Swallow optional blank lines.
+.br
+See \fB\ BLANK\ LINES\fR.
 .TP
 .B -ss\fR, \fB--space-special-semicolon\fR
 On one-line \fBfor\fR and \fBwhile\fR statments, 
 force a blank before the semicolon.
+.br
+See \fB\ STATEMENTS\fR.
 .TP
 .B -st\fR, \fB--standard-output\fR
 Write to standard output.
+.br
+See \fB\ INVOKING\ INDENT\fR.
 .TP
 .B -T\fR
 Tell \fBindent\fR the name of typenames.
+.br
+See \fB\ DECLARATIONS\fR.
 .TP
 .B -ts\fIn\fB\fR, \fB--tab-size\fIn\fB\fR
 Set tab size to \fIn\fR spaces.
+.br
+See \fB\ INDENTATION\fR.
+.TP
+.B -ut\fR, \fB--use-tabs\fR
+Use tabs. This is the default.
+.br
+See \fB\ INDENTATION\fR.
 .TP
 .B -v\fR, \fB--verbose\fR
 Enable verbose mode.
+.br
+See \fB\ MISCELLANEOUS\ OPTIONS\fR.
 .TP
 .B -version\fR
 Output the version number of \fBindent\fR.
+.br
+See \fB\ MISCELLANEOUS\ OPTIONS\fR.
 
 .SH "INVOKING INDENT"
 
@@ -411,7 +603,8 @@ error.  Option settings which correspond to the GNU style are:
 .nf
 .na
 -nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
--ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -nsc -nsob
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -saf -sai
+-saw -nsc -nsob
 .in -5
 .ad
 .fi
@@ -433,7 +626,7 @@ of options:
 .na
 -nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
--nprs -npsl -nsc -nsob -nss
+-nprs -npsl -saf -sai -saw -nsc -nsob -nss
 .in -5
 .ad
 .fi
@@ -451,8 +644,8 @@ long option name).  This style is equivalent to the following settings:
 .nf
 .na
 -nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
--cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl -sc
--nsob -nss -ts8
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl
+-saf -sai -saw -sc -nsob -nss -ts8
 .in -5
 .ad
 .fi
@@ -789,6 +982,33 @@ else {
 .ad
 .fi
 
+This causes the \fBwhile\fR in a do-while
+loop to cuddle up to the immediately preceding \`}\'.  For
+example, with \`-cdw\' you get the following:
+
+.in +5
+.nf
+.na
+do {
+  x--;
+} while (x);
+.in -5
+.ad
+.fi
+
+With \`-ncdw\' that code would appear as
+
+.in +5
+.nf
+.na
+do {
+  x--;
+}
+while (x);
+.in -5
+.ad
+.fi
+
 The \`-cli\' option specifies the number of spaces that case labels
 should be indented to the right of the containing \fBswitch\fR
 statement.
@@ -864,12 +1084,22 @@ body of the \fBfor\fR or \fBwhile\fR statement is an empty statement.
 The \`-pcs\' option causes a space to be placed between the name of
 the procedure being called and the \`(\' (for example, \fBputs\ ("Hi");\fR.  The \`-npcs\' option would give \fBputs("Hi");\fR).
 
+
 If the \`-cs\' option is specified, \fBindent\fR puts a space after
 a cast operator.
 
 The \`-bs\' option ensures that there is a space between the
 keyword \fBsizeof\fR and its argument.  In some versions, this is
 known as the \`Bill_Shannon\' option.
+
+The \`-saf\' option forces a space between an \fBfor\fR
+and the following parenthesis.  This is the default.
+
+The \`-sai\' option forces a space between an \fBif\fR
+and the following parenthesis.  This is the default.
+
+The \`-saw\' option forces a space between an \fBwhile\fR
+and the following parenthesis.  This is the default.
 
 The \`-prs\' option causes all parentheses to be seperated with
 a space from the what is between them.  For example, using \`-prs\'
@@ -947,6 +1177,33 @@ With the \`-nbc\' option this would look like
 .nf
 .na
 int a, b, c;
+.in -5
+.ad
+.fi
+
+The \`-bfda\' option causes a newline to be forced after the comma
+separating the arguments of a function declaration.  The arguments will
+appear at the current indention level matching the opening paren.  This 
+is particularly helpful for functions with long argument lists.   For 
+example,
+
+.in +5
+.nf
+.na
+void foo (int arg1, char arg2, int *arg3, long arg4, char arg5);
+.in -5
+.ad
+.fi
+With the \`-bfda\' option this would look like
+
+.in +5
+.nf
+.na
+void foo (int arg1,
+          char arg2,
+          int *arg3,
+          long arg4,
+          char arg5);
 .in -5
 .ad
 .fi
@@ -1302,10 +1559,10 @@ the corresponding short option.
 .in +5
 .nf
 .na
---blank-lines-after-block-comments              -bbb            
 --blank-lines-after-commas                      -bc             
 --blank-lines-after-declarations                -bad            
 --blank-lines-after-procedures                  -bap            
+--blank-lines-before-block-comments             -bbb            
 --braces-after-if-line                          -bl             
 --brace-indent                                  -bli
 --braces-after-struct-decl-line                 -bls
@@ -1313,16 +1570,20 @@ the corresponding short option.
 --braces-on-struct-decl-line                    -brs
 --break-after-boolean-operator                  -nbbo
 --break-before-boolean-operator                 -bbo
+--break-function-decl-args                      -bfda
 --case-indentation                              -cli\fIn\fR     
 --case-brace-indentation                        -cbi\fIn\fR
 --comment-delimiters-on-blank-lines             -cdb            
 --comment-indentation                           -c\fIn\fR       
 --continuation-indentation                      -ci\fIn\fR      
 --continue-at-parentheses                       -lp             
+--cuddle-do-while                               -cdw
 --cuddle-else                                   -ce             
 --declaration-comment-column                    -cd\fIn\fR      
 --declaration-indentation                       -di\fIn\fR      
+--dont-break-function-decl-args                 -nbfda
 --dont-break-procedure-type                     -npsl           
+--dont-cuddle-do-while                          -ncdw
 --dont-cuddle-else                              -nce            
 --dont-format-comments                          -nfca           
 --dont-format-first-column-comments             -nfc1           
@@ -1345,11 +1606,16 @@ the corresponding short option.
 --no-blank-lines-after-commas                   -nbc            
 --no-blank-lines-after-declarations             -nbad           
 --no-blank-lines-after-procedures               -nbap           
+--no-blank-lines-before-block-comments          -nbbb           
 --no-comment-delimiters-on-blank-lines          -ncdb           
 --no-space-after-casts                          -ncs            
 --no-parameter-indentation                      -nip            
+--no-space-after-for				-nsaf
 --no-space-after-function-call-names            -npcs           
+--no-space-after-if				-nsai
 --no-space-after-parentheses                    -nprs
+--no-space-after-while				-nsaw
+--no-tabs                                       -nut
 --no-verbosity                                  -nv             
 --original                                      -orig
 --parameter-indentation                         -ip\fIn\fR      
@@ -1357,14 +1623,18 @@ the corresponding short option.
 --preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
+--space-after-for				-saf
+--space-after-if				-sai
 --space-after-parentheses                       -prs
 --space-after-procedure-calls                   -pcs            
+--space-after-while				-saw
 --space-special-semicolon                       -ss             
 --standard-output                               -st             
 --start-left-side-of-comments                   -sc             
 --struct-brace-indentation                      -sbi\fIn\fR
 --swallow-optional-blank-lines                  -sob            
 --tab-size                                      -ts\fIn\fR      
+--use-tabs                                      -ut
 --verbose                                       -v              
 .in -5
 .ad

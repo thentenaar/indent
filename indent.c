@@ -1,4 +1,4 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
    Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved.
    Copyright (c) 1992, Free Software Foundation, Inc.  All rights reserved.
 
@@ -27,6 +27,8 @@
 #include <time.h>
 #ifdef HAVE_UTIME_H
 #include <utime.h>
+#elif defined(HAVE_SYS_UTIME_H)
+#include <sys/utime.h>
 #endif
 #endif
 #include <sys/stat.h>
@@ -41,7 +43,7 @@
 #include "comments.h"
 #include "args.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.42 1999/12/31 15:52:42 carlo Exp $");
+RCSTAG_CC ("$Id: indent.c,v 1.60 2000/11/17 03:01:04 carlo Exp $");
 
 void
 usage ()
@@ -145,12 +147,14 @@ output_line_length ()
   if (s_code != e_code)
     {
       int code_col = compute_code_target ();
+
       code_length = count_columns (code_col, s_code, EOL) - code_col;
     }
 
   if (s_com != e_com)
     {
       int com_col = parser_state_tos->com_col;
+
       com_length = count_columns (com_col, s_com, EOL) - com_col;
     }
 
@@ -258,8 +262,11 @@ indent (this_file)
       int is_procname_definition;
       enum bb_code can_break;
 
+      /* GDB_HOOK_mainloop() */
+
       parser_state_tos->last_saw_nl = false;
-      can_break = parser_state_tos->can_break;
+      if (type_code != newline)
+	can_break = parser_state_tos->can_break;
       parser_state_tos->can_break = bb_none;
 
       type_code = lexi ();	/* lexi reads one token.  "token" points to
@@ -273,27 +280,16 @@ indent (this_file)
          A similar check is performed at the end of the loop, after
          we've put the token on the line. */
       if (max_col > 0 && buf_break != NULL
-	  && ((parser_state_tos->last_token == ident
-	       && type_code != comma
-	       && type_code != semicolon
-	       && type_code != newline
-	       && type_code != form_feed
-	       && type_code != rparen
-	       && type_code != struct_delim)
-	      ||
-	      (parser_state_tos->last_token == rparen
-	       && type_code != comma && type_code != rparen))
+	  &&
+	  ((parser_state_tos->last_token == ident && type_code != comma && type_code != semicolon
+	    && type_code != newline && type_code != form_feed && type_code != rparen && type_code != struct_delim)
+	   || (parser_state_tos->last_token == rparen && type_code != comma && type_code != rparen))
 	  && output_line_length () > max_col)
-	{
-	  break_line = 1;
-	  force_nl = true;
-	}
+	break_line = 1;
 
       if (last_token_ends_sp > 0)
 	last_token_ends_sp--;
-      is_procname_definition = ((parser_state_tos->procname[0] != '\0'
-				 && parser_state_tos->
-				 in_parameter_declaration)
+      is_procname_definition = ((parser_state_tos->procname[0] != '\0' && parser_state_tos->in_parameter_declaration)
 				|| parser_state_tos->classname[0] != '\0');
 
       /* The following code moves everything following an if (), while (),
@@ -326,15 +322,13 @@ indent (this_file)
 	      if (btype_2 && parser_state_tos->last_token != rbrace)
 		{
 		  /* Kludge to get my newline back */
-		  if (parser_state_tos->last_token == sp_else
-		      && save_com.end > &save_com.ptr[4]
-		      && save_com.end[-2] == '*'
-		      && save_com.end[-1] == '/'
-		      && save_com.ptr[2] == '/' && save_com.ptr[3] == '*')
+		  if (parser_state_tos->last_token == sp_else && save_com.end > &save_com.ptr[4]
+		      && save_com.end[-2] == '*' && save_com.end[-1] == '/' && save_com.ptr[2] == '/'
+		      && save_com.ptr[3] == '*')
 		    {
 		      char *p;
-		      for (p = &save_com.ptr[4]; *p != '\n'
-			   && p < &save_com.end[-2]; ++p);
+
+		      for (p = &save_com.ptr[4]; *p != '\n' && p < &save_com.end[-2]; ++p);
 		      if (*p != '\n')
 			*save_com.end++ = EOL;
 		    }
@@ -419,9 +413,7 @@ indent (this_file)
 	         to break the line. */
 	      if ((type_code == sp_paren && *token == 'i'	/* "if" statement */
 		   && last_else) || (type_code == sp_else	/* "else" statement */
-				     && e_code != s_code && e_code[-1] == '}'))	/* The "else"
-										 * follows '}'
-										 */
+				     && e_code != s_code && e_code[-1] == '}'))	/* The "else" * follows '}' */
 		force_nl = false;
 	      else if (flushed_nl)
 		force_nl = true;
@@ -436,8 +428,7 @@ indent (this_file)
 	      if (force_nl)
 		{
 		  force_nl = false;
-		  --line_no;	/* this will be re-increased when the nl is
-				   read from the buffer */
+		  --line_no;	/* this will be re-increased when the nl is read from the buffer */
 		  need_chars (&save_com, 2);
 		  *save_com.end++ = EOL;
 		  save_com.len++;
@@ -446,8 +437,7 @@ indent (this_file)
 		  flushed_nl = false;
 		}
 
-	      /* Now copy this token we just found into the
-	         saved buffer. */
+	      /* Now copy this token we just found into the saved buffer. */
 	      *save_com.end++ = ' ';
 	      save_com.len++;
 	      buf_ptr = token;
@@ -483,21 +473,16 @@ indent (this_file)
 		just_saw_nl = true;
 	      type_code = lexi ();
 	      if ((type_code == newline && just_saw_nl == true)
-		  || (type_code == comment && parser_state_tos->last_saw_nl
-		      && parser_state_tos->last_token != sp_else))
+		  || (type_code == comment && parser_state_tos->last_saw_nl && parser_state_tos->last_token != sp_else))
 		{
 		  dump_line (true);
 		  flushed_nl = true;
 		}
-	      is_procname_definition
-		= (parser_state_tos->procname[0] != '\0'
-		   && parser_state_tos->in_parameter_declaration);
+	      is_procname_definition = (parser_state_tos->procname[0] != '\0'
+					&& parser_state_tos->in_parameter_declaration);
 	    }
 
-	  if (type_code == ident
-	      && flushed_nl
-	      && !procnames_start_line
-	      && parser_state_tos->in_decl
+	  if (type_code == ident && flushed_nl && !procnames_start_line && parser_state_tos->in_decl
 	      && parser_state_tos->procname[0] != '\0')
 	    flushed_nl = 0;
 	}			/* end of while (search_brace) */
@@ -517,40 +502,29 @@ indent (this_file)
 
 	  if (verbose)
 	    {
-	      printf ("There were %d non-blank output lines and %d comments\n",
-		      (int) out_lines, (int) com_lines);
+	      printf ("There were %d non-blank output lines and %d comments\n", (int) out_lines, (int) com_lines);
 	      if (com_lines > 0 && code_lines > 0)
-		printf ("(Lines with comments)/(Lines with code): %6.3f\n",
-			(1.0 * com_lines) / code_lines);
+		printf ("(Lines with comments)/(Lines with code): %6.3f\n", (1.0 * com_lines) / code_lines);
 	    }
 	  fflush (output);
 
 	  return file_exit_value;
 	}
 
-      if ((type_code != comment) &&
-	  (type_code != cplus_comment) &&
-	  (type_code != newline) &&
-	  (type_code != preesc) && (type_code != form_feed))
+      if ((type_code != comment) && (type_code != cplus_comment) && (type_code != newline) && (type_code != preesc)
+	  && (type_code != form_feed))
 	{
-	  if (force_nl &&
-	      (type_code != semicolon) &&
-	      (type_code != lbrace ||
-	       (!parser_state_tos->in_decl && !btype_2) ||
-	       (parser_state_tos->in_decl && !braces_on_struct_decl_line) ||
-	       parser_state_tos->last_token == rbrace))
+	  if (force_nl && (type_code != semicolon)
+	      && (type_code != lbrace || (!parser_state_tos->in_decl && !btype_2)
+		  || (parser_state_tos->in_decl && !braces_on_struct_decl_line)
+		  || parser_state_tos->last_token == rbrace))
 	    {
 	      if (verbose && !flushed_nl)
 		WARNING ("Line broken", 0, 0);
 
 	      flushed_nl = false;
-	      if (break_line)
-		dump_line (false);
-	      else
-		{
-		  dump_line (false);
-		  parser_state_tos->want_blank = false;
-		}
+	      dump_line (true);
+	      parser_state_tos->want_blank = false;
 	      force_nl = false;
 	    }
 
@@ -586,8 +560,8 @@ indent (this_file)
 	      e_com = s_com;
 	    }
 	}
-      else if (type_code != comment
-	       && type_code != cplus_comment
+      else if (type_code != comment && type_code != cplus_comment
+	       && !(break_function_decl_args && parser_state_tos->last_token == comma)
 	       && !(parser_state_tos->last_token == comma && !leave_comma))
 	{
 	  /* preserve force_nl thru a comment but
@@ -619,37 +593,28 @@ indent (this_file)
 	      if (s_code == e_code)
 		parser_state_tos->want_blank = false;
 	    }
-	  else if ((parser_state_tos->last_token != comma
-		    || !leave_comma || !break_comma
-		    || parser_state_tos->p_l_follow > 0
-		    || parser_state_tos->block_init
-		    || s_com != e_com)
-		   && ((parser_state_tos->last_token != rbrace
-			|| !(braces_on_struct_decl_line
-			     && parser_state_tos->in_decl))))
+	  else
+	    if ((parser_state_tos->last_token != comma || !leave_comma || !break_comma
+		 || parser_state_tos->p_l_follow > 0 || parser_state_tos->block_init || s_com != e_com)
+		&&
+		((parser_state_tos->last_token != rbrace
+		  || !(braces_on_struct_decl_line && parser_state_tos->in_decl))))
 	    {
 	      /* Attempt to detect the newline before a procedure name,
 	         and if e.g., K&R style, leave the procedure on the
 	         same line as the type. */
-	      if (!procnames_start_line
-		  && s_lab == e_lab
-		  && parser_state_tos->last_token != lparen
-		  && parser_state_tos->last_token != semicolon
-		  && parser_state_tos->last_token != comma
-		  && parser_state_tos->last_rw == rw_decl
-		  && parser_state_tos->last_rw_depth == 0
-		  && !parser_state_tos->block_init
-		  && parser_state_tos->in_decl)
+	      if (!procnames_start_line && s_lab == e_lab && parser_state_tos->last_token != lparen
+		  && parser_state_tos->last_token != semicolon && parser_state_tos->last_token != comma
+		  && parser_state_tos->last_rw == rw_decl && parser_state_tos->last_rw_depth == 0
+		  && !parser_state_tos->block_init && parser_state_tos->in_decl)
 		{
 		  /* Put a space between the type and the procedure name,
 		     unless it was a pointer type and the user doesn't
 		     want such spaces after '*'. */
-		  if (!(!space_after_pointer_type
-			&& e_code > s_code && e_code[-1] == '*'))
+		  if (!(!space_after_pointer_type && e_code > s_code && e_code[-1] == '*'))
 		    parser_state_tos->want_blank = true;
 		}
-	      else if (!parser_state_tos->in_stmt
-		       || s_com != e_com || embedded_comment_on_line)
+	      if (!parser_state_tos->in_stmt || s_com != e_com || embedded_comment_on_line)
 		{
 		  dump_line (true);
 		  if (s_code == e_code)
@@ -674,8 +639,7 @@ indent (this_file)
 
 	     However, if the current line is empty, the left brace is
 	     already on a new line, so don't molest it.  */
-	  if (token[0] == '{'
-	      && (s_code != e_code || s_com != e_com || s_lab != e_lab))
+	  if (token[0] == '{' && (s_code != e_code || s_com != e_com || s_lab != e_lab))
 	    {
 	      dump_line (true);
 	      /* Do not put a space before the '{'.  */
@@ -683,21 +647,17 @@ indent (this_file)
 	    }
 
 	  /* Count parens so we know how deep we are.  */
-	  if (++parser_state_tos->p_l_follow
-	      >= parser_state_tos->paren_indents_size)
+	  if (++parser_state_tos->p_l_follow >= parser_state_tos->paren_indents_size)
 	    {
 	      parser_state_tos->paren_indents_size *= 2;
 	      parser_state_tos->paren_indents =
 		(short *) xrealloc ((char *) parser_state_tos->paren_indents,
-				    parser_state_tos->paren_indents_size *
-				    sizeof (short));
+				    parser_state_tos->paren_indents_size * sizeof (short));
 	    }
 	  parser_state_tos->paren_depth++;
 	  if (parser_state_tos->want_blank && *token != '['
 	      && (parser_state_tos->last_token != ident || proc_calls_space
-		  || (parser_state_tos->its_a_keyword
-		      && (!parser_state_tos->sizeof_keyword
-			  || blank_after_sizeof))))
+		  || (parser_state_tos->its_a_keyword && (!parser_state_tos->sizeof_keyword || blank_after_sizeof))))
 	    {
 	      set_buf_break (bb_proc_call);
 	      *e_code++ = ' ';
@@ -725,19 +685,16 @@ indent (this_file)
 	  else
 	    *e_code++ = token[0];
 
-          if ( parentheses_space && *token != '[' )
-            *e_code++ = ' ';
+	  if (parentheses_space && *token != '[')
+	    *e_code++ = ' ';
 
-	  parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1]
-	    = e_code - s_code;
-	  if (sp_sw && parser_state_tos->p_l_follow == 1
-	      && extra_expression_indent
+	  parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1] = e_code - s_code;
+	  if (sp_sw && parser_state_tos->p_l_follow == 1 && extra_expression_indent
 	      && parser_state_tos->paren_indents[0] < 2 * ind_size)
 	    parser_state_tos->paren_indents[0] = 2 * ind_size;
 	  parser_state_tos->want_blank = false;
 
-	  if (parser_state_tos->in_or_st == 1
-	      && *token == '(' && parser_state_tos->tos <= 2)
+	  if (parser_state_tos->in_or_st == 1 && *token == '(')
 	    {
 	      /* this is a kluge to make sure that declarations will be
 	         aligned right if proc decl has an explicit type on it, i.e.
@@ -748,31 +705,24 @@ indent (this_file)
 	      parser_state_tos->in_or_st = false;
 	    }
 	  if (parser_state_tos->sizeof_keyword)
-	    parser_state_tos->sizeof_mask |=
-	      1 << parser_state_tos->p_l_follow;
+	    parser_state_tos->sizeof_mask |= 1 << parser_state_tos->p_l_follow;
 
 	  /* The '(' that starts a cast can never be preceeded by an
 	     indentifier or decl.  */
 	  if (parser_state_tos->last_token == decl
-	      || (parser_state_tos->last_token == ident
-		  && parser_state_tos->last_rw != rw_return))
-	    parser_state_tos->noncast_mask |=
-	      1 << parser_state_tos->p_l_follow;
+	      || (parser_state_tos->last_token == ident && parser_state_tos->last_rw != rw_return))
+	    parser_state_tos->noncast_mask |= 1 << parser_state_tos->p_l_follow;
 	  else
-	    parser_state_tos->noncast_mask &=
-	      ~(1 << parser_state_tos->p_l_follow);
+	    parser_state_tos->noncast_mask &= ~(1 << parser_state_tos->p_l_follow);
 
 	  break;
 
 	case rparen:
 	  parser_state_tos->paren_depth--;
-	  if (parser_state_tos->cast_mask
-	      & (1 << parser_state_tos->p_l_follow)
-	      & ~parser_state_tos->sizeof_mask)
+	  if (parser_state_tos->cast_mask & (1 << parser_state_tos->p_l_follow) & ~parser_state_tos->sizeof_mask)
 	    {
 	      parser_state_tos->last_u_d = true;
-	      parser_state_tos->cast_mask &=
-		(1 << parser_state_tos->p_l_follow) - 1;
+	      parser_state_tos->cast_mask &= (1 << parser_state_tos->p_l_follow) - 1;
 	      if (!parser_state_tos->cast_mask && cast_space)
 		parser_state_tos->want_blank = true;
 	      else
@@ -781,31 +731,29 @@ indent (this_file)
 		  parser_state_tos->can_break = bb_cast;
 		}
 	    }
-	  else if (parser_state_tos->in_decl
-		   && !parser_state_tos->block_init
-		   && parser_state_tos->paren_depth == 0)
+	  else if (parser_state_tos->in_decl && !parser_state_tos->block_init && parser_state_tos->paren_depth == 0)
 	    parser_state_tos->want_blank = true;
 
-	  parser_state_tos->sizeof_mask
-	    &= (1 << parser_state_tos->p_l_follow) - 1;
+	  parser_state_tos->sizeof_mask &= (1 << parser_state_tos->p_l_follow) - 1;
 	  if (--parser_state_tos->p_l_follow < 0)
 	    {
 	      parser_state_tos->p_l_follow = 0;
-	      WARNING ("Extra %c", (int) *token, 0);
+	      WARNING ("Extra %c", (unsigned long) *((unsigned char *) token), 0);
 	    }
 
 	  /* if the paren starts the line, then indent it */
 	  if (e_code == s_code)
 	    {
 	      int level = parser_state_tos->p_l_follow;
+
 	      parser_state_tos->paren_level = level;
 	      if (level > 0)
 		paren_target = -parser_state_tos->paren_indents[level - 1];
 	      else
 		paren_target = 0;
 	    }
-          if ( parentheses_space && *token != ']' )
-            *e_code++ = ' ';
+	  if (parentheses_space && *token != ']')
+	    *e_code++ = ' ';
 	  *e_code++ = token[0];
 
 	  /* check for end of if (...), or some such */
@@ -855,9 +803,7 @@ indent (this_file)
 
 	    /* if this is a unary op in a declaration, we should
 	       indent this token */
-	    if (parser_state_tos->paren_depth == 0
-		&& parser_state_tos->in_decl
-		&& !buf_break_used
+	    if (parser_state_tos->paren_depth == 0 && parser_state_tos->in_decl && !buf_break_used
 		&& !parser_state_tos->block_init)
 	      {
 		while ((e_code - s_code) < (dec_ind - (token_end - token)))
@@ -882,8 +828,7 @@ indent (this_file)
 	  break;
 
 	case binary_op:	/* any binary operation */
-	  if (parser_state_tos->want_blank
-	      || (e_code > s_code && *e_code != ' '))
+	  if (parser_state_tos->want_blank || (e_code > s_code && *e_code != ' '))
 	    {
 	      set_buf_break (bb_binary_op);
 	      *e_code++ = ' ';
@@ -950,59 +895,66 @@ indent (this_file)
 	      parser_state_tos->want_blank = true;
 	      break;
 	    }
-	  
+
 	  /*            __ e_code
 	   *           |
-	   * "  private:\n"			C++, treat as label.
-	   *  ^^^	 ^
+	   * "  private:\n"                     C++, treat as label.
+	   *  ^^^        ^
 	   *  |          |
 	   *  |          `- buf_ptr (in different buffer though!)
 	   *  `- s_code
 	   *
 	   * or
 	   *
-	   * "  unsigned int private:4\n"	C/C++, treat as bits.
+	   * "  unsigned int private:4\n"       C/C++, treat as bits.
 	   */
 	  if (parser_state_tos->in_decl)
-	  {
-	    if (!((e_code - s_code > 6 && !strncmp(&buf_ptr[-8], "private:", 8)) && !isdigit(*buf_ptr)) &&
-	        !((e_code - s_code > 8 && !strncmp(&buf_ptr[-10], "protected:", 10)) && !isdigit(*buf_ptr)) &&
-	        !((e_code - s_code > 5 && !strncmp(&buf_ptr[-7], "public:", 7)) && !isdigit(*buf_ptr)))
 	    {
-	      *e_code++ = ':';
-	      parser_state_tos->want_blank = false;
-	      break;
-	    }
-	    else if (*s_code == ' ')
-	    {
-	      /*
-	       * It is possible that dec_ind spaces have been inserted before
-	       * the `public:' etc. label because indent thinks it's of the
-	       * type:
-	       */
+	      if (!((e_code - s_code > 6 && !strncmp (&buf_ptr[-8], "private:", 8)) && !isdigit (*buf_ptr))
+		  && !((e_code - s_code > 8 && !strncmp (&buf_ptr[-10], "protected:", 10)) && !isdigit (*buf_ptr))
+		  && !((e_code - s_code > 5 && !strncmp (&buf_ptr[-7], "public:", 7)) && !isdigit (*buf_ptr)))
+		{
+		  *e_code++ = ':';
+		  parser_state_tos->want_blank = false;
+		  break;
+		}
+	      else if (*s_code == ' ')
+		{
+		  /*
+		   * It is possible that dec_ind spaces have been inserted before
+		   * the `public:' etc. label because indent thinks it's of the
+		   * type:
+		   */
 #if 0
-	       struct foo {
-	         int w:28,		/* comment */
-	             public:4;
-	       };
+		  struct foo
+		  {
+		    int w:28,	/* comment */
+		      public:4;
+		  };
 #endif
-	      /*
-	       * Only now we see the '4' isn't there.
-	       * Remove those spaces:
-	       */
-	      char *p1 = s_code;
-	      char *p2 = s_code + dec_ind;
-	      while (p2 < e_code)
-	        *p1++ = *p2++;
-	      e_code -= dec_ind;
-	      *e_code = '\0';
+		  /*
+		   * Only now we see the '4' isn't there.
+		   * Remove those spaces:
+		   */
+		  char *p1 = s_code;
+		  char *p2 = s_code + dec_ind;
+
+		  while (p2 < e_code)
+		    *p1++ = *p2++;
+		  e_code -= dec_ind;
+		  *e_code = '\0';
+		}
 	    }
-	  }
 	  parser_state_tos->in_stmt = false;	/* seeing a label does not
 						   imply we are in a stmt */
 	  for (t_ptr = s_code; *t_ptr; ++t_ptr)
 	    *e_lab++ = *t_ptr;	/* turn everything so far into a label */
 	  e_code = s_code;
+	  clear_buf_break_list ();	/* This is bullshit for C code, because
+					   normally a label doesn't have breakpoints
+					   at all of course.  But in the case of
+					   wrong code, not clearing the list can make
+					   indent core dump. */
 	  *e_lab++ = ':';
 	  set_buf_break (bb_label);
 	  *e_lab++ = ' ';
@@ -1043,10 +995,7 @@ indent (this_file)
 	  parser_state_tos->block_init_level = 0;
 	  parser_state_tos->just_saw_decl--;
 
-	  if (parser_state_tos->in_decl
-	      && s_code == e_code
-	      && !buf_break_used
-	      && !parser_state_tos->block_init)
+	  if (parser_state_tos->in_decl && s_code == e_code && !buf_break_used && !parser_state_tos->block_init)
 	    {
 	      while ((e_code - s_code) < (dec_ind - 1))
 		{
@@ -1092,6 +1041,7 @@ indent (this_file)
 	    {
 	      /* dont indent the '{' unless it is followed by more code. */
 	      char *p = buf_ptr;
+
 	      for (;;)
 		{
 		  while (*p == ' ' || *p == TAB)
@@ -1127,16 +1077,15 @@ indent (this_file)
 
 	  if (s_code != e_code && parser_state_tos->block_init != 1)
 	    {
-	      if ((!parser_state_tos->in_decl && !btype_2) ||
-		  (parser_state_tos->in_decl && !braces_on_struct_decl_line))
+	      if ((!parser_state_tos->in_decl && !btype_2)
+		  || (parser_state_tos->in_decl && !braces_on_struct_decl_line))
 		{
 		  dump_line (true);
 		  parser_state_tos->want_blank = false;
 		}
 	      else
 		{
-		  if (parser_state_tos->in_parameter_declaration
-		      && !parser_state_tos->in_or_st)
+		  if (parser_state_tos->in_parameter_declaration && !parser_state_tos->in_or_st)
 		    {
 		      parser_state_tos->i_l_follow = 0;
 		      dump_line (true);
@@ -1158,9 +1107,7 @@ indent (this_file)
 	      if (parser_state_tos->dec_nest >= di_stack_alloc)
 		{
 		  di_stack_alloc *= 2;
-		  di_stack = (int *) xrealloc ((char *) di_stack,
-					       di_stack_alloc *
-					       sizeof (*di_stack));
+		  di_stack = (int *) xrealloc ((char *) di_stack, di_stack_alloc * sizeof (*di_stack));
 		}
 	      di_stack[parser_state_tos->dec_nest++] = dec_ind;
 	      /* ?              dec_ind = 0; */
@@ -1186,35 +1133,28 @@ indent (this_file)
 
 	  PARSE (lbrace);
 	  set_buf_break (bb_lbrace);
-	  if (parser_state_tos->want_blank)	/* put a blank before '{' if
-						   '{' is not at start of
-						   line */
+	  if (parser_state_tos->want_blank && s_code != e_code)	/* put a blank before '{' if
+								   '{' is not at start of line */
 	    *e_code++ = ' ';
 
 	  parser_state_tos->want_blank = false;
 	  *e_code++ = '{';
 	  *e_code = '\0';	/* null terminate code sect */
 	  parser_state_tos->just_saw_decl = 0;
-	  if (parser_state_tos->block_init
-	      && parser_state_tos->block_init_level >= 2)
+	  if (parser_state_tos->block_init && parser_state_tos->block_init_level >= 2)
 	    {
 	      /* Treat the indentation of the second '{' as a '(' in * struct foo { { bar }, ... } */
-	      if (++parser_state_tos->p_l_follow >=
-		  parser_state_tos->paren_indents_size)
+	      if (++parser_state_tos->p_l_follow >= parser_state_tos->paren_indents_size)
 		{
 		  parser_state_tos->paren_indents_size *= 2;
 		  parser_state_tos->paren_indents =
-		    (short *) xrealloc ((char *) parser_state_tos->
-					paren_indents,
-					parser_state_tos->paren_indents_size *
-					sizeof (short));
+		    (short *) xrealloc ((char *) parser_state_tos->paren_indents,
+					parser_state_tos->paren_indents_size * sizeof (short));
 		}
 	      ++parser_state_tos->paren_depth;
-	      parser_state_tos->paren_indents[parser_state_tos->p_l_follow -
-					      1] = e_code - s_code;
+	      parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1] = e_code - s_code;
 	    }
-	  else if (parser_state_tos->block_init
-		   && parser_state_tos->block_init_level == 1)
+	  else if (parser_state_tos->block_init && parser_state_tos->block_init_level == 1)
 	    {
 	      /* Put a blank after the first '{' */
 	      parser_state_tos->want_blank = true;
@@ -1223,8 +1163,7 @@ indent (this_file)
 
 	case rbrace:		/* got a '}' */
 	  /* semicolons can be omitted in declarations */
-	  if ((parser_state_tos->p_stack[parser_state_tos->tos] == decl
-	      && !parser_state_tos->block_init)
+	  if ((parser_state_tos->p_stack[parser_state_tos->tos] == decl && !parser_state_tos->block_init)
 	      /* ANSI C forbids label at end of compound statement, but we don't I guess :/ */
 	      || parser_state_tos->p_stack[parser_state_tos->tos] == casestmt)
 	    PARSE (semicolon);
@@ -1250,50 +1189,42 @@ indent (this_file)
 	    }
 	  *e_code++ = '}';
 	  parser_state_tos->want_blank = true;
-	  if (parser_state_tos->block_init
-	      && parser_state_tos->block_init_level > 0)
+	  if (parser_state_tos->block_init && parser_state_tos->block_init_level > 0)
 	    {
 	      /* We were treating this { } as normal ( ) */
 	      --parser_state_tos->paren_depth;
 	      if (--parser_state_tos->p_l_follow < 0)
 		{
 		  parser_state_tos->p_l_follow = 0;
-		  WARNING ("Extra %c", (int) *token, 0);
+		  WARNING ("Extra %c", (unsigned long) *((unsigned char *) token), 0);
 		}
 	    }
 	  else if (parser_state_tos->dec_nest > 0)
 	    {			/* we are in multi-level structure
 				   declaration */
 	      dec_ind = di_stack[--parser_state_tos->dec_nest];
-	      if (parser_state_tos->dec_nest == 0
-		  && !parser_state_tos->in_parameter_declaration)
+	      if (parser_state_tos->dec_nest == 0 && !parser_state_tos->in_parameter_declaration)
 		parser_state_tos->just_saw_decl = 2;
 	      parser_state_tos->in_decl = true;
 	    }
 	  prefix_blankline_requested = 0;
 	  PARSE (rbrace);
-	  parser_state_tos->search_brace
-	    = (cuddle_else
-	       && parser_state_tos->p_stack[parser_state_tos->tos] == ifhead);
+	  parser_state_tos->search_brace = (cuddle_else && parser_state_tos->p_stack[parser_state_tos->tos] == ifhead)
+	    || (cuddle_do_while && parser_state_tos->p_stack[parser_state_tos->tos] == dohead);
 
 	  if ((parser_state_tos->p_stack[parser_state_tos->tos] == stmtl
-	       && ((parser_state_tos->last_rw != rw_struct_like
-		    && parser_state_tos->last_rw != rw_enum
-		    && parser_state_tos->last_rw != rw_decl)
-		   || (!braces_on_struct_decl_line
-		       && parser_state_tos->block_init != 1)))
+	       &&
+	       ((parser_state_tos->last_rw != rw_struct_like && parser_state_tos->last_rw != rw_enum
+		 && parser_state_tos->last_rw != rw_decl) || (!braces_on_struct_decl_line
+							      && parser_state_tos->block_init != 1)))
 	      || (parser_state_tos->p_stack[parser_state_tos->tos] == ifhead)
-	      || (parser_state_tos->p_stack[parser_state_tos->tos] == dohead
-		  && !btype_2))
+	      || (parser_state_tos->p_stack[parser_state_tos->tos] == dohead && !cuddle_do_while && !btype_2))
 	    force_nl = true;
-	  if (!parser_state_tos->in_decl
-	      && parser_state_tos->tos <= 0
-	      && blanklines_after_procs
+	  if (!parser_state_tos->in_decl && parser_state_tos->tos <= 0 && blanklines_after_procs
 	      && parser_state_tos->dec_nest <= 0)
 	    {
 	      postfix_blankline_requested = 1;
-	      postfix_blankline_requested_code =
-		parser_state_tos->in_decl ? decl : rbrace;
+	      postfix_blankline_requested_code = parser_state_tos->in_decl ? decl : rbrace;
 	    }
 	  break;
 
@@ -1307,8 +1238,7 @@ indent (this_file)
 	case sp_paren:		/* token is if, while, for */
 	  sp_sw = true;		/* the interesting stuff is done after the
 				   expression is scanned */
-	  hd_type = (*token == 'i' ? ifstmt :
-		     (*token == 'w' ? whilestmt : forstmt));
+	  hd_type = (*token == 'i' ? ifstmt : (*token == 'w' ? whilestmt : forstmt));
 
 	  /* remember the type of header for later use by parser */
 	  goto copy_id;		/* copy the token into line */
@@ -1379,10 +1309,8 @@ indent (this_file)
 	     return itsMediaDomainList;
 	     }
 	     by ignoring "const" just after a parameter list */
-	  if (parser_state_tos->last_token == rparen
-	      && parser_state_tos->in_parameter_declaration
-	      && parser_state_tos->saw_double_colon
-	      && !strncmp (token, "const", 5))
+	  if (parser_state_tos->last_token == rparen && parser_state_tos->in_parameter_declaration
+	      && parser_state_tos->saw_double_colon && !strncmp (token, "const", 5))
 	    {
 	      set_buf_break (bb_const_qualifier);
 	      *e_code++ = ' ';
@@ -1398,8 +1326,7 @@ indent (this_file)
 	  if (!parser_state_tos->sizeof_mask)
 	    PARSE (decl);
 
-	  if (parser_state_tos->last_token == rparen
-	      && parser_state_tos->tos <= 1)
+	  if (parser_state_tos->last_token == rparen && parser_state_tos->tos <= 1)
 	    {
 	      parser_state_tos->in_parameter_declaration = 1;
 	      if (s_code != e_code)
@@ -1408,12 +1335,10 @@ indent (this_file)
 		  parser_state_tos->want_blank = false;
 		}
 	    }
-	  if (parser_state_tos->in_parameter_declaration
-	      && parser_state_tos->dec_nest == 0
+	  if (parser_state_tos->in_parameter_declaration && parser_state_tos->dec_nest == 0
 	      && parser_state_tos->p_l_follow == 0)
 	    {
-	      parser_state_tos->ind_level
-		= parser_state_tos->i_l_follow = indent_parameters;
+	      parser_state_tos->ind_level = parser_state_tos->i_l_follow = indent_parameters;
 	      parser_state_tos->ind_stmt = 0;
 	    }
 
@@ -1423,16 +1348,14 @@ indent (this_file)
 	    parser_state_tos->in_or_st = true;
 
 	  if (!parser_state_tos->sizeof_mask)
-	    parser_state_tos->in_decl = parser_state_tos->decl_on_line = true;
-	  {
-	    if (parser_state_tos->dec_nest <= 0)
-	      parser_state_tos->just_saw_decl = 2;
-	  }
+	    {
+	      parser_state_tos->in_decl = parser_state_tos->decl_on_line = true;
+	      if (parser_state_tos->dec_nest <= 0)
+		parser_state_tos->just_saw_decl = 2;
+	    }
 	  if (prefix_blankline_requested
-	      && (parser_state_tos->block_init != 0
-		  || parser_state_tos->block_init_level != -1
-		  || parser_state_tos->last_token != rbrace
-		  || e_code != s_code || e_lab != s_lab || e_com != s_com))
+	      && (parser_state_tos->block_init != 0 || parser_state_tos->block_init_level != -1
+		  || parser_state_tos->last_token != rbrace || e_code != s_code || e_lab != s_lab || e_com != s_com))
 	    prefix_blankline_requested = 0;
 	  i = token_end - token + 1;	/* get length of token plus 1 */
 
@@ -1447,9 +1370,7 @@ indent (this_file)
 	case ident:		/* got an identifier or constant */
 	  /* If we are in a declaration, we must indent identifier. But not
 	     inside the parentheses of an ANSI function declaration.  */
-	  if (parser_state_tos->in_decl
-	      && parser_state_tos->p_l_follow == 0
-	      && parser_state_tos->last_token != rbrace)
+	  if (parser_state_tos->in_decl && parser_state_tos->p_l_follow == 0 && parser_state_tos->last_token != rbrace)
 	    {
 	      if (parser_state_tos->want_blank)
 		{
@@ -1461,11 +1382,12 @@ indent (this_file)
 		set_buf_break (can_break);
 	      parser_state_tos->want_blank = false;
 
-	      if (is_procname_definition == 0 || (!procnames_start_line
-						  && s_code != e_code))
+	      if (is_procname_definition == 0 || (!procnames_start_line && s_code != e_code))
 		{
 		  if (!parser_state_tos->block_init && !buf_break_used)
 		    {
+		      if (is_procname_definition)
+			dec_ind = 0;
 		      while ((e_code - s_code) < dec_ind)
 			{
 			  CHECK_CODE_SIZE;
@@ -1478,8 +1400,7 @@ indent (this_file)
 		}
 	      else
 		{
-		  if (dec_ind && s_code != e_code
-		      && parser_state_tos->last_token != doublecolon)
+		  if (s_code != e_code && parser_state_tos->last_token != doublecolon)
 		    dump_line (true);
 		  dec_ind = 0;
 		  parser_state_tos->want_blank = false;
@@ -1514,11 +1435,17 @@ indent (this_file)
 
 	  parser_state_tos->want_blank = true;
 
+	  /* Handle the options -nsaf, -nsai and -nsaw */
+	  if (type_code == sp_paren
+	      && ((!space_after_if && *token == 'i') || (!space_after_for && *token == 'f')
+		  || (!space_after_while && *token == 'w')))
+	    parser_state_tos->want_blank = false;
+
 	  /* If the token is one of the GNU gettext macro's '_' or 'N_'
 	     then we don't want a blank */
 	  if (((token_end - token) == 1 && *token == '_')
 	      || ((token_end - token) == 2 && *token == 'N' && token[1] == '_'))
-            parser_state_tos->want_blank = false;
+	    parser_state_tos->want_blank = false;
 
 	  /* If the token is va_dcl, it appears without a semicolon, so we
 	     need to pretend that one was there.  */
@@ -1546,9 +1473,7 @@ indent (this_file)
 
 	case comma:
 	  parser_state_tos->want_blank = true;
-	  if (parser_state_tos->paren_depth == 0
-	      && parser_state_tos->in_decl
-	      && !buf_break_used
+	  if (parser_state_tos->paren_depth == 0 && parser_state_tos->in_decl && !buf_break_used
 	      && is_procname_definition == 0 && !parser_state_tos->block_init)
 	    {
 	      while ((e_code - s_code) < (dec_ind - 1))
@@ -1575,301 +1500,281 @@ indent (this_file)
 	  if (parser_state_tos->block_init)
 	    parser_state_tos->in_stmt = false;	/* Don't indent after comma */
 
+	  /* For declarations, if user wants all fn decls broken, force that
+	     now. */
+	  if (break_function_decl_args
+	      && (!parser_state_tos->in_or_st && parser_state_tos->in_stmt && parser_state_tos->in_decl))
+	    force_nl = true;
+
 	  break;
 
 	case preesc:		/* got the character '#' */
-	{
-	  char *p;
-	  if ((s_com != e_com) || (s_lab != e_lab) || (s_code != e_code))
-	    dump_line (true);
 	  {
-	    int in_comment = 0;
-	    int in_cplus_comment = 0;
-	    int com_start = 0;
-	    char quote = 0;
-	    int com_end = 0;
+	    char *p;
 
-	    /* ANSI allows spaces between '#' and preprocessor directives.
-	       If the user specified "-lps" and there are such spaces,
-	       they will be part of `token', otherwise `token' is just
-	       '#'. */
-	    for (t_ptr = token; t_ptr < token_end; ++t_ptr)
-	      {
-		CHECK_LAB_SIZE;
-		*e_lab++ = *t_ptr;
-	      }
-
-	    while (!had_eof && (*buf_ptr != EOL || in_comment))
-	      {
-		CHECK_LAB_SIZE;
-		*e_lab = *buf_ptr++;
-		if (buf_ptr >= buf_end)
-		  fill_buffer ();
-
-		switch (*e_lab++)
-		  {
-		  case BACKSLASH:
-		    if (!in_comment && !in_cplus_comment)
-		      {
-			*e_lab++ = *buf_ptr++;
-			if (buf_ptr >= buf_end)
-			  fill_buffer ();
-		      }
-		    break;
-
-		  case '/':
-		    if ((*buf_ptr == '*' || *buf_ptr == '/')
-			&& !in_comment && !in_cplus_comment && !quote)
-		      {
-			save_com.column = current_column () - 1;
-			if (*buf_ptr == '/')
-			  in_cplus_comment = 1;
-			else
-			  in_comment = 1;
-			*e_lab++ = *buf_ptr++;
-			com_start = e_lab - s_lab - 2;
-			/* Store the column that corresponds with the start
-			   of the buffer */
-			if (save_com.ptr == save_com.end)
-			  save_com.start_column = current_column () - 2;
-		      }
-		    break;
-
-		  case '"':
-		  case '\'':
-		    if (!quote)
-		      quote = e_lab[-1];
-		    else if (e_lab[-1] == quote)
-		      quote = 0;
-		    break;
-
-		  case '*':
-		    if (*buf_ptr == '/' && in_comment)
-		      {
-			in_comment = 0;
-			*e_lab++ = *buf_ptr++;
-			com_end = e_lab - s_lab;
-		      }
-		    break;
-		  }
-	      }
-
-	    while (e_lab > s_lab && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
-	      e_lab--;
-
-	    if (in_cplus_comment)	/* Should we also check in_comment? -jla */
-	      {
-		in_cplus_comment = 0;
-		*e_lab++ = *buf_ptr++;
-		com_end = e_lab - s_lab;
-	      }
-
-	    if (e_lab - s_lab == com_end && bp_save == 0)
-	      {			/* comment on preprocessor line */
-		if (save_com.end != save_com.ptr)
-		  {
-		    need_chars (&save_com, 2);
-		    *save_com.end++ = EOL;	/* add newline between
-						   comments */
-		    *save_com.end++ = ' ';
-		    save_com.len += 2;
-		    --line_no;
-		  }
-		need_chars (&save_com, com_end - com_start + 1);
-		strncpy (save_com.end, s_lab + com_start,
-			 com_end - com_start);
-		save_com.end[com_end - com_start] = '\0';
-		save_com.end += com_end - com_start;
-		save_com.len += com_end - com_start;
-
-		e_lab = s_lab + com_start;
-		while (e_lab > s_lab
-		       && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
-		  e_lab--;
-
-		/* Switch input buffers so that calls to lexi() will
-		   read from our save buffer. */
-		bp_save = buf_ptr;
-		be_save = buf_end;
-		buf_ptr = save_com.ptr;
-		need_chars (&save_com, 1);
-		buf_end = save_com.end;
-		save_com.end = save_com.ptr;	/* make save_com empty */
-	      }
-	    *e_lab = '\0';	/* null terminate line */
-	    parser_state_tos->pcase = false;
-	  }
-
-	  p = s_lab + 1;
-	  while (*p == ' ' || *p == TAB)
-	    ++p;
-
-	  if (strncmp (p, "if", 2) == 0)
-	    {
-	      if (blanklines_around_conditional_compilation)
-		{
-		  prefix_blankline_requested++;
-		  prefix_blankline_requested_code = preesc;
-		  while (*in_prog_pos++ == EOL);
-		  in_prog_pos--;
-		}
-
-	      {
-		/* Push a copy of the parser_state onto the stack. All
-		   manipulations will use the copy at the top of stack, and
-		   then we can return to the previous state by popping the
-		   stack.  */
-		struct parser_state *new;
-
-		new =
-		  (struct parser_state *)
-		  xmalloc (sizeof (struct parser_state));
-		(void) memcpy (new, parser_state_tos,
-			       sizeof (struct parser_state));
-
-		/* We need to copy the dynamically allocated arrays in the
-		   struct parser_state too.  */
-		new->p_stack =
-		  (enum codes *) xmalloc (parser_state_tos->p_stack_size *
-					  sizeof (enum codes));
-		(void) memcpy (new->p_stack, parser_state_tos->p_stack,
-			       (parser_state_tos->p_stack_size *
-				sizeof (enum codes)));
-
-		new->il =
-		  (int *) xmalloc (parser_state_tos->p_stack_size *
-				   sizeof (int));
-		(void) memcpy (new->il, parser_state_tos->il,
-			       parser_state_tos->p_stack_size * sizeof (int));
-
-		new->cstk = (int *) xmalloc (parser_state_tos->p_stack_size
-					     * sizeof (int));
-		(void) memcpy (new->cstk, parser_state_tos->cstk,
-			       parser_state_tos->p_stack_size * sizeof (int));
-
-		new->paren_indents = (short *) xmalloc
-		  (parser_state_tos->paren_indents_size * sizeof (short));
-		(void) memcpy (new->paren_indents,
-			       parser_state_tos->paren_indents,
-			       (parser_state_tos->paren_indents_size *
-				sizeof (short)));
-
-		new->next = parser_state_tos;
-		parser_state_tos = new;
-		/* GDB_HOOK_parser_state_tos */
-	      }
-	    }
-	  else if (strncmp (p, "else", 4) == 0 || strncmp (p, "elif", 4) == 0)
-	    {
-	      /* When we get #else, we want to restore the parser state to
-	         what it was before the matching #if, so that things get
-	         lined up with the code before the #if.  However, we do not
-	         want to pop the stack; we just want to copy the second to
-	         top elt of the stack because when we encounter the #endif,
-	         it will pop the stack.  */
-	      else_or_endif = (strncmp (p, "else", 4) == 0);
-	      prefix_blankline_requested = 0;
-	      if (parser_state_tos->next)
-		{
-		  /* First save the addresses of the arrays for the top of
-		     stack.  */
-		  enum codes *tos_p_stack = parser_state_tos->p_stack;
-		  int *tos_il = parser_state_tos->il;
-		  int *tos_cstk = parser_state_tos->cstk;
-		  short *tos_paren_indents = parser_state_tos->paren_indents;
-		  struct parser_state *second = parser_state_tos->next;
-
-		  (void) memcpy (parser_state_tos, second, sizeof (struct parser_state));
-		  parser_state_tos->next = second;
-
-		  /* Now copy the arrays from the second to top of stack to
-		     the top of stack.  */
-		  /* Since the p_stack, etc. arrays only grow, never shrink,
-		     we know that they will be big enough to fit the array
-		     from the second to top of stack.  */
-		  parser_state_tos->p_stack = tos_p_stack;
-		  (void) memcpy (parser_state_tos->p_stack,
-				 parser_state_tos->next->p_stack,
-				 parser_state_tos->p_stack_size *
-				 sizeof (enum codes));
-
-		  parser_state_tos->il = tos_il;
-		  (void) memcpy (parser_state_tos->il,
-				 parser_state_tos->next->il,
-				 (parser_state_tos->p_stack_size *
-				  sizeof (int)));
-
-		  parser_state_tos->cstk = tos_cstk;
-		  (void) memcpy (parser_state_tos->cstk,
-				 parser_state_tos->next->cstk,
-				 (parser_state_tos->p_stack_size *
-				  sizeof (int)));
-
-		  parser_state_tos->paren_indents = tos_paren_indents;
-		  (void) memcpy (parser_state_tos->paren_indents,
-				 parser_state_tos->next->paren_indents,
-				 (parser_state_tos->paren_indents_size *
-				  sizeof (short)));
-		}
-	      else
-		{
-		  ERROR (else_or_endif ? "Unmatched #else" : "Unmatched #elif", 0, 0);
-		  file_exit_value = indent_error;
-		}
-	    }
-	  else if (strncmp (p, "endif", 5) == 0)
-	    {
-	      else_or_endif = true;
-	      prefix_blankline_requested = 0;
-	      /* We want to remove the second to top elt on the stack, which
-	         was put there by #if and was used to restore the stack at
-	         the #else (if there was one). We want to leave the top of
-	         stack unmolested so that the state which we have been using
-	         is unchanged.  */
-	      if (parser_state_tos->next)
-		{
-		  struct parser_state *second = parser_state_tos->next;
-
-		  parser_state_tos->next = second->next;
-		  free (second->p_stack);
-		  free (second->il);
-		  free (second->cstk);
-		  free (second->paren_indents);
-		  free (second);
-		}
-	      else
-		{
-		  ERROR ("Unmatched #endif", 0, 0);
-		  file_exit_value = indent_error;
-		}
-
-	      if (blanklines_around_conditional_compilation)
-		{
-		  postfix_blankline_requested++;
-		  postfix_blankline_requested_code = preesc;
-		  n_real_blanklines = 0;
-		}
-	    }
-
-	  /* Don't put a blank line after declarations if they are directly
-	     followed by an #else or #endif -Run */
-	  if (else_or_endif && prefix_blankline_requested_code == decl)
-	    prefix_blankline_requested = 0;
-
-	  /* Normally, subsequent processing of the newline character
-	     causes the line to be printed.  The following clause handles
-	     a special case (comma-separated declarations separated
-	     by the preprocessor lines) where this doesn't happen. */
-	  if (parser_state_tos->last_token == comma
-	      && parser_state_tos->p_l_follow <= 0
-	      && leave_comma && !parser_state_tos->block_init
-	      && break_comma && s_com == e_com)
-	    {
+	    if ((s_com != e_com) || (s_lab != e_lab) || (s_code != e_code))
 	      dump_line (true);
-	      parser_state_tos->want_blank = false;
+	    {
+	      int in_comment = 0;
+	      int in_cplus_comment = 0;
+	      int com_start = 0;
+	      char quote = 0;
+	      int com_end = 0;
+
+	      /* ANSI allows spaces between '#' and preprocessor directives.
+	         If the user specified "-lps" and there are such spaces,
+	         they will be part of `token', otherwise `token' is just
+	         '#'. */
+	      for (t_ptr = token; t_ptr < token_end; ++t_ptr)
+		{
+		  CHECK_LAB_SIZE;
+		  *e_lab++ = *t_ptr;
+		}
+
+	      while (!had_eof && (*buf_ptr != EOL || in_comment))
+		{
+		  CHECK_LAB_SIZE;
+		  *e_lab = *buf_ptr++;
+		  if (buf_ptr >= buf_end)
+		    fill_buffer ();
+
+		  switch (*e_lab++)
+		    {
+		    case BACKSLASH:
+		      if (!in_comment && !in_cplus_comment)
+			{
+			  *e_lab++ = *buf_ptr++;
+			  if (buf_ptr >= buf_end)
+			    fill_buffer ();
+			}
+		      break;
+
+		    case '/':
+		      if ((*buf_ptr == '*' || *buf_ptr == '/') && !in_comment && !in_cplus_comment && !quote)
+			{
+			  save_com.column = current_column () - 1;
+			  if (*buf_ptr == '/')
+			    in_cplus_comment = 1;
+			  else
+			    in_comment = 1;
+			  *e_lab++ = *buf_ptr++;
+			  com_start = e_lab - s_lab - 2;
+			  /* Store the column that corresponds with the start
+			     of the buffer */
+			  if (save_com.ptr == save_com.end)
+			    save_com.start_column = current_column () - 2;
+			}
+		      break;
+
+		    case '"':
+		    case '\'':
+		      if (!quote)
+			quote = e_lab[-1];
+		      else if (e_lab[-1] == quote)
+			quote = 0;
+		      break;
+
+		    case '*':
+		      if (*buf_ptr == '/' && in_comment)
+			{
+			  in_comment = 0;
+			  *e_lab++ = *buf_ptr++;
+			  com_end = e_lab - s_lab;
+			}
+		      break;
+		    }
+		}
+
+	      while (e_lab > s_lab && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
+		e_lab--;
+
+	      if (in_cplus_comment)	/* Should we also check in_comment? -jla */
+		{
+		  in_cplus_comment = 0;
+		  *e_lab++ = *buf_ptr++;
+		  com_end = e_lab - s_lab;
+		}
+
+	      if (e_lab - s_lab == com_end && bp_save == 0)
+		{		/* comment on preprocessor line */
+		  if (save_com.end != save_com.ptr)
+		    {
+		      need_chars (&save_com, 2);
+		      *save_com.end++ = EOL;	/* add newline between
+						   comments */
+		      *save_com.end++ = ' ';
+		      save_com.len += 2;
+		      --line_no;
+		    }
+		  need_chars (&save_com, com_end - com_start + 1);
+		  strncpy (save_com.end, s_lab + com_start, com_end - com_start);
+		  save_com.end[com_end - com_start] = '\0';
+		  save_com.end += com_end - com_start;
+		  save_com.len += com_end - com_start;
+
+		  e_lab = s_lab + com_start;
+		  while (e_lab > s_lab && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
+		    e_lab--;
+
+		  /* Switch input buffers so that calls to lexi() will
+		     read from our save buffer. */
+		  bp_save = buf_ptr;
+		  be_save = buf_end;
+		  buf_ptr = save_com.ptr;
+		  need_chars (&save_com, 1);
+		  buf_end = save_com.end;
+		  save_com.end = save_com.ptr;	/* make save_com empty */
+		}
+	      *e_lab = '\0';	/* null terminate line */
+	      parser_state_tos->pcase = false;
 	    }
-	  break;
-	}
+
+	    p = s_lab + 1;
+	    while (*p == ' ' || *p == TAB)
+	      ++p;
+
+	    if (strncmp (p, "if", 2) == 0)
+	      {
+		if (blanklines_around_conditional_compilation)
+		  {
+		    prefix_blankline_requested++;
+		    prefix_blankline_requested_code = preesc;
+		    while (*in_prog_pos++ == EOL);
+		    in_prog_pos--;
+		  }
+
+		{
+		  /* Push a copy of the parser_state onto the stack. All
+		     manipulations will use the copy at the top of stack, and
+		     then we can return to the previous state by popping the
+		     stack.  */
+		  struct parser_state *new;
+
+		  new = (struct parser_state *) xmalloc (sizeof (struct parser_state));
+		  (void) memcpy (new, parser_state_tos, sizeof (struct parser_state));
+
+		  /* We need to copy the dynamically allocated arrays in the
+		     struct parser_state too.  */
+		  new->p_stack = (enum codes *) xmalloc (parser_state_tos->p_stack_size * sizeof (enum codes));
+		  (void) memcpy (new->p_stack, parser_state_tos->p_stack,
+				 (parser_state_tos->p_stack_size * sizeof (enum codes)));
+
+		  new->il = (int *) xmalloc (parser_state_tos->p_stack_size * sizeof (int));
+		  (void) memcpy (new->il, parser_state_tos->il, parser_state_tos->p_stack_size * sizeof (int));
+
+		  new->cstk = (int *) xmalloc (parser_state_tos->p_stack_size * sizeof (int));
+		  (void) memcpy (new->cstk, parser_state_tos->cstk, parser_state_tos->p_stack_size * sizeof (int));
+
+		  new->paren_indents = (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
+		  (void) memcpy (new->paren_indents, parser_state_tos->paren_indents,
+				 (parser_state_tos->paren_indents_size * sizeof (short)));
+
+		  new->next = parser_state_tos;
+		  parser_state_tos = new;
+		  /* GDB_HOOK_parser_state_tos */
+		}
+	      }
+	    else if (strncmp (p, "else", 4) == 0 || strncmp (p, "elif", 4) == 0)
+	      {
+		/* When we get #else, we want to restore the parser state to
+		   what it was before the matching #if, so that things get
+		   lined up with the code before the #if.  However, we do not
+		   want to pop the stack; we just want to copy the second to
+		   top elt of the stack because when we encounter the #endif,
+		   it will pop the stack.  */
+		else_or_endif = (strncmp (p, "else", 4) == 0);
+		prefix_blankline_requested = 0;
+		if (parser_state_tos->next)
+		  {
+		    /* First save the addresses of the arrays for the top of
+		       stack.  */
+		    enum codes *tos_p_stack = parser_state_tos->p_stack;
+		    int *tos_il = parser_state_tos->il;
+		    int *tos_cstk = parser_state_tos->cstk;
+		    short *tos_paren_indents = parser_state_tos->paren_indents;
+		    struct parser_state *second = parser_state_tos->next;
+
+		    (void) memcpy (parser_state_tos, second, sizeof (struct parser_state));
+		    parser_state_tos->next = second;
+
+		    /* Now copy the arrays from the second to top of stack to
+		       the top of stack.  */
+		    /* Since the p_stack, etc. arrays only grow, never shrink,
+		       we know that they will be big enough to fit the array
+		       from the second to top of stack.  */
+		    parser_state_tos->p_stack = tos_p_stack;
+		    (void) memcpy (parser_state_tos->p_stack, parser_state_tos->next->p_stack,
+				   parser_state_tos->p_stack_size * sizeof (enum codes));
+
+		    parser_state_tos->il = tos_il;
+		    (void) memcpy (parser_state_tos->il, parser_state_tos->next->il,
+				   (parser_state_tos->p_stack_size * sizeof (int)));
+
+		    parser_state_tos->cstk = tos_cstk;
+		    (void) memcpy (parser_state_tos->cstk, parser_state_tos->next->cstk,
+				   (parser_state_tos->p_stack_size * sizeof (int)));
+
+		    parser_state_tos->paren_indents = tos_paren_indents;
+		    (void) memcpy (parser_state_tos->paren_indents, parser_state_tos->next->paren_indents,
+				   (parser_state_tos->paren_indents_size * sizeof (short)));
+		  }
+		else
+		  {
+		    ERROR (else_or_endif ? "Unmatched #else" : "Unmatched #elif", 0, 0);
+		    file_exit_value = indent_error;
+		  }
+	      }
+	    else if (strncmp (p, "endif", 5) == 0)
+	      {
+		else_or_endif = true;
+		prefix_blankline_requested = 0;
+		/* We want to remove the second to top elt on the stack, which
+		   was put there by #if and was used to restore the stack at
+		   the #else (if there was one). We want to leave the top of
+		   stack unmolested so that the state which we have been using
+		   is unchanged.  */
+		if (parser_state_tos->next)
+		  {
+		    struct parser_state *second = parser_state_tos->next;
+
+		    parser_state_tos->next = second->next;
+		    free (second->p_stack);
+		    free (second->il);
+		    free (second->cstk);
+		    free (second->paren_indents);
+		    free (second);
+		  }
+		else
+		  {
+		    ERROR ("Unmatched #endif", 0, 0);
+		    file_exit_value = indent_error;
+		  }
+
+		if (blanklines_around_conditional_compilation)
+		  {
+		    postfix_blankline_requested++;
+		    postfix_blankline_requested_code = preesc;
+		    n_real_blanklines = 0;
+		  }
+	      }
+
+	    /* Don't put a blank line after declarations if they are directly
+	       followed by an #else or #endif -Run */
+	    if (else_or_endif && prefix_blankline_requested_code == decl)
+	      prefix_blankline_requested = 0;
+
+	    /* Normally, subsequent processing of the newline character
+	       causes the line to be printed.  The following clause handles
+	       a special case (comma-separated declarations separated
+	       by the preprocessor lines) where this doesn't happen. */
+	    if (parser_state_tos->last_token == comma && parser_state_tos->p_l_follow <= 0 && leave_comma
+		&& !parser_state_tos->block_init && break_comma && s_com == e_com)
+	      {
+		dump_line (true);
+		parser_state_tos->want_blank = false;
+	      }
+	    break;
+	  }
 	  /* A C or C++ comment. */
 	case comment:
 	case cplus_comment:
@@ -1904,10 +1809,8 @@ indent (this_file)
 	}			/* end of big switch stmt */
 
       *e_code = '\0';		/* make sure code section is null terminated */
-      if (type_code != comment
-	  && type_code != cplus_comment
-	  && type_code != newline
-	  && type_code != preesc && type_code != form_feed)
+      if (type_code != comment && type_code != cplus_comment && type_code != newline && type_code != preesc
+	  && type_code != form_feed)
 	parser_state_tos->last_token = type_code;
 
       /*  Now that we've put the token on the line (in most cases),
@@ -1919,19 +1822,11 @@ indent (this_file)
          periods, or preprocessor commands. */
       if (max_col > 0 && buf_break != NULL)
 	{
-	  if (((type_code == binary_op)
-	       || (type_code == postop)
-	       || (type_code == question)
-	       || (type_code == colon && (scase || squest <= 0))
-	       || (type_code == semicolon)
-	       || (type_code == sp_nparen)
-	       || (type_code == sp_else)
-	       || (type_code == ident && *token == '\"')
+	  if (((type_code == binary_op) || (type_code == postop) || (type_code == question)
+	       || (type_code == colon && (scase || squest <= 0)) || (type_code == semicolon) || (type_code == sp_nparen)
+	       || (type_code == sp_else) || (type_code == ident && *token == '\"') || (type_code == struct_delim)
 	       || (type_code == comma)) && output_line_length () > max_col)
-	    {
-	      break_line = 1;
-	      force_nl = true;
-	    }
+	    break_line = 1;
 	}
 
     }				/* end of main while (1) loop */
@@ -1956,7 +1851,7 @@ char **in_file_names;
 int max_input_files = 128;
 
 #ifdef DEBUG
-int debug;
+int debug = 1;
 #endif
 
 int
@@ -1968,6 +1863,13 @@ main (argc, argv)
   char *profile_pathname = 0;
   int using_stdin = false;
   enum exit_values exit_status;
+
+#ifdef _WIN32
+  /* wildcard expansion of commandline arguments, see wildexp.c */
+  extern void wildexp (int *argc, char ***argv);
+
+  wildexp (&argc, &argv);
+#endif /* _WIN32 */
 
 #ifdef DEBUG
   if (debug)
@@ -1985,8 +1887,7 @@ main (argc, argv)
   set_defaults ();
   for (i = 1; i < argc; ++i)
     {
-      if (strcmp (argv[i], "-npro") == 0
-	  || strcmp (argv[i], "--ignore-profile") == 0
+      if (strcmp (argv[i], "-npro") == 0 || strcmp (argv[i], "--ignore-profile") == 0
 	  || strcmp (argv[i], "+ignore-profile") == 0)
 	break;
     }
@@ -2001,16 +1902,13 @@ main (argc, argv)
 	    {
 	      if (out_name != 0)
 		{
-		  fprintf (stderr,
-			   "indent: only one output file (2nd was %s)\n",
-			   argv[i]);
+		  fprintf (stderr, "indent: only one output file (2nd was %s)\n", argv[i]);
 		  exit (invocation_error);
 		}
 
 	      if (input_files > 1)
 		{
-		  fprintf (stderr,
-			   "indent: only one input file when output file is specified\n");
+		  fprintf (stderr, "indent: only one input file when output file is specified\n");
 		  exit (invocation_error);
 		}
 
@@ -2022,8 +1920,7 @@ main (argc, argv)
 	    {
 	      if (using_stdin)
 		{
-		  fprintf (stderr,
-			   "indent: can't have filenames when specifying standard input\n");
+		  fprintf (stderr, "indent: can't have filenames when specifying standard input\n");
 		  exit (invocation_error);
 		}
 
@@ -2032,25 +1929,20 @@ main (argc, argv)
 		{
 		  if (out_name != 0)
 		    {
-		      fprintf (stderr,
-			       "indent: only one input file when output file is specified\n");
+		      fprintf (stderr, "indent: only one input file when output file is specified\n");
 		      exit (invocation_error);
 		    }
 
 		  if (use_stdout != 0)
 		    {
-		      fprintf (stderr,
-			       "indent: only one input file when stdout is used\n");
+		      fprintf (stderr, "indent: only one input file when stdout is used\n");
 		      exit (invocation_error);
 		    }
 
 		  if (input_files > max_input_files)
 		    {
 		      max_input_files = 2 * max_input_files;
-		      in_file_names
-			= (char **) xrealloc ((char *) in_file_names,
-					      (max_input_files *
-					       sizeof (char *)));
+		      in_file_names = (char **) xrealloc ((char *) in_file_names, (max_input_files * sizeof (char *)));
 		    }
 		}
 
@@ -2064,8 +1956,7 @@ main (argc, argv)
 	    {
 	      if (input_files > 0)
 		{
-		  fprintf (stderr,
-			   "indent: can't have filenames when specifying standard input\n");
+		  fprintf (stderr, "indent: can't have filenames when specifying standard input\n");
 		  exit (invocation_error);
 		}
 
@@ -2078,6 +1969,8 @@ main (argc, argv)
 
   if (verbose && profile_pathname)
     fprintf (stderr, "Read profile %s\n", profile_pathname);
+
+  set_defaults_after ();
 
   if (input_files > 1)
     {
@@ -2106,13 +1999,14 @@ main (argc, argv)
 	  if (fclose (output) != 0)
 	    fatal ("Can't close output file %s", out_name);
 #ifdef PRESERVE_MTIME
-          else if (preserve_mtime)
+	  else if (preserve_mtime)
 	    {
-              struct utimbuf buf;
-	      buf.actime = time(NULL);
+	      struct utimbuf buf;
+
+	      buf.actime = time (NULL);
 	      buf.modtime = file_stats.st_mtime;
-	      if (utime(out_name, &buf) != 0)
-	        WARNING ("Can't preserve modification time on output file %s", out_name, 0);
+	      if (utime (out_name, &buf) != 0)
+		WARNING ("Can't preserve modification time on output file %s", out_name, 0);
 	    }
 #endif
 	}
@@ -2159,17 +2053,18 @@ main (argc, argv)
       exit_status = indent (current_input);
 
       if (output != stdout)
-        {
+	{
 	  if (fclose (output) != 0)
 	    fatal ("Can't close output file %s", out_name);
 #ifdef PRESERVE_MTIME
 	  if (input_files > 0 && !using_stdin && preserve_mtime)
 	    {
-              struct utimbuf buf;
-	      buf.actime = time(NULL);
+	      struct utimbuf buf;
+
+	      buf.actime = time (NULL);
 	      buf.modtime = file_stats.st_mtime;
-	      if (utime(out_name, &buf) != 0)
-	        WARNING ("Can't preserve modification time on output file %s", out_name, 0);
+	      if (utime (out_name, &buf) != 0)
+		WARNING ("Can't preserve modification time on output file %s", out_name, 0);
 	    }
 #endif
 	}

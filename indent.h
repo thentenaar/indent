@@ -22,7 +22,7 @@
 #ifndef INDENT_INDENT_H
 #define INDENT_INDENT_H
 
-RCSTAG_H (indent, "$Id: indent.h,v 1.19 1999/11/09 01:22:06 carlo Exp $");
+RCSTAG_H (indent, "$Id: indent.h,v 1.24 2000/11/17 03:01:04 carlo Exp $");
 
 #include "lexi.h"
 #include "io.h"
@@ -86,6 +86,8 @@ extern FILE *output;
 /* True if we're handling C++ code. */
 extern int c_plus_plus;
 
+extern int use_tabs;		/* does indent convert tabs to spaces or not */
+
 extern char *labbuf;		/* buffer for label */
 extern char *s_lab;		/* start ... */
 extern char *e_lab;		/* .. and end of stored label */
@@ -111,6 +113,7 @@ extern int break_line;		/* Whether or not we should break the line. */
 
 /* pointer to the token that lexi() has just found */
 extern char *token;
+
 /* points to the first char after the end of token */
 extern char *token_end;
 
@@ -204,6 +207,7 @@ extern int max_col;		/* the maximum allowable line length */
 extern int verbose;		/* when true, non-essential error messages
 				   are printed */
 extern int cuddle_else;		/* true if else should cuddle up to '}' */
+extern int cuddle_do_while;	/* true if '}' should cuddle up to while in do loop */
 extern int star_comment_cont;	/* true if comment continuation lines should
 				   have stars at the beginning of each line. */
 extern int comment_delimiter_on_blankline;
@@ -221,6 +225,7 @@ extern int cast_space;		/* If true, casts look like: r                          
 
 /* If comments which start in column 1 are to be magically reformatted */
 extern int format_col1_comments;
+
 /* If any comments are to be reformatted */
 extern int format_comments;
 
@@ -282,15 +287,20 @@ extern int com_ind;		/* the column in which comments to the right
 extern int decl_indent;		/* column to indent declared identifiers to */
 extern int ljust_decl;		/* true if declarations should be left
 				   justified */
+extern int break_function_decl_args;	/* true if declarations should have
+					   args on new lines */
 extern int unindent_displace;	/* comments not to the right of code will be
 				   placed this many indentation levels to the
 				   left of code */
 /* Number of spaces to indent parameters.  */
 extern int indent_parameters;
+
 /* The size of one indentation level in spaces.  */
 extern int ind_size;
+
 /* The number of columns a tab character generates. */
 extern int tabsize;
+
 /* Nonzero if we should use standard input/output when files are not
    explicitly specified.  */
 extern int use_stdinout;
@@ -302,6 +312,9 @@ extern int honour_newlines;	/* True when positions at which we read a newline
 				   to break long lines at. */
 extern int preserve_mtime;	/* True when the modification time of the files should
 				   be preserved. */
+extern int space_after_if;	/* Put a space after `if' */
+extern int space_after_for;	/* Put a space after `for' */
+extern int space_after_while;	/* Put a space after `while' */
 
 /* This structure contains information relating to the state of parsing the
    code.  The difference is that the state is saved on #if and restored on

@@ -1,4 +1,4 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
    Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
    Copyright (c) 1985 Sun Microsystems, Inc. Copyright (c) 1980 The Regents
    of the University of California. Copyright (c) 1976 Board of Trustees of
@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.19 1999/11/12 13:43:47 carlo Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.21 2000/11/17 03:01:04 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -31,19 +31,14 @@ struct parser_state *parser_state_tos;
 void
 init_parser ()
 {
-  parser_state_tos
-    = (struct parser_state *) xmalloc (sizeof (struct parser_state));
+  parser_state_tos = (struct parser_state *) xmalloc (sizeof (struct parser_state));
   /* GDB_HOOK_parser_state_tos */
   parser_state_tos->p_stack_size = INITIAL_STACK_SIZE;
-  parser_state_tos->p_stack
-    = (enum codes *) xmalloc (INITIAL_STACK_SIZE * sizeof (enum codes));
+  parser_state_tos->p_stack = (enum codes *) xmalloc (INITIAL_STACK_SIZE * sizeof (enum codes));
   parser_state_tos->il = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
-  parser_state_tos->cstk =
-    (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
+  parser_state_tos->cstk = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
   parser_state_tos->paren_indents_size = 8;
-  parser_state_tos->paren_indents
-    =
-    (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
+  parser_state_tos->paren_indents = (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
 
   /* Although these are supposed to grow if we reach the end,
      I can find no place in the code which does this. */
@@ -148,18 +143,14 @@ inc_pstack ()
       parser_state_tos->p_stack_size *= 2;
       parser_state_tos->p_stack =
 	(enum codes *) xrealloc ((char *) parser_state_tos->p_stack,
-				 parser_state_tos->p_stack_size *
-				 sizeof (enum codes));
+				 parser_state_tos->p_stack_size * sizeof (enum codes));
       parser_state_tos->il =
-	(int *) xrealloc ((char *) parser_state_tos->il,
-			  parser_state_tos->p_stack_size * sizeof (int));
+	(int *) xrealloc ((char *) parser_state_tos->il, parser_state_tos->p_stack_size * sizeof (int));
       parser_state_tos->cstk =
-	(int *) xrealloc ((char *) parser_state_tos->cstk,
-			  parser_state_tos->p_stack_size * sizeof (int));
+	(int *) xrealloc ((char *) parser_state_tos->cstk, parser_state_tos->p_stack_size * sizeof (int));
     }
 
-  parser_state_tos->cstk[parser_state_tos->tos]
-    = parser_state_tos->cstk[parser_state_tos->tos - 1];
+  parser_state_tos->cstk[parser_state_tos->tos] = parser_state_tos->cstk[parser_state_tos->tos - 1];
   return parser_state_tos->tos;
 }
 
@@ -169,7 +160,7 @@ static char **debug_symbol_strings;
 void
 debug_init ()
 {
-  int size = ((int) period + 4) * sizeof (char *);
+  int size = ((int) number_of_codes) * sizeof (char *);
 
   debug_symbol_strings = (char **) xmalloc (size);
 
@@ -177,18 +168,23 @@ debug_init ()
   debug_symbol_strings[newline] = "newline";
   debug_symbol_strings[lparen] = "lparen";
   debug_symbol_strings[rparen] = "rparen";
+  debug_symbol_strings[start_token] = "start_token";
   debug_symbol_strings[unary_op] = "unary_op";
   debug_symbol_strings[binary_op] = "binary_op";
   debug_symbol_strings[postop] = "postop";
   debug_symbol_strings[question] = "question";
   debug_symbol_strings[casestmt] = "casestmt";
   debug_symbol_strings[colon] = "colon";
+  debug_symbol_strings[doublecolon] = "doublecolon";
   debug_symbol_strings[semicolon] = "semicolon";
   debug_symbol_strings[lbrace] = "lbrace";
   debug_symbol_strings[rbrace] = "rbrace";
   debug_symbol_strings[ident] = "ident";
+  debug_symbol_strings[overloaded] = "overloaded";
+  debug_symbol_strings[cpp_operator] = "cpp_operator";
   debug_symbol_strings[comma] = "comma";
   debug_symbol_strings[comment] = "comment";
+  debug_symbol_strings[cplus_comment] = "cplus_comment";
   debug_symbol_strings[swstmt] = "swstmt";
   debug_symbol_strings[preesc] = "preesc";
   debug_symbol_strings[form_feed] = "form_feed";
@@ -197,6 +193,7 @@ debug_init ()
   debug_symbol_strings[sp_nparen] = "sp_nparen";
   debug_symbol_strings[sp_else] = "sp_else";
   debug_symbol_strings[ifstmt] = "ifstmt";
+  debug_symbol_strings[elseifstmt] = "elseifstmt";
   debug_symbol_strings[whilestmt] = "whilestmt";
   debug_symbol_strings[forstmt] = "forstmt";
   debug_symbol_strings[stmt] = "stmt";
@@ -207,7 +204,8 @@ debug_init ()
   debug_symbol_strings[dostmt] = "dostmt";
   debug_symbol_strings[ifhead] = "ifhead";
   debug_symbol_strings[elsehead] = "elsehead";
-  debug_symbol_strings[period] = "period";
+  debug_symbol_strings[struct_delim] = "struct_delim";
+  debug_symbol_strings[attribute] = "attribute";
 }
 
 #endif
@@ -221,16 +219,14 @@ parse (tk)
 #ifdef DEBUG
   if (debug)
     {
-      if (tk >= code_eof && tk <= period)
+      if (tk >= code_eof && tk < number_of_codes)
 	printf ("Parse: %s\n", debug_symbol_strings[tk]);
       else
-	printf ("Parse: Unknown code: %d for %s\n",
-		(int) tk, token ? token : "NULL");
+	printf ("Parse: Unknown code: %d for %s\n", (int) tk, token ? token : "NULL");
     }
 #endif
 
-  while (parser_state_tos->p_stack[parser_state_tos->tos] == ifhead
-	 && tk != elselit)
+  while (parser_state_tos->p_stack[parser_state_tos->tos] == ifhead && tk != elselit)
     {
       /* true if we have an if without an else */
 
@@ -247,15 +243,13 @@ parse (tk)
     case decl:			/* scanned a declaration word */
       parser_state_tos->search_brace = braces_on_struct_decl_line;
       /* indicate that following brace should be on same line */
-      if (parser_state_tos->p_stack[parser_state_tos->tos] != decl
-	  && parser_state_tos->block_init == 0)
+      if (parser_state_tos->p_stack[parser_state_tos->tos] != decl && parser_state_tos->block_init == 0)
 	{			/* only put one declaration onto stack */
 	  break_comma = true;	/* while in declaration, newline should be
 				   forced after comma */
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = decl;
-	  parser_state_tos->il[parser_state_tos->tos] =
-	    parser_state_tos->i_l_follow;
+	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
 
 	  if (ljust_decl)
 	    {			/* only do if we want left justified
@@ -273,15 +267,13 @@ parse (tk)
 
     case ifstmt:		/* scanned if (...) */
       if (parser_state_tos->p_stack[parser_state_tos->tos] == elsehead)
-	parser_state_tos->i_l_follow
-	  = parser_state_tos->il[parser_state_tos->tos];
+	parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
     case dolit:		/* 'do' */
     case forstmt:		/* for (...) */
     case casestmt:		/* case n: */
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = tk;
-      parser_state_tos->il[parser_state_tos->tos]
-	= parser_state_tos->ind_level = parser_state_tos->i_l_follow;
+      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
       if (tk != casestmt)
 	parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
 							   should be indented */
@@ -297,12 +289,9 @@ parse (tk)
       else if (parser_state_tos->p_stack[parser_state_tos->tos] == decl)
 	{
 	  parser_state_tos->i_l_follow += ind_size;
-	  if ((parser_state_tos->last_rw == rw_struct_like
-	       || parser_state_tos->last_rw == rw_enum)
-	      && (parser_state_tos->block_init != 1
-		  || parser_state_tos->block_init_level == 0)
-	      && parser_state_tos->last_token != rparen
-	      && !braces_on_struct_decl_line)
+	  if ((parser_state_tos->last_rw == rw_struct_like || parser_state_tos->last_rw == rw_enum)
+	      && (parser_state_tos->block_init != 1 || parser_state_tos->block_init_level == 0)
+	      && parser_state_tos->last_token != rparen && !braces_on_struct_decl_line)
 	    {
 	      parser_state_tos->ind_level += struct_brace_indent;
 	      parser_state_tos->i_l_follow += struct_brace_indent;
@@ -336,32 +325,27 @@ parse (tk)
 
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = lbrace;
-      parser_state_tos->il[parser_state_tos->tos] =
-	parser_state_tos->ind_level;
+      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level;
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
       /* allow null stmt between braces */
-      parser_state_tos->il[parser_state_tos->tos] =
-	parser_state_tos->i_l_follow;
+      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
       break;
 
     case whilestmt:		/* scanned while (...) */
       if (parser_state_tos->p_stack[parser_state_tos->tos] == dohead)
 	{
 	  /* it is matched with do stmt */
-	  parser_state_tos->ind_level = parser_state_tos->i_l_follow
-	    = parser_state_tos->il[parser_state_tos->tos];
+	  parser_state_tos->ind_level = parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = whilestmt;
-	  parser_state_tos->il[parser_state_tos->tos]
-	    = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
+	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
 	}
       else
 	{			/* it is a while loop */
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = whilestmt;
-	  parser_state_tos->il[parser_state_tos->tos] =
-	    parser_state_tos->i_l_follow;
+	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
 	  parser_state_tos->i_l_follow += ind_size;
 	  parser_state_tos->search_brace = btype_2;
 	}
@@ -377,11 +361,9 @@ parse (tk)
       else
 	{
 	  /* indentation for else should be same as for if */
-	  parser_state_tos->ind_level
-	    = parser_state_tos->il[parser_state_tos->tos];
+	  parser_state_tos->ind_level = parser_state_tos->il[parser_state_tos->tos];
 	  /* everything following should be in 1 level */
-	  parser_state_tos->i_l_follow =
-	    (parser_state_tos->ind_level + ind_size);
+	  parser_state_tos->i_l_follow = (parser_state_tos->ind_level + ind_size);
 
 	  parser_state_tos->p_stack[parser_state_tos->tos] = elsehead;
 	  /* remember if with else */
@@ -393,8 +375,7 @@ parse (tk)
       /* stack should have <lbrace> <stmt> or <lbrace> <stmtl> */
       if (parser_state_tos->p_stack[parser_state_tos->tos - 1] == lbrace)
 	{
-	  parser_state_tos->ind_level = parser_state_tos->i_l_follow
-	    = parser_state_tos->il[--parser_state_tos->tos];
+	  parser_state_tos->ind_level = parser_state_tos->i_l_follow = parser_state_tos->il[--parser_state_tos->tos];
 	  parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
 	}
       else
@@ -409,14 +390,12 @@ parse (tk)
 #if 0
       parser_state_tos->cstk[parser_state_tos->tos] = case_ind;
 #endif
-      parser_state_tos->cstk[parser_state_tos->tos]
-	= case_indent + parser_state_tos->i_l_follow;
+      parser_state_tos->cstk[parser_state_tos->tos] = case_indent + parser_state_tos->i_l_follow;
       if (!btype_2)
 	parser_state_tos->cstk[parser_state_tos->tos] += brace_indent;
 
       /* save current case indent level */
-      parser_state_tos->il[parser_state_tos->tos]
-	= parser_state_tos->i_l_follow;
+      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
       /* case labels should be one level down from switch, plus
          `case_indent' if any.  Then, statements should be the `ind_size'
          further. */
@@ -439,8 +418,7 @@ parse (tk)
 	{
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
-	  parser_state_tos->il[parser_state_tos->tos]
-	    = parser_state_tos->ind_level;
+	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level;
 	}
       break;
 
@@ -456,8 +434,7 @@ parse (tk)
     {
       printf ("\nParseStack [%d]:\n", (int) parser_state_tos->p_stack_size);
       for (i = 1; i <= parser_state_tos->tos; ++i)
-	printf ("  stack[%d] =>   stack: %d   ind_level: %d\n",
-		(int) i, (int) parser_state_tos->p_stack[i],
+	printf ("  stack[%d] =>   stack: %d   ind_level: %d\n", (int) i, (int) parser_state_tos->p_stack[i],
 		(int) parser_state_tos->il[i]);
       printf ("\n");
     }
@@ -526,16 +503,14 @@ reduce ()
 
 	    case dolit:	/* <do> <stmt> */
 	      parser_state_tos->p_stack[--parser_state_tos->tos] = dohead;
-	      parser_state_tos->i_l_follow
-		= parser_state_tos->il[parser_state_tos->tos];
+	      parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
 	      break;
 
 	    case ifstmt:
 	      /* <if> <stmt> */
 	      parser_state_tos->p_stack[--parser_state_tos->tos] = ifhead;
 	      for (i = parser_state_tos->tos - 1;
-		   (parser_state_tos->p_stack[i] != stmt
-		    && parser_state_tos->p_stack[i] != stmtl
+		   (parser_state_tos->p_stack[i] != stmt && parser_state_tos->p_stack[i] != stmtl
 		    && parser_state_tos->p_stack[i] != lbrace); --i);
 	      parser_state_tos->i_l_follow = parser_state_tos->il[i];
 	      /* for the time being, we will assume that there is no else on
@@ -559,8 +534,7 @@ reduce ()
 	    case whilestmt:
 	      /* <while> <stmt> */
 	      parser_state_tos->p_stack[--parser_state_tos->tos] = stmt;
-	      parser_state_tos->i_l_follow =
-		parser_state_tos->il[parser_state_tos->tos];
+	      parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
 	      break;
 
 	    default:		/* <anything else> <stmt> */

@@ -24,6 +24,7 @@
 #define strrchr rindex
 #endif
 char *strchr (), *strrchr ();
+
 #ifndef HAVE_MEMCPY
 #define memcpy(d, s, n) bcopy ((s), (d), (n))
 #endif
@@ -76,7 +77,7 @@ extern int debug;
 #define PARAMS(x) ()
 #endif
 
-#if defined(HAVE_UTIME) && defined(HAVE_UTIME_H)
+#if defined(HAVE_UTIME) && (defined(HAVE_UTIME_H) || defined(HAVE_SYS_UTIME_H))
 #define PRESERVE_MTIME 1
 #endif
 
@@ -90,5 +91,4 @@ extern int debug;
 #else
 #define RCSTAG_H(name, string) /**/
 #endif
-
-RCSTAG_H (sys, "$Id: sys.h,v 1.13 1999/12/31 12:15:37 carlo Exp $");
+  RCSTAG_H (sys, "$Id: sys.h,v 1.15 2000/11/17 03:01:04 carlo Exp $");

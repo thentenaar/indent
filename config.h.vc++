@@ -33,7 +33,10 @@
 #define HAVE_STRCHR
 
 /* Define if you have the utime function.  */
-/* #undef HAVE_UTIME */
+#define HAVE_UTIME
+
+/* Define if you have the <sys/utime.h> header file.  */
+#define HAVE_SYS_UTIME_H
 
 /* Define if you have the <dirent.h> header file.  */
 /* #undef HAVE_DIRENT_H */
@@ -63,7 +66,7 @@
 #define PACKAGE  "indent"
 
 /* Version number of package */
-#define VERSION  "2.2.5"
+#define VERSION  "2.2.6"
 
 /* Define if compiler has function prototypes */
 #define PROTOTYPES

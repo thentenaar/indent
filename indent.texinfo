@@ -338,7 +338,8 @@ error.  Option settings which correspond to the GNU style are:
 @example
 @group
 -nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
--ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -nsc -nsob
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -saf -sai
+-saw -nsc -nsob
 @end group
 @end example
 
@@ -363,7 +364,7 @@ of options:
 @group
 -nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
--nprs -npsl -nsc -nsob -nss
+-nprs -npsl -saf -sai -saw -nsc -nsob -nss
 @end group
 @end example
 
@@ -384,8 +385,8 @@ long option name).  This style is equivalent to the following settings:
 @example
 @group
 -nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
--cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl -sc
--nsob -nss -ts8
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl
+-saf -sai -saw -sc -nsob -nss -ts8
 @end group
 @end example
 
@@ -406,9 +407,9 @@ The @option{-bap} option forces a blank line after every procedure body.
 The @option{-nbap} option forces no such blank line.
 
 @kindex -bbb
-@kindex --blank-lines-after-block-comments
+@kindex --blank-lines-before-block-comments
 @kindex -nbbb
-@kindex --no-blank-lines-after-block-comments
+@kindex --no-blank-lines-before-block-comments
 The @option{-bbb} option forces a blank line before every boxed comment,
 @xref{Comments}. The @option{-nbbb} option does not force such blank lines.
 
@@ -774,6 +775,34 @@ else @{
 @end group
 @end example
 
+@kindex -cdw
+@kindex --cuddle-do-while
+@kindex -ncdw
+@kindex --dont-cuddle-do-while
+This causes the @code{while} in a do-while
+loop to cuddle up to the immediately preceding @samp{@}}.  For
+example, with @option{-cdw} you get the following:
+
+@example
+@group
+do @{
+  x--;
+@} while (x);
+@end group
+@end example
+
+@noindent
+With @option{-ncdw} that code would appear as
+
+@example
+@group
+do @{
+  x--;
+@}
+while (x);
+@end group
+@end example
+
 @kindex -cli@var{n}
 @kindex --case-indentation@var{n}
 The @option{-cli} option specifies the number of spaces that case labels
@@ -872,6 +901,27 @@ The @option{-bs} option ensures that there is a space between the
 keyword @code{sizeof} and its argument.  In some versions, this is
 known as the @samp{Bill_Shannon} option.
 
+@kindex -saf
+@kindex --space-after-for
+@kindex -nsaf
+@kindex --no-space-after-for
+The @option{-saf} option forces a space between an @code{for}
+and the following parenthesis.  This is the default.
+
+@kindex -sai
+@kindex --space-after-if
+@kindex -nsai
+@kindex --no-space-after-if
+The @option{-sai} option forces a space between an @code{if}
+and the following parenthesis.  This is the default.
+
+@kindex -saw
+@kindex --space-after-while
+@kindex -nsaw
+@kindex --no-space-after-while
+The @option{-saw} option forces a space between an @code{while}
+and the following parenthesis.  This is the default.
+
 @kindex -prs
 @kindex --space-after-parentheses
 The @option{-prs} option causes all parentheses to be seperated with
@@ -947,6 +997,32 @@ With the @option{-nbc} option this would look like
 
 @example
 int a, b, c;
+@end example
+
+@kindex -bfda
+@kindex --break-function-decl-args
+@kindex -nbfda
+@kindex --dont-break-function-decl-args
+The @option{-bfda} option causes a newline to be forced after the comma
+separating the arguments of a function declaration.  The arguments will
+appear at the current indention level matching the opening paren.  This 
+is particularly helpful for functions with long argument lists.   For 
+example,
+
+@example
+@group
+void foo (int arg1, char arg2, int *arg3, long arg4, char arg5);
+@end group
+@end example
+@noindent
+With the @option{-bfda} option this would look like
+
+@example
+void foo (int arg1,
+          char arg2,
+          int *arg3,
+          long arg4,
+          char arg5);
 @end example
 
 @kindex -psl
@@ -1351,8 +1427,8 @@ Force blank lines after procedure bodies.@*
 @xref{Blank lines}.
 
 @item -bbb
-@itemx --blank-lines-after-block-comments
-Force blank lines after block comments.@*
+@itemx --blank-lines-before-block-comments
+Force blank lines before block comments.@*
 @xref{Blank lines}.
 
 @item -bbo
@@ -1416,6 +1492,11 @@ Put comments to the right of the declarations in column @var{n}.@*
 Put comment delimiters on blank lines.@*
 @xref{Comments}.
 
+@item -cdw
+@itemx --cuddle-do-while
+Cuddle while of @code{do @{@} while;} and preceeding @samp{@}}.@*
+@xref{Comments}.
+
 @item -ce
 @itemx --cuddle-else
 Cuddle else and preceeding @samp{@}}.@*
@@ -1447,6 +1528,11 @@ Put a space after a cast operator.@*
 Set indentation of comments not to the right 
 of code to @var{n} spaces.@*
 @xref{Comments}.
+
+@item -bfda
+@itemx --break-function-decl-args
+Align all arguments in a declaration with opening paren.@*
+@xref{Declarations}.
 
 @item -di@var{n}
 @itemx --declaration-indentation@var{n}
@@ -1522,8 +1608,8 @@ Do not force blank lines after procedure bodies.@*
 @ignore
 @comment Didn't do anything, so I removed it
 @item -nbbb
-@itemx --no-blank-lines-after-block-comments
-Do not force blank-lines after block comments.@*
+@itemx --no-blank-lines-before-block-comments
+Do not force blank-lines before block comments.@*
 @xref{Blank lines}.
 @end ignore
 
@@ -1537,10 +1623,20 @@ Do not prefer to break long lines before boolean operators.@*
 Do not force newlines after commas in declarations.@*
 @xref{Declarations}.
 
+@item -nbfda
+@itemx --dont-break-function-decl-args
+Don't put each argument in a function declaration on a seperate line.@*
+@xref{Declarations}.
+
 @item -ncdb
 @itemx --no-comment-delimiters-on-blank-lines
 Do not put comment delimiters on blank lines.@*
 @xref{Comments}.
+
+@item -ncdw
+@itemx --dont-cuddle-do-while
+Do not cuddle @code{@}} and the @code{while} of a @code{do @{@} while;}.@*
+@xref{Statements}.
 
 @item -nce
 @itemx --dont-cuddle-else
@@ -1592,6 +1688,21 @@ Do not put a space after every '(' and before every ')'.@*
 Put the type of a procedure on the same line as its name.@*
 @xref{Declarations}.
 
+@item -nsaf
+@itemx --no-space-after-for
+Do not put a space after every @code{for}.@*
+@xref{Statements}.
+
+@item -nsai
+@itemx --no-space-after-if
+Do not put a space after every @code{if}.@*
+@xref{Statements}.
+
+@item -nsaw
+@itemx --no-space-after-while
+Do not put a space after every @code{while}.@*
+@xref{Statements}.
+
 @item -nsc
 @itemx --dont-star-comments
 Do not put the @samp{*} character at the left of comments.@*
@@ -1607,6 +1718,11 @@ Do not swallow optional blank lines.@*
 Do not force a space before the semicolon after certain statements.
 Disables @option{-ss}.@*
 @xref{Statements}.
+
+@item -nut
+@itemx --no-tabs
+Use spaces instead of tabs.@*
+@xref{Indentation}.
 
 @item -nv
 @itemx --no-verbosity
@@ -1650,6 +1766,21 @@ Put a space after every '(' and before every ')'.@*
 Put the type of a procedure on the line before its name.@*
 @xref{Declarations}.
 
+@item -saf
+@itemx --space-after-for
+Put a space after each @code{for}.@*
+@xref{Statements}.
+
+@item -sai
+@itemx --space-after-if
+Put a space after each @code{if}.@*
+@xref{Statements}.
+
+@item -saw
+@itemx --space-after-while
+Put a space after each @code{while}.@*
+@xref{Statements}.
+
 @item -sbi@var{n}
 @itemx --struct-brace-indentation@var{n}
 Indent braces of a struct, union or enum N spaces.@*
@@ -1685,6 +1816,11 @@ Tell @command{indent} the name of typenames.@*
 Set tab size to @var{n} spaces.@*
 @xref{Indentation}.
 
+@item -ut
+@itemx --use-tabs
+Use tabs. This is the default.@*
+@xref{Indentation}.
+
 @item -v
 @itemx --verbose
 Enable verbose mode.@*
@@ -1709,15 +1845,16 @@ the corresponding short option.
 \def\leaderfill{\leaders\hbox to 1em{\hss.\hss}\hfill}
 
 {\tt
-\line{ --blank-lines-after-block-comments \leaderfill -bbb\ }
 \line{ --blank-lines-after-commas \leaderfill         -bc\ \ }  
 \line{ --blank-lines-after-declarations \leaderfill   -bad\ } 
 \line{ --blank-lines-after-procedures \leaderfill     -bap\ }  
+\line{ --blank-lines-before-block-comments \leaderfill -bbb\ }
 \line{ --braces-after-if-line \leaderfill            -bl\ \ } 
 \line{ --brace-indent \leaderfill                -bli@var{n}}
 \line{ --braces-after-struct-decl-line \leaderfill    -bls\ \ }
 \line{ --break-after-boolean-operator \leaderfill     -nbbo\ \ }
 \line{ --break-before-boolean-operator \leaderfill    -bbo\ \ }
+\line{ --break-function-decl-args \leaderfill         -bfda} 
 \line{ --braces-on-if-line \leaderfill               -br\ \ }      
 \line{ --braces-on-struct-decl-line \leaderfill       -brs\ \ }
 \line{ --case-indentation \leaderfill            -cli@var{n}}
@@ -1726,10 +1863,13 @@ the corresponding short option.
 \line{ --comment-indentation \leaderfill       -c@var{n}\ \ } 
 \line{ --continuation-indentation       \leaderfill -ci@var{n}\ } 
 \line{ --continue-at-parentheses  \leaderfill   -lp\ \ }            
+\line{ --cuddle-do-while \leaderfill                     -cdw\ \ }
 \line{ --cuddle-else \leaderfill                         -ce\ \ }
 \line{ --declaration-comment-column \leaderfill  -cd@var{n}\ } 
 \line{ --declaration-indentation \leaderfill     -di@var{n}\ } 
+\line{ --dont-break-function-decl-args \leaderfill       -nbfda} 
 \line{ --dont-break-procedure-type \leaderfill           -npsl} 
+\line{ --dont-cuddle-do-while \leaderfill                -ncdw\ \ }
 \line{ --dont-cuddle-else \leaderfill                    -nce\ }  
 \line{ --dont-format-comments \leaderfill                -nfca} 
 \line{ --dont-format-first-column-comments \leaderfill   -nfc1} 
@@ -1749,18 +1889,19 @@ the corresponding short option.
 \line{ --line-comments-indentation \leaderfill      -d@var{n}\ \ }
 \line{ --leave-preprocessor-space \leaderfill       -lps\ }
 \line{ --line-length \leaderfill                    -l@var{n}\ \ }
-@ignore
-@comment Didn't do anything, so I removed it
-\line{ --no-blank-lines-after-block-comments \leaderfill -nbbb}
-@end ignore
 \line{ --no-blank-lines-after-commas \leaderfill         -nbc\ }   
 \line{ --no-blank-lines-after-declarations \leaderfill   -nbad}  
 \line{ --no-blank-lines-after-procedures \leaderfill     -nbap}  
+\line{ --no-blank-lines-before-block-comments \leaderfill -nbbb}
 \line{ --no-comment-delimiters-on-blank-lines \leaderfill -ncdb}  
 \line{ --no-space-after-casts \leaderfill               -ncs\ }    
 \line{ --no-parameter-indentation \leaderfill               -nip\ }    
+\line{ --no-space-after-for \leaderfill             -nsaf}
 \line{ --no-space-after-function-call-names \leaderfill -npcs}   
+\line{ --no-space-after-if \leaderfill             -nsai}
 \line{ --no-space-after-parentheses \leaderfill          -nprs}
+\line{ --no-space-after-while \leaderfill             -nsaw}
+\line{ --no-tabs \leaderfill                            -nut\ \ } 
 \line{ --no-verbosity \leaderfill                       -nv\ \ }
 \line{ --original \leaderfill                      -orig}
 \line{ --parameter-indentation \leaderfill         -ip@var{n}\ } 
@@ -1768,24 +1909,28 @@ the corresponding short option.
 \line{ --preserve-mtime \leaderfill                -pmt\ }
 \line{ --procnames-start-lines \leaderfill         -psl\ }  
 \line{ --space-after-cast \leaderfill              -cs\ \ } 
+\line{ --space-after-for \leaderfill               -saf\ }
+\line{ --space-after-if \leaderfill                -sai\ }
 \line{ --space-after-parentheses \leaderfill       -prs\ }
 \line{ --space-after-procedure-calls \leaderfill   -pcs\ }  
+\line{ --space-after-while \leaderfill             -saw\ }
 \line{ --space-special-semicolon \leaderfill       -ss\ \ } 
 \line{ --standard-output \leaderfill      -st\ \ } 
 \line{ --start-left-side-of-comments \leaderfill   -sc\ \ }
 \line{ --struct-brace-indentation \leaderfill      -sbi@var{n}}
 \line{ --swallow-optional-blank-lines \leaderfill  -sob\ } 
 \line{ --tab-size \leaderfill          -ts@var{n}\ }  
+\line{ --use-tabs \leaderfill          -ut\ \ } 
 \line{ --verbose \leaderfill       -v\ \ \ }  
 }
 @end tex
 
 @ifinfo
 @example
---blank-lines-after-block-comments              -bbb            
 --blank-lines-after-commas                      -bc             
 --blank-lines-after-declarations                -bad            
 --blank-lines-after-procedures                  -bap            
+--blank-lines-before-block-comments             -bbb            
 --braces-after-if-line                          -bl             
 --brace-indent                                  -bli
 --braces-after-struct-decl-line                 -bls
@@ -1793,16 +1938,20 @@ the corresponding short option.
 --braces-on-struct-decl-line                    -brs
 --break-after-boolean-operator                  -nbbo
 --break-before-boolean-operator                 -bbo
+--break-function-decl-args                      -bfda
 --case-indentation                              -cli@var{n}     
 --case-brace-indentation                        -cbi@var{n}
 --comment-delimiters-on-blank-lines             -cdb            
 --comment-indentation                           -c@var{n}       
 --continuation-indentation                      -ci@var{n}      
 --continue-at-parentheses                       -lp             
+--cuddle-do-while                               -cdw
 --cuddle-else                                   -ce             
 --declaration-comment-column                    -cd@var{n}      
 --declaration-indentation                       -di@var{n}      
+--dont-break-function-decl-args                 -nbfda
 --dont-break-procedure-type                     -npsl           
+--dont-cuddle-do-while                          -ncdw
 --dont-cuddle-else                              -nce            
 --dont-format-comments                          -nfca           
 --dont-format-first-column-comments             -nfc1           
@@ -1822,18 +1971,19 @@ the corresponding short option.
 --leave-preprocessor-space                      -lps
 --line-comments-indentation                     -d@var{n}       
 --line-length                                   -l@var{n}       
-@ignore
-@comment Didn't do anything, so I've removed it.
---no-blank-lines-after-block-comments           -nbbb           
-@end ignore
 --no-blank-lines-after-commas                   -nbc            
 --no-blank-lines-after-declarations             -nbad           
 --no-blank-lines-after-procedures               -nbap           
+--no-blank-lines-before-block-comments          -nbbb           
 --no-comment-delimiters-on-blank-lines          -ncdb           
 --no-space-after-casts                          -ncs            
 --no-parameter-indentation                      -nip            
+--no-space-after-for				-nsaf
 --no-space-after-function-call-names            -npcs           
+--no-space-after-if				-nsai
 --no-space-after-parentheses                    -nprs
+--no-space-after-while				-nsaw
+--no-tabs                                       -nut
 --no-verbosity                                  -nv             
 --original                                      -orig
 --parameter-indentation                         -ip@var{n}      
@@ -1841,14 +1991,18 @@ the corresponding short option.
 --preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
+--space-after-for				-saf
+--space-after-if				-sai
 --space-after-parentheses                       -prs
 --space-after-procedure-calls                   -pcs            
+--space-after-while				-saw
 --space-special-semicolon                       -ss             
 --standard-output                               -st             
 --start-left-side-of-comments                   -sc             
 --struct-brace-indentation                      -sbi@var{n}
 --swallow-optional-blank-lines                  -sob            
 --tab-size                                      -ts@var{n}      
+--use-tabs                                      -ut
 --verbose                                       -v              
 @end example
 @end ifinfo

@@ -102,10 +102,10 @@ texinfo2man: texinfo2man.c
 	$(CC) -g -o texinfo2man texinfo2man.c
 
 @PACKAGE@.html: @PACKAGE@.texinfo version.texi
-	texi2html -expandinfo -menu @PACKAGE@.texinfo
+	texi2html -expand info -menu @PACKAGE@.texinfo
 
 @PACKAGE@_%.html: @PACKAGE@.texinfo version.texi
-	texi2html -expandinfo -menu @PACKAGE@.texinfo
+	texi2html -expand info -menu @PACKAGE@.texinfo
 
 index.html: index.html.in configure.in
 	grep -B2000 '^CHANGELOGLIST' index.html.in \
@@ -134,7 +134,7 @@ tar:
 	mv @PACKAGE@-@VERSION@.tar.gz $(REDHAT)/SOURCES
 
 rpm: tar $(SPECFILE)
-	rpm --rcfile /usr/lib/rpm/rpmrc:rpm/rpmrc --target $(TARGET) --sign --clean -ba $(SPECFILE)
+	rpm --rcfile=/usr/lib/rpm/rpmrc:rpm/rpmrc --target=$(TARGET) --sign --clean -ba $(SPECFILE)
 
 cvslog:
 	cvs2html -e -r$(PREVTAG):HEAD -o cvslog-@VERSION@;

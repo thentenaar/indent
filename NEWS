@@ -1,3 +1,83 @@
+Release notes for GNU indent version 2.2.6, November 2000
+
+* New option --break-function-decl-args (-bfda).
+  This causes each argument of a function declaration to be put on
+  a seperate line, aligned with the opening parathesis of the function.
+  For example,
+
+  void
+  udi_pio_trans(udi_pio_trans_call_t *callback,
+                udi_cb_t *gcb,
+		udi_pio_handle_t handle,
+		udi_buf_t *buf,
+		void *mem_ptr)
+
+* The option -diN does not any longer indent procedure names
+  (when also using -npsl).  Nested function are still indented however.
+
+* New options --no-space-after-for (-nsaf), --no-space-after-if (-nsai)
+  and --no-space-after-while (-nsaw) to remove the space directly following
+  `for', `if' and `while' respectively.
+
+* Nested functions (a gcc extension) were indented wrong.
+
+* --blank-lines-after-declarations (-bad) caused blank lines to be
+  inserted in the middle of C-style comments when a multiple line
+  comment was used after a declaration.
+
+* The option --dont-line-up-parentheses (-nlp) was broken, sometimes
+  causing long lines that were broken twice or more being indented
+  too little.
+
+* Renamed long option --blank-lines-after-block-comments to
+  --blank-lines-before-block-comments.  This was a very old bug.
+  The equivalent short option is still -bbb.
+  Idem for --no-blank-lines-after-block-comments.
+
+* New option --cuddle-do-while (-cdw).
+  This causes the `while' in a do-while loop to cuddle up to the
+  immediately preceding `}'.  For example,
+  
+  do {
+    x--;
+  } while (x);
+
+* New option --no-tabs (-nut) causes indent to replace all TABS with
+  the appropriate space in the output.  Unlike using --tab-size 1,
+  this has no influence on the column where comments start.
+
+* --line-comments-indentationN/-dN now works again.
+
+* Sometimes an extra blank line was inserted between two parts of a
+  long, broken line.  This should be fixed now.
+
+* The priority of breaking lines at a point that doesn't help, is now
+  set at minus infinity.  The means that instead of getting
+
+  if (
+      extremely_long.
+      struct_element)
+
+  because breaking after a '.' has a very low priority, you'll now get
+
+  if (extremely_long.
+      struct_element)
+
+* The option --format-comments (-fca) was broken, it did not remove leading
+  '*' in comments like: "/* this       , this now becomes: "/* this <- one */".
+                          * <- one */"   instead of "/* this * <- one */".
+  Adjacent spaces are now always eaten and not only when they are at the
+  start of a line: "/* a  b.    c  d */" becomes now "/* a b.  c d */".
+  Two spaces are left after a dot.
+
+* A typo in indent.c caused types inside a sizeof() to be marked as a
+  declaration.  This caused a blank line to be put after them in some
+  cases (when using the --blank-lines-after-declarations (-bad)).
+
+* A backslash-newline, outside a macro definition or string, was treated
+  as two seperate characters, breaking compilation when the newline was
+  repositioned.  Now the backslash is simply eaten.
+
 Release notes for GNU indent version 2.2.5, Januari 2000
 
 * When using --dont-break-procedure-type, indent wrongly joined

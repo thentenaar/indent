@@ -58,6 +58,8 @@
 #include <time.h>
 #ifdef HAVE_UTIME_H
 #include <utime.h>
+#elif defined(HAVE_SYS_UTIME_H)
+#include <sys/utime.h>
 #endif
 #endif
 #include <sys/stat.h>
@@ -97,7 +99,7 @@
 #include "globs.h"
 #include "io.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.9 1999/11/04 17:03:06 carlo Exp $");
+RCSTAG_CC ("$Id: backup.c,v 1.12 2000/11/17 03:01:04 carlo Exp $");
 
 #ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
@@ -140,8 +142,7 @@ simple_backup_name (pathname)
 {
   char *backup_name;
 
-  backup_name =
-    xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
+  backup_name = xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
   sprintf (backup_name, "%s%s", pathname, simple_backup_suffix);
   return backup_name;
 }
@@ -160,8 +161,7 @@ version_number (base, direntry, base_length)
   char *p;
 
   version = 0;
-  if (!strncmp (base, direntry, base_length)
-      && ISDIGIT (direntry[base_length + 2]))
+  if (!strncmp (base, direntry, base_length) && ISDIGIT (direntry[base_length + 2]))
     {
       for (p = &direntry[base_length + 2]; ISDIGIT (*p); ++p)
 	version = version * 10 + *p - '0';
@@ -270,8 +270,7 @@ generate_backup_filename (version_control, pathname)
   if (!backup_name)
     return 0;
 
-  sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname, version_width,
-	   (int) last_numbered_version);
+  sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname, version_width, (int) last_numbered_version);
 
   return backup_name;
 }
@@ -319,11 +318,12 @@ version_control_value ()
 /* Initialize information used in determining backup filenames. */
 
 void
-set_version_width(void)
+set_version_width (void)
 {
   char *v = getenv ("VERSION_WIDTH");
-  if (v && ISDIGIT(*v))
-    version_width = atoi(v);
+
+  if (v && ISDIGIT (*v))
+    version_width = atoi (v);
   if (version_width > 16)
     version_width = 16;
 }
@@ -358,7 +358,7 @@ make_backup (file, file_stats)
      struct file_buffer *file;
      const struct stat *file_stats;
 {
-  int fd;
+  FILE *bf;
   char *backup_filename;
   unsigned int size;
 
@@ -368,25 +368,25 @@ make_backup (file, file_stats)
   backup_filename = generate_backup_filename (version_control, file->name);
   if (!backup_filename)
     {
-      fprintf (stderr, "indent: Can't make backup filename of %s\n",
-	       file->name);
+      fprintf (stderr, "indent: Can't make backup filename of %s\n", file->name);
       exit (system_error);
     }
 
-  fd = creat (backup_filename, 0666);
-  if (fd < 0)
+  bf = fopen (backup_filename, "w");
+  if (!bf)
     fatal ("Can't open backup file %s", backup_filename);
-  size = write (fd, file->data, file->size);
-  if (size != file->size)
+  size = fwrite (file->data, file->size, 1, bf);
+  if (size != 1)
     fatal ("Can't write to backup file %s", backup_filename);
 
-  close (fd);
+  fclose (bf);
 #ifdef PRESERVE_MTIME
   {
     struct utimbuf buf;
-    buf.actime = time(NULL);
+
+    buf.actime = time (NULL);
     buf.modtime = file_stats->st_mtime;
-    if (utime(backup_filename, &buf) != 0)
+    if (utime (backup_filename, &buf) != 0)
       WARNING ("Can't preserve modification time on backup file %s", backup_filename, 0);
   }
 #endif

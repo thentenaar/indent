@@ -18,7 +18,7 @@
 #ifndef INDENT_LEXI_H
 #define INDENT_LEXI_H
 
-RCSTAG_H (lexi, "$Id: lexi.h,v 1.3 1999/07/17 19:16:23 carlo Exp $");
+RCSTAG_H (lexi, "$Id: lexi.h,v 1.4 2000/02/14 11:14:08 carlo Exp $");
 
 enum rwcodes
 {
@@ -92,7 +92,8 @@ enum codes
   elsehead,
   struct_delim,			/* '.' or "->" */
 
-  attribute			/* The '__attribute__' qualifier */
+  attribute,			/* The '__attribute__' qualifier */
+  number_of_codes
 };
 
 extern void addkey PARAMS ((char *key, enum rwcodes val));
