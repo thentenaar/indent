@@ -18,7 +18,7 @@
 #ifndef INDENT_IO_H
 #define INDENT_IO_H
 
-RCSTAG_H (io, "$Id: io.h,v 1.10 2002/03/15 07:48:46 david Exp $");
+RCSTAG_H (io, "$Id: io.h,v 1.12 2002/08/04 17:08:41 david Exp $");
 #include <sys/stat.h>
 
 typedef struct file_buffer
@@ -63,13 +63,15 @@ typedef enum bb_code
 
 extern char   * cur_line;
 
+extern char * skip_horiz_space(const char * p);
+
 extern file_buffer_ty *read_file (char *filename, struct stat *);
 extern file_buffer_ty *read_stdin (void);
 extern int count_columns (int column, char *bp, int stop_char);
 extern int current_column (void);
 extern void fill_buffer (void);
-extern void dump_line (int force_nl);
-extern int compute_code_target (void);
+extern int compute_code_target (int paren_targ);
 extern int compute_label_target (void);
+extern void skip_buffered_space(void);
 
 #endif /* INDENT_IO_H */

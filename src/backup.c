@@ -51,88 +51,103 @@
 #include "sys.h"
 #include <ctype.h>
 #include <stdlib.h>
-#if defined (HAVE_UNISTD_H)
-#include <unistd.h>
+
+#ifdef HAVE_UNISTD_H
+   #include <unistd.h>
 #endif
+
 #ifdef PRESERVE_MTIME
-#include <time.h>
-#ifdef HAVE_UTIME_H
-#include <utime.h>
-#elif defined(HAVE_SYS_UTIME_H)
-#include <sys/utime.h>
+
+   #include <time.h>
+
+   #ifdef HAVE_UTIME_H
+      #include <utime.h>
+   #elif defined(HAVE_SYS_UTIME_H)
+      #include <sys/utime.h>
+   #endif
 #endif
-#endif
+
 #include <sys/stat.h>
+
 #if defined (_WIN32) && !defined (__CYGWIN__)
-#include <io.h>
+   #include <io.h>
 #else
-#include <fcntl.h>
+   #include <fcntl.h>
 #endif
+
 #include <string.h>
+
 #ifndef isascii
-#define ISDIGIT(c) (isdigit ((unsigned char) (c)))
+   #define ISDIGIT(c) (isdigit ((unsigned char) (c)))
 #else
-#define ISDIGIT(c) (isascii (c) && isdigit (c))
+   #define ISDIGIT(c) (isascii (c) && isdigit (c))
 #endif
+
 #include <sys/types.h>
-#if HAVE_DIRENT_H
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
+
+#ifdef HAVE_DIRENT_H
+   #include <dirent.h>
+   #define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-# if !defined(HAVE_SYS_NDIR_H) && !defined(HAVE_SYS_DIR_H) && !defined(HAVE_NDIR_H)
-#  define NODIR 1
-# endif
+   #define dirent direct
+   #define NAMLEN(dirent) (dirent)->d_namlen
+
+   #ifdef HAVE_SYS_NDIR_H
+      #include <sys/ndir.h>
+   #endif
+
+   #ifdef HAVE_SYS_DIR_H
+      #include <sys/dir.h>
+   #endif
+
+   #ifdef HAVE_NDIR_H
+      #include <ndir.h>
+   #endif
+
+   #if !defined(HAVE_SYS_NDIR_H) && !defined(HAVE_SYS_DIR_H) && !defined(HAVE_NDIR_H)
+      #define NODIR 1
+   #endif
 #endif
-#include "backup.h"
+
 #include "indent.h"
 #include "globs.h"
 #include "io.h"
+#include "backup.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.19 2002/02/26 20:38:27 david Exp $");
+RCSTAG_CC ("$Id: backup.c,v 1.21 2002/08/04 17:08:41 david Exp $");
 
 #ifndef NODIR
-#if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
-/* POSIX does not require that the d_ino field be present, and some
-   systems do not provide it. */
-#define REAL_DIR_ENTRY(dp) 1
-#else
-#define REAL_DIR_ENTRY(dp) ((dp)->d_ino != 0)
-#endif
+   #if defined (_POSIX_VERSION) /* Might be defined in unistd.h.  */
+      /* POSIX does not require that the d_ino field be present, and some
+       * systems do not provide it. */
+      #define REAL_DIR_ENTRY(dp) 1
+   #else
+      #define REAL_DIR_ENTRY(dp) ((dp)->d_ino != 0)
+   #endif
 #else /* NODIR */
-#define generate_backup_filename(v,f) simple_backup_name((f))
+   #define generate_backup_filename(v,f) simple_backup_name((f))
 #endif /* NODIR */
 
 #ifndef BACKUP_SUFFIX_STR
-#define BACKUP_SUFFIX_STR    "~"
+   #define BACKUP_SUFFIX_STR    "~"
 #endif
 
 #ifndef BACKUP_SUFFIX_CHAR
-#define BACKUP_SUFFIX_CHAR   '~'
+   #define BACKUP_SUFFIX_CHAR   '~'
 #endif
 
 #ifndef BACKUP_SUFFIX_FORMAT
-#define BACKUP_SUFFIX_FORMAT "%s.~%0*d~"
+   #define BACKUP_SUFFIX_FORMAT "%s.~%0*d~"
 #endif
 
 /* Default backup file suffix to use */
-static char *simple_backup_suffix = BACKUP_SUFFIX_STR;
+static char   * simple_backup_suffix = BACKUP_SUFFIX_STR;
 
 /* What kinds of backup files to make -- see
  * table `version_control_values' below. */
 
-backup_mode_ty version_control = unknown;
-int version_width = 1;
+backup_mode_ty  version_control = unknown;
+int             version_width = 1;
 
 /* Construct a simple backup name for PATHNAME by appending
    the value of `simple_backup_suffix'. */
@@ -140,11 +155,11 @@ int version_width = 1;
 static char * simple_backup_name (
                     char *pathname)
 {
-  char *backup_name;
+    char *backup_name;
 
-  backup_name = xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
-  sprintf (backup_name, "%s%s", pathname, simple_backup_suffix);
-  return backup_name;
+    backup_name = xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
+    sprintf (backup_name, "%s%s", pathname, simple_backup_suffix);
+    return backup_name;
 }
 
 #ifndef NODIR
@@ -156,12 +171,12 @@ static int version_number(
     char * direntry,
     int    base_length)
 {
-  int    version;
-  char * p = NULL;
+    int    version;
+    char * p = NULL;
 
-  version = 0;
+    version = 0;
   
-  if (!strncmp (base, direntry, base_length) && ISDIGIT (direntry[base_length + 2]))
+    if (!strncmp (base, direntry, base_length) && ISDIGIT (direntry[base_length + 2]))
     {
         for (p = &direntry[base_length + 2]; ISDIGIT (*p); ++p)
         {
@@ -174,7 +189,7 @@ static int version_number(
         }
     }
 
-  return version;
+    return version;
 }
 
 
@@ -218,6 +233,7 @@ static int highest_version (
     }
 
     closedir (dirp);
+    
     return highest_version;
 }
 
@@ -226,7 +242,7 @@ static int highest_version (
    are no backups, or only a simple backup, return 0. */
 
 static int max_version (
-    char *pathname)
+    char * pathname)
 {
     char * p;
     char * filename;
@@ -263,55 +279,56 @@ static int max_version (
 /* Generate a backup filename for PATHNAME, dependent on the
  * value of VERSION_CONTROL. */
 
-static char *
-generate_backup_filename (
-                          backup_mode_ty version_control,
-                          char *pathname)
+static char * generate_backup_filename (
+    backup_mode_ty   version_control,
+    char           * pathname)
 {
-  int last_numbered_version;
-  char *backup_name;
+    int last_numbered_version;
+    char *backup_name;
 
-  if (version_control == none)
-  {
-      return 0;
-  }
+    if (version_control == none)
+    {
+        return 0;
+    }
 
-  if (version_control == simple)
-  {
-      return simple_backup_name (pathname);
-  }
+    if (version_control == simple)
+    {
+        return simple_backup_name (pathname);
+    }
 
-  last_numbered_version = max_version (pathname);
-  if ((version_control == numbered_existing) && (last_numbered_version == 0))
-  {
-      return simple_backup_name (pathname);
-  }
+    last_numbered_version = max_version (pathname);
+    
+    if ((version_control == numbered_existing) && (last_numbered_version == 0))
+    {
+        return simple_backup_name (pathname);
+    }
 
-  last_numbered_version++;
-  backup_name = xmalloc (strlen (pathname) + 16);
+    last_numbered_version++;
+    backup_name = xmalloc (strlen (pathname) + 16);
   
-  if (!backup_name)
-  {
-      return 0;
-  }
+    if (!backup_name)
+    {
+        return 0;
+    }
 
-  sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname, version_width, (int) last_numbered_version);
+    sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname,
+             version_width, (int) last_numbered_version);
 
-  return backup_name;
+    return backup_name;
 }
 
 #endif /* !NODIR */
 
 static version_control_values_ty values[] =
 {
-    {none, "never"},		/* Don't make backups. */
-    {none, "none"},		/* Ditto */
-    {simple, "simple"},		/* Only simple backups */
-    {numbered_existing, "existing"},	/* Numbered if they already exist */
-    {numbered_existing, "nil"},	/* Ditto */
-    {numbered, "numbered"},	/* Numbered backups */
-    {numbered, "t"},		/* Ditto */
-    {unknown, 0}			/* Initial, undefined value. */
+    {none,              "never"},    /* Don't make backups. */
+    {none,              "none"},     /* Ditto */
+    {simple,            "simple"},   /* Only simple backups */
+    {numbered_existing, "existing"}, /* Numbered if they already exist */
+    {numbered_existing, "nil"},      /* Ditto */
+    {numbered,          "numbered"}, /* Numbered backups */
+    {numbered,          "t"},        /* Ditto */
+    {unknown,           0}           /* Initial, undefined value. */
 };
 
 
@@ -319,29 +336,35 @@ static version_control_values_ty values[] =
    environment variable "VERSION_CONTROL".  Defaults to
    numbered_existing. */
 
-backup_mode_ty version_control_value (void)
+backup_mode_ty version_control_value(void)
 {
-    char                         * version = getenv ("VERSION_CONTROL");
+    char                      * version = getenv("VERSION_CONTROL");
     version_control_values_ty * v;
-
-    if (version == 0 || *version == 0)
-    {
-        return numbered_existing;
-    }
-
-    v = &values[0];
+    backup_mode_ty              ret = unknown;
     
-    while (v->name)
+    if ((version == NULL) || (*version == 0))
     {
-        if (strcmp (version, v->name) == 0)
-        {
-            return v->value;
-        }
-
-        v++;
+        ret = numbered_existing;
     }
-
-    return unknown;
+    else
+    {
+        v = &values[0];
+    
+        while (v->name)
+        {
+            if (strcmp(version, v->name) == 0)
+            {
+                ret = v->value;
+                break;
+            }
+            else
+            {
+                v++;
+            }
+        }
+    }
+    
+    return ret;
 }
 
 
@@ -383,6 +406,7 @@ void initialize_backups (void)
         version_control = numbered_existing;
     }
 #endif /* !NODIR */
+    
     set_version_width ();
 }
 
@@ -440,5 +464,6 @@ void make_backup (
         }
     }
 #endif
+    
     free (backup_filename);
 }

@@ -140,7 +140,12 @@ of code to \fIn\fR spaces.
 See \fB\ COMMENTS\fR.
 .TP
 .B -bfda\fR, \fB--break-function-decl-args\fR
-Align all arguments in a declaration with opening paren.
+Break the line before all arguments in a declaration.
+.br
+See \fB\ DECLARATIONS\fR.
+.TP
+.B -bfde\fR, \fB--break-function-decl-args\fR
+Break the line after the last argument in a declaration.
 .br
 See \fB\ DECLARATIONS\fR.
 .TP
@@ -1189,8 +1194,14 @@ int a, b, c;
 
 The \`-bfda\' option causes a newline to be forced after the comma
 separating the arguments of a function declaration.  The arguments will
-appear at the current indention level matching the opening paren.  This 
-is particularly helpful for functions with long argument lists.   For 
+appear at one indention level deeper than the function declaration.  This 
+is particularly helpful for functions with long argument lists. 
+The option \`-bfde\' causes a newline to be forced before the closing 
+bracket of the function declaration. For both options the \'n\' setting is the default:
+-nbdfa and -nbdfe.
+
+
+For 
 example,
 
 .in +5
@@ -1205,11 +1216,28 @@ With the \`-bfda\' option this would look like
 .in +5
 .nf
 .na
-void foo (int arg1,
-          char arg2,
-          int *arg3,
-          long arg4,
-          char arg5);
+void foo (
+    int arg1,
+    char arg2,
+    int *arg3,
+    long arg4,
+    char arg5);
+.in -5
+.ad
+.fi
+
+With, in addition, the \`-bfde\' option this would look like
+
+.in +5
+.nf
+.na
+void foo (
+    int arg1,
+    char arg2,
+    int *arg3,
+    long arg4,
+    char arg5
+    );
 .in -5
 .ad
 .fi
@@ -1359,7 +1387,39 @@ is provided, which is equivalent to \`-ip0\'.
 ANSI C allows white space to be placed on preprocessor command lines
 between the character \`#\' and the command name.  By default,
 .B indent\fR removes this space, but specifying the \`-lps\' option
-directs \fBindent\fR to leave this space unmodified.
+directs \fBindent\fR to leave this space unmodified. The option \`-ppi\' 
+overrides  \`-nlps\' and  \`-lps\'.
+
+This option can be used to request that preprocessor conditional statements can
+be indented by to given number of spaces, for example with the option \`-ppi 3\'
+
+.in +5
+.nf
+.na
+#if X
+#if Y
+#define Z 1
+#else
+#define Z 0
+#endif
+#endif
+.in -5
+.ad
+.fi
+becomes
+.in +5
+.nf
+.na
+#if X
+#   if Y
+#      define Z 1
+#   else
+#      define Z 0
+#   endif
+#endif
+.in -5
+.ad
+.fi
 
 .SH "BREAKING LONG LINES"
 
@@ -1580,6 +1640,7 @@ the corresponding short option.
 --break-after-boolean-operator                  -nbbo
 --break-before-boolean-operator                 -bbo
 --break-function-decl-args                      -bfda
+--break-function-decl-args-end                  -bfde
 --case-indentation                              -cli\fIn\fR     
 --case-brace-indentation                        -cbi\fIn\fR
 --comment-delimiters-on-blank-lines             -cdb            
@@ -1591,6 +1652,7 @@ the corresponding short option.
 --declaration-comment-column                    -cd\fIn\fR      
 --declaration-indentation                       -di\fIn\fR      
 --dont-break-function-decl-args                 -nbfda
+--dont-break-function-decl-args-end             -nbfde
 --dont-break-procedure-type                     -npsl           
 --dont-cuddle-do-while                          -ncdw
 --dont-cuddle-else                              -nce            

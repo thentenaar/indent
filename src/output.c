@@ -6,6 +6,9 @@
  *
  * History:
  * 2002-03-04 D.Ingamells Creation.
+ * 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
+ *            Added --preprocessor-indentation (ppi)   if set, will indent nested
+ *            preprocessor-statements with n spaces per level.  overrides -lps.
  */
 
 #include <stdio.h>
@@ -18,7 +21,7 @@
 #include "globs.h"
 #include "output.h"
 
-RCSTAG_CC ("$Id: output.c,v 1.1 2002/03/15 07:48:46 david Exp $");
+RCSTAG_CC ("$Id: output.c,v 1.5 2002/12/12 17:36:49 david Exp $");
 
 static FILE            * output       = NULL;
 static BOOLEAN           inhibited    = 0;
@@ -29,9 +32,12 @@ static const int boolean_operator = 1;
 
 buf_break_st_ty * buf_break = NULL;
 
+int             out_lines      = 0;     /* used in output.c indent.c */
+int             com_lines      = 0;     /* used in output.c indent.c comments.c */
 
 int           prev_target_col_break = 0;
 int           buf_break_used        = 0;
+int           preproc_indent        = 0;
 
 /*
  * Returns `true' when `b1' is a better place to break the code than `b2'.
@@ -47,6 +53,7 @@ int           buf_break_used        = 0;
  * This is because the `target_col' is pretty close to the break point
  * of the `while': "mask"->target_col - "while"->col == 15 == "mask"->level * 2 + 1.
  */
+
 static int better_break (
     buf_break_st_ty *b1,
     const buf_break_st_ty *b2)
@@ -197,10 +204,11 @@ static void set_priority (
  */
 
 void set_buf_break (
-    bb_code_ty code)
+    bb_code_ty code,
+    int        paren_targ)
 {
     int target_col, level;
-    int code_target = compute_code_target ();
+    int code_target = compute_code_target (paren_targ);
     buf_break_st_ty *bb;
 
     /* First, calculate the column that code following e_code would be
@@ -285,7 +293,8 @@ void set_buf_break (
     {
         case binary_op:
             if ((e_code - s_code) >= 3 && e_code[-3] == ' '
-                && ((e_code[-1] == '&' && e_code[-2] == '&') || (e_code[-1] == '|' && e_code[-2] == '|')))
+                && ((e_code[-1] == '&' && e_code[-2] == '&') ||
+                    (e_code[-1] == '|' && e_code[-2] == '|')))
             {
                 bb->priority_code = bb_after_boolean_binary_op;
             }
@@ -556,7 +565,8 @@ static int pad_output (
  */
 
 extern void dump_line (
-    int force_nl)
+    int force_nl,
+    int *paren_targ)
 {
     int cur_col;
     int target_col = 0;
@@ -588,7 +598,7 @@ extern void dump_line (
 
     /* A blank line */
     
-    if (s_code == e_code && s_lab == e_lab && s_com == e_com)
+    if ((s_code == e_code) && (s_lab == e_lab) && (s_com == e_com))
     {
         /* If we have a formfeed on a blank line, we should just output it,
          * rather than treat it as a normal blank line.  */
@@ -600,14 +610,11 @@ extern void dump_line (
         }
         else
         {
-            parser_state_tos->bl_line = true;
             n_real_blanklines++;
         }
     }
     else
     {
-        parser_state_tos->bl_line = false;
-        
         if (prefix_blankline_requested && n_real_blanklines == 0)
         {
             n_real_blanklines = 1;
@@ -632,18 +639,72 @@ extern void dump_line (
         if (e_lab != s_lab)
         {
             /* print lab, if any */
-            while (e_lab > s_lab && (e_lab[-1] == ' ' || e_lab[-1] == TAB))
+            while ((e_lab > s_lab) && ((e_lab[-1] == ' ') || 
+                                       (e_lab[-1] == TAB)))
             {
                 e_lab--;
             }
             
             cur_col = pad_output (1, compute_label_target ());
             
-            if (s_lab[0] == '#' && ((strncmp (s_lab, "#else", 5) == 0) ||
-                                    (strncmp (s_lab, "#endif", 6) == 0)))
+            /* force indentation of preprocessor directives.
+             * this happens when force_preproc_width > 0 */
+            
+            if ((settings.force_preproc_width > 0) &&
+                (s_lab[0] == '#'))
+            {
+                int preproc_postcrement;
+                char *p = &s_lab[1];
+
+                while(*p == ' ')
+                {
+                    p++;
+                }
+
+                preproc_postcrement = settings.force_preproc_width;
+
+                if (strncmp(p, "else", 4) == 0)
+                {
+                    preproc_indent-=settings.force_preproc_width;
+                }
+                else if((strncmp(p, "if", 2) == 0) ||
+                        (strncmp(p, "ifdef", 5) == 0))
+                {
+                }
+                else if (strncmp(p, "elif", 4) == 0)
+                {
+                    preproc_indent -= settings.force_preproc_width;
+                }
+                else if(strncmp(p, "endif", 5) == 0)
+                {
+                    preproc_indent -= settings.force_preproc_width;
+                    preproc_postcrement = 0;
+                }
+                else
+                {
+                    preproc_postcrement = 0;
+                }
+
+                if (preproc_indent == 0)
+                {
+                    fprintf (output, "#");
+                }
+                else
+                {
+                    fprintf (output, "#%*s", preproc_indent, " ");
+                }
+                
+                fprintf (output, "%.*s", (int) (e_lab - p), p);
+
+                cur_col = count_columns (cur_col + preproc_indent + 1, p, NULL_CHAR);
+                preproc_indent += preproc_postcrement;
+            }
+            else if ((s_lab[0] == '#') && ((strncmp (&s_lab[1], "else", 4) == 0) ||
+                                           (strncmp (&s_lab[1], "endif", 5) == 0)))
             {
                 /* Treat #else and #endif as a special case because any text
-                   after #else or #endif should be converted to a comment.  */
+                 * after #else or #endif should be converted to a comment.  */
+                
                 char *s = s_lab;
 
                 if (e_lab[-1] == EOL)   /* Don't include EOL in the comment */
@@ -655,7 +716,7 @@ extern void dump_line (
                 {
                     putc (*s++, output);
                     ++cur_col;
-                } while (s < e_lab && 'a' <= *s && *s <= 'z');
+                } while ((s < e_lab) && ('a' <= *s) && (*s <= 'z'));
                 
                 while (((*s == ' ') || (*s == TAB)) && (s < e_lab))
                 {
@@ -701,7 +762,7 @@ extern void dump_line (
         parser_state_tos->pcase = false;
 
         /* Remove trailing spaces */
-        while (*(e_code - 1) == ' ' && e_code > s_code)
+        while ((*(e_code - 1) == ' ') && (e_code > s_code))
         {
             *(--e_code) = NULL_CHAR;
         }
@@ -725,7 +786,7 @@ extern void dump_line (
             }
             else
             {
-                target_col = compute_code_target ();
+                target_col = compute_code_target (*paren_targ);
             }
 
             /* If a line ends in an lparen character, the following line should
@@ -739,7 +800,8 @@ extern void dump_line (
 
             cur_col = pad_output (cur_col, target_col);
 
-            if (break_line && s_com == e_com && buf_break->target_col <= buf_break->col)
+            if (break_line && (s_com == e_com) &&
+                (buf_break->target_col <= buf_break->col))
             {
                 int offset, len;
                 char c;
@@ -772,7 +834,8 @@ extern void dump_line (
                     }
                 }
                 
-                for (i = parser_state_tos->p_l_follow; i < parser_state_tos->paren_indents_size; ++i)
+                for (i = parser_state_tos->p_l_follow; 
+                     i < parser_state_tos->paren_indents_size; ++i)
                 {
                     if (parser_state_tos->paren_indents[i] >= (ptr - s_code))
                     {
@@ -875,7 +938,8 @@ extern void dump_line (
 
         ++out_lines;
         
-        if (parser_state_tos->just_saw_decl == 1 && settings.blanklines_after_declarations)
+        if ((parser_state_tos->just_saw_decl == 1) && 
+            settings.blanklines_after_declarations)
         {
             prefix_blankline_requested = 1;
             prefix_blankline_requested_code = decl;
@@ -899,37 +963,43 @@ extern void dump_line (
     
     parser_state_tos->ind_stmt = parser_state_tos->in_stmt;
 
-    parser_state_tos->dumped_decl_indent = 0;
-    *(e_lab = s_lab) = '\0';    /* reset buffers */
+    e_lab = s_lab;
+    *s_lab = '\0';    /* reset buffers */
     
     if (not_truncated)
     {
-        *(e_code = s_code) = '\0';
+        e_code = s_code;
+        *s_code = '\0';
         s_code_corresponds_to = NULL;
     }
 
-    *(e_com = s_com) = '\0';
+    e_com = s_com;
+    
+    *s_com = '\0';
+
     parser_state_tos->ind_level = parser_state_tos->i_l_follow;
     parser_state_tos->paren_level = parser_state_tos->p_l_follow;
     
     if (parser_state_tos->paren_level > 0)
     {
         /* If we broke the line and the following line will
-           begin with a rparen, the indentation is set for
-           the column of the rparen *before* the break - reset
-           the column to the position after the break. */
-        if (!not_truncated && (*s_code == '(' || *s_code == '[') && parser_state_tos->paren_level >= 2)
+         * begin with a rparen, the indentation is set for
+         * the column of the rparen *before* the break - reset
+         * the column to the position after the break. */
+
+        if (!not_truncated && ((*s_code == '(') || (*s_code == '[')) && 
+            (parser_state_tos->paren_level >= 2))
         {
-            paren_target = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 2];
+            *paren_targ = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 2];
         }
         else
         {
-            paren_target = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 1];
+            *paren_targ = -parser_state_tos->paren_indents[parser_state_tos->paren_level - 1];
         }
     }
     else
     {
-        paren_target = 0;
+        *paren_targ = 0;
     }
 
     if (inhibited)
@@ -945,15 +1015,18 @@ extern void dump_line (
 
         do
         {
-            while (*p != '\0' && *p != EOL)
+            while ((*p != '\0') && (*p != EOL))
             {
                 putc (*p++, output);
             }
             
-            if (*p == '\0' && (unsigned long) (p - current_input->data) == current_input->size)
+            if ((*p == '\0') && 
+                ((unsigned long) (p - current_input->data) == current_input->size))
             {
-                buf_ptr = buf_end = in_prog_pos = p;
-                had_eof = 1;
+                in_prog_pos = p;
+                buf_end = p;
+                buf_ptr = p;
+                had_eof = true;
                 return;
             }
 
@@ -966,19 +1039,22 @@ extern void dump_line (
             putc (*p++, output);
             while ((*p == ' ') || (*p == TAB))
             {
-                putc (*p++, output);
+                putc (*p, output);
+                p++;
             }
             
-            if (*p == '/' && (*(p + 1) == '*' || *(p + 1) == '/'))
+            if ((*p == '/') && ((*(p + 1) == '*') ||
+                                (*(p + 1) == '/')))
             {
                 /* We've hit a comment.  See if turns formatting
                    back on. */
                 putc (*p++, output);
                 putc (*p++, output);
                 
-                while (*p == ' ' || *p == TAB)
+                while ((*p == ' ') || (*p == TAB))
                 {
-                    putc (*p++, output);
+                    putc (*p, output);
+                    p++;
                 }
                 
                 if (!strncmp (p, "*INDENT-ON*", 11))
@@ -993,8 +1069,10 @@ extern void dump_line (
                         if ((*p == '\0') &&
                             (((unsigned long) (p - current_input->data) == current_input->size)))
                         {
-                            buf_ptr = buf_end = in_prog_pos = p;
-                            had_eof = 1;
+                            in_prog_pos = p;
+                            buf_end     = p;
+                            buf_ptr     = p;
+                            had_eof     = true;
                             return;
                         }
                         else
@@ -1013,7 +1091,10 @@ extern void dump_line (
             }
         } while (inhibited);
 
-        buf_ptr = buf_end = in_prog_pos = cur_line;
+        in_prog_pos = cur_line;
+        buf_end     = cur_line;
+        buf_ptr     = cur_line;
+
         fill_buffer ();
     }
 
@@ -1021,7 +1102,7 @@ extern void dump_line (
     if (buf_break_used && (s_code != e_code) && force_nl)
     {
         prefix_blankline_requested = 0;
-        dump_line (true);
+        dump_line (true, paren_targ);
     }
 
     return;

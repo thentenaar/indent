@@ -1,19 +1,63 @@
-2002-03-14 David Ingamells   <d.ingamells@hccnet.nl>
+2002-12-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add intl,
+	(EXTRA_DIST): Add config/config.rpath config/mkinstalldirs.
+	* configure.ac (AC_OUTPUT): Add intl/Makefile,
+
+2002-12-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.ac (AC_OUTPUT): Add po/Makefile.in.
+
+2002-12-12  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add intl,
+	(EXTRA_DIST): Add config/config.rpath config/mkinstalldirs.
+	* configure.ac (AC_OUTPUT): Add intl/Makefile,
+
+2002-12-12  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.ac (AC_OUTPUT): Add intl/Makefile.
+
+2002-12-12  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add m4.
+	(SUBDIRS): Remove intl.
+	(ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config/config.rpath config/mkinstalldirs.
+	* configure.ac (AC_OUTPUT): Add m4/Makefile.
+	(AC_OUTPUT): Remove command that created po/Makefile.
+
+2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
+        * Added --preprocessor-indentation (ppi)   if set, will indent nested
+           preprocessor-statements with n spaces per level.  Overrides -lps.
+
+2002-08-25  D.Ingamells <indent@dingamells.fsnet.co.uk> 
+	* Added option break-function-decl-args-end 
+          (bfde) to break the function arguments list before the closing bracket.
+        * -bdfa now causes a break after the opening bracket and before the first 
+          argument so that the first argument and subsequent argments are indented
+          one indentation step instead of being aligned with the opening bracket.
+	
+2002-08-05 Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
+	 * Added support for -brf to place function opening brace after function
+ 	 * declaration.
+	
+2002-03-14 David Ingamells   <indent@dingamells.fsnet.co.uk>
 	* args.c : fixed handling of comments in the profile file.
 	* args.c : profile file can also be specified by the environment variable INDENT_PROFILE
 	* io.c output.c : extracted output code from io.c and put it in output.c
 	
-2002-02-26 David Ingamells   <d.ingamells@hccnet.nl>
+2002-02-26 David Ingamells   <indent@dingamells.fsnet.co.uk>
 	* comments.c : reduced problems with -st and repeated calls. Still a bug when 2
 	comments on one line.
 	
-2002-01-22 David Ingamells   <d.ingamells@hccnet.nl>
+2002-01-22 David Ingamells   <indent@dingamells.fsnet.co.uk>
 	* indent.h : hopefully reduced problems when building without the gettext library.
 	
 2002-01-22 Charles Lecklider <charles@invis.co.uk>
 	* config.h.watcom makefile.watcom.in : Added files for use with Watcom compiler.
 
-2002-01-17 David Ingamells   <d.ingamells@hccnet.nl>
+2002-01-17 David Ingamells   <indent@dingamells.fsnet.co.uk>
 	* io.c : Files will now always get a newline at the end of file if the input was missing
 	one. This now matches the default behaviour of vi.
 	* args.c : Parameterised argument lists for gnu, kr and orig setting sets.
@@ -21,7 +65,7 @@
 2002-01-17 Carlo Wood <carlo@alinoe.com>
 	* texinfo2man.c : Fixed handling of @@ within a @email{}. Now only one @ is output.
 	
-2002-01-08 David Ingamells  <d.ingamells@hccnet.nl>
+2002-01-08 David Ingamells  <indent@dingamells.fsnet.co.uk>
 	* configure.ac : Fixed problems of autoconf items used by gettext being defined instead
 	of just "required". This should fix problems with a missing stpcpy during build.
 	* automake.am : fixed order that directories are listed. This ensure that the intl directory
@@ -40,11 +84,11 @@
 	* miscel/Makefile.mingw32 : Some fixes for the the mingw32 compiler's makefile.
 	* miscel/config.h.vc++ : prevent UTIME for mingw32.
 	
-2001-11-27 David Ingamells <d.ingamells@hccnet.nl>
+2001-11-27 David Ingamells <indent@dingamells.fsnet.co.uk>
 	* makefile.am,*/makefile.am : Major changes to the Makefile.am files to reflect the new 
 	deep structure and to come closer to the current auto-tool styles.
 
-2001-11-02 David Ingamells <d.ingamells@hccnet.nl>
+2001-11-02 David Ingamells <indent@dingamells.fsnet.co.uk>
 
 	* general : Changing over to 'deep' release structure with src, doc, etc. directories. This
 	is requiring a major revamp of the "auto" tool input files.

@@ -5,95 +5,92 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: indent 2.2.7\n"
-"POT-Creation-Date: 2002-03-21 21:44+0100\n"
-"PO-Revision-Date: 2002-01-17 09:49+0100\n"
+"Project-Id-Version: indent 2.2.8\n"
+"POT-Creation-Date: 2002-12-16 16:12+0000\n"
+"PO-Revision-Date: 2002-10-24 20:48+0200\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: src/args.c:518
+#: src/args.c:543
 msgid "usage: indent file [-o outfile ] [ options ]\n"
-msgstr "pou¾itie: indent súbor [-o výstupný_súbor ] [ voµby ]\n"
+msgstr "pouï¿½itie: indent sï¿½bor [-o vï¿½stupnï¿½_sï¿½bor ] [ voï¿½by ]\n"
 
-#: src/args.c:519
+#: src/args.c:544
 msgid "       indent file1 file2 ... fileN [ options ]\n"
-msgstr "       indent súbor1 súbor2 ... súborN [ voµby ]\n"
+msgstr "       indent sï¿½bor1 sï¿½bor2 ... sï¿½borN [ voï¿½by ]\n"
 
-#: src/args.c:583
+#: src/args.c:609
 #, c-format
 msgid "indent: missing argument to parameter %s\n"
-msgstr "indent: chýbajúci argument k parametru %s\n"
+msgstr "indent: chï¿½bajï¿½ci argument k parametru %s\n"
 
-#: src/args.c:682
+#: src/args.c:717
 #, c-format
 msgid "indent: unknown option \"%s\"\n"
-msgstr "indent: neznáma voµba \"%s\"\n"
+msgstr "indent: neznï¿½ma voï¿½ba \"%s\"\n"
 
-#: src/args.c:693
+#: src/args.c:728
 #, c-format
 msgid "option: %s\n"
-msgstr "voµba: %s\n"
+msgstr "voï¿½ba: %s\n"
 
-#. This is not really an error, but zero exit values are
-#. returned only when code has been successfully formatted.
-#: src/args.c:709
+#: src/args.c:744
 #, c-format
 msgid "GNU indent %s\n"
 msgstr "GNU indent: %s\n"
 
-#: src/args.c:786
+#: src/args.c:827
 #, c-format
 msgid "indent: option ``%s'' requires a numeric parameter\n"
-msgstr "indent: voµba ``%s'' vy¾aduje ako parameter èíslo\n"
+msgstr "indent: voï¿½ba ``%s'' vyï¿½aduje ako parameter ï¿½ï¿½slo\n"
 
-#: src/args.c:796
+#: src/args.c:836
 #, c-format
 msgid "indent: set_option: internal error: p_type %d\n"
-msgstr "indent: set_option: interná chyba: p_type %d\n"
+msgstr "indent: set_option: internï¿½ chyba: p_type %d\n"
 
-#: src/args.c:852
-#, fuzzy
+#: src/args.c:892
 msgid "Profile contains an unterminated comment"
-msgstr "Profil obsahuje nechutné znaky"
+msgstr "Profil obsahuje neukonï¿½enï¿½ komentï¿½r"
 
-#: src/args.c:889
+#: src/args.c:929
 msgid "Profile contains unpalatable characters"
-msgstr "Profil obsahuje nechutné znaky"
+msgstr "Profil obsahuje neprï¿½jemnï¿½ znaky"
 
-#: src/backup.c:381
+#: src/backup.c:404
 msgid "indent:  Strange version-control value\n"
-msgstr "indent:  Divná hodnota version-control\n"
+msgstr "indent:  Divnï¿½ hodnota version-control\n"
 
-#: src/backup.c:382
+#: src/backup.c:405
 msgid "indent:  Using numbered-existing\n"
-msgstr "indent:  Pou¾ijú sa existujúce oèíslované\n"
+msgstr "indent:  Pouï¿½ijï¿½ sa existujï¿½ce oï¿½ï¿½slovanï¿½\n"
 
-#: src/backup.c:410
+#: src/backup.c:434
 #, c-format
 msgid "indent: Can't make backup filename of %s\n"
-msgstr "indent: Nemô¾em vytvori» zálo¾nú kópiu súboru %s\n"
+msgstr "indent: Nemï¿½ï¿½em vytvoriï¿½ zï¿½loï¿½nï¿½ kï¿½piu sï¿½boru %s\n"
 
-#: src/backup.c:418
+#: src/backup.c:442
 #, c-format
 msgid "Can't open backup file %s"
-msgstr "Nemô¾em otvori» zálo¾ný súbor %s"
+msgstr "Nemï¿½ï¿½em otvoriï¿½ zï¿½loï¿½nï¿½ sï¿½bor %s"
 
-#: src/backup.c:425
+#: src/backup.c:449
 #, c-format
 msgid "Can't write to backup file %s"
-msgstr "Nemô¾em zapísa» do zálo¾ného súboru %s"
+msgstr "Nemï¿½ï¿½em zapï¿½saï¿½ do zï¿½loï¿½nï¿½ho sï¿½boru %s"
 
-#: src/backup.c:439
+#: src/backup.c:463
 #, c-format
 msgid "Can't preserve modification time on backup file %s"
-msgstr "Nemô¾em zachova» èas zmeny zálo¾ného súboru %s"
+msgstr "Nemï¿½ï¿½em zachovaï¿½ ï¿½as zmeny zï¿½loï¿½nï¿½ho sï¿½boru %s"
 
 #: src/globs.c:41 src/globs.c:64
 msgid "indent: Virtual memory exhausted.\n"
-msgstr "indent: Vyèerpaná virtuálna pamä».\n"
+msgstr "indent: Vyï¿½erpanï¿½ virtuï¿½lna pamï¿½ï¿½.\n"
 
 #: src/globs.c:79
 #, c-format
@@ -102,195 +99,190 @@ msgstr "indent: %s:%d: %s:"
 
 #: src/globs.c:93
 msgid "indent: Fatal Error: "
-msgstr "indent: Záva¾ná chyba: "
+msgstr "indent: Zï¿½vaï¿½nï¿½ chyba: "
 
 #: src/globs.c:103
 msgid "indent: System Error: "
-msgstr "indent: Systémová chyba: "
+msgstr "indent: Systï¿½movï¿½ chyba: "
 
-#. Warning messages:  indent continues
 #: src/globs.h:25
 msgid "Warning"
 msgstr "Upozornenie"
 
-#. Error messages: indent stops processing the current file.
 #: src/globs.h:29
 msgid "Error"
 msgstr "Chyba"
 
-#: src/indent.c:141
+#: src/indent.c:156
 msgid "Ran out of memory"
-msgstr "Beh vyèerpal pamä»"
+msgstr "Beh vyï¿½erpal pamï¿½ï¿½"
 
-#: src/indent.c:444
-msgid "EOF encountered in comment"
-msgstr "V komentári sa vyskytol koniec súboru"
-
-#: src/indent.c:500 src/indent.c:1562 src/indent.c:1584
-msgid "Line broken"
-msgstr "Riadok rozdelený"
-
-#: src/indent.c:581
-msgid "Unexpected end of file"
-msgstr "Neoèakávaný koniec súboru"
-
-#: src/indent.c:587
-#, c-format
-msgid "There were %d non-blank output lines and %d comments\n"
-msgstr "Spracovaných %d neprázdnych výstupných riadkov a %d komentárov\n"
-
-#: src/indent.c:591
-#, c-format
-msgid "(Lines with comments)/(Lines with code): %6.3f\n"
-msgstr "(Riadkov s komentármi)/(Riadkov s kódom): %6.3f\n"
-
-#: src/indent.c:612
-msgid "Line broken 2"
-msgstr "Riadok rozdelený 2"
-
-#: src/indent.c:909 src/indent.c:1486
+#: src/indent.c:588 src/indent.c:1248
 #, c-format
 msgid "Extra %c"
 msgstr "Extra %c"
 
-#: src/indent.c:2205
+#: src/indent.c:1352 src/indent.c:1378 src/indent.c:2438
+msgid "Line broken"
+msgstr "Riadok rozdelenï¿½"
+
+#: src/indent.c:1969
 msgid "Unmatched #else"
-msgstr "Nezodpovedajúce #else"
+msgstr "Nezodpovedajï¿½ce #else"
 
-#: src/indent.c:2206
+#: src/indent.c:1970
 msgid "Unmatched #elif"
-msgstr "Nezodpovedajúce #elif"
+msgstr "Nezodpovedajï¿½ce #elif"
 
-#: src/indent.c:2233
+#: src/indent.c:1997
 msgid "Unmatched #endif"
-msgstr "Nezodpovedajúce #endif"
+msgstr "Nezodpovedajï¿½ce #endif"
 
-#: src/indent.c:2385
+#: src/indent.c:2381
+msgid "EOF encountered in comment"
+msgstr "V komentï¿½ri sa vyskytol koniec sï¿½boru"
+
+#: src/indent.c:2610
+msgid "Unexpected end of file"
+msgstr "Neoï¿½akï¿½vanï¿½ koniec sï¿½boru"
+
+#: src/indent.c:2616
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr ""
+"Spracovanï¿½ch %d neprï¿½zdnych vï¿½stupnï¿½ch riadkov a %d komentï¿½rov\n"
+
+#: src/indent.c:2620
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Riadkov s komentï¿½rmi)/(Riadkov s kï¿½dom): %6.3f\n"
+
+#: src/indent.c:2644
+msgid "Line broken 2"
+msgstr "Riadok rozdelenï¿½ 2"
+
+#: src/indent.c:2846
 #, c-format
 msgid "indent: only one output file (2nd was %s)\n"
-msgstr "indent: iba jeden výstupný súbor (druhý bol %s)\n"
+msgstr "indent: iba jeden vï¿½stupnï¿½ sï¿½bor (druhï¿½ bol %s)\n"
 
-#: src/indent.c:2394 src/indent.c:2420
+#: src/indent.c:2855 src/indent.c:2881
 msgid "indent: only one input file when output file is specified\n"
-msgstr "indent: iba jeden vstupný súbor, keï je zadaný výstupný súbor\n"
+msgstr ""
+"indent: iba jeden vstupnï¿½ sï¿½bor, keï¿½ je zadanï¿½ vï¿½stupnï¿½ sï¿½bor\n"
 
-#: src/indent.c:2408 src/indent.c:2455
+#: src/indent.c:2869 src/indent.c:2916
 msgid "indent: can't have filenames when specifying standard input\n"
-msgstr "indent: nemo¾no zada» súbory, ak ste zadali ¹tandardný vstup\n"
+msgstr ""
+"indent: nemoï¿½no zadaï¿½ sï¿½bory, ak ste zadali ï¿½tandardnï¿½ vstup\n"
 
-#: src/indent.c:2428
+#: src/indent.c:2889
 msgid "indent: only one input file when stdout is used\n"
-msgstr "indent: iba jeden vstupný súbor, keï je pou¾itý ¹tandardný výstup\n"
+msgstr ""
+"indent: iba jeden vstupnï¿½ sï¿½bor, keï¿½ je pouï¿½itï¿½ ï¿½tandardnï¿½ "
+"vï¿½stup\n"
 
-#: src/indent.c:2617
+#: src/indent.c:3103
 #, c-format
 msgid "Read profile %s\n"
-msgstr "Èita» profil %s\n"
+msgstr "ï¿½itaï¿½ profil %s\n"
 
-#: src/io.c:139
+#: src/io.c:187
 msgid "Internal buffering error"
-msgstr "Interná chyba vyrovnávacej pamäte"
+msgstr "Internï¿½ chyba vyrovnï¿½vacej pamï¿½te"
 
-#: src/io.c:300
+#: src/io.c:349
 #, c-format
 msgid "Can't open input file %s"
-msgstr "Nemô¾em otvori» vstupný súbor %s"
+msgstr "Nemï¿½ï¿½em otvoriï¿½ vstupnï¿½ sï¿½bor %s"
 
-#: src/io.c:305
+#: src/io.c:354
 #, c-format
 msgid "Can't stat input file %s"
-msgstr "Nemô¾em zisti» stav vstupného súboru %s"
+msgstr "Nemï¿½ï¿½em zistiï¿½ stav vstupnï¿½ho sï¿½boru %s"
 
-#: src/io.c:310
+#: src/io.c:359
 #, c-format
 msgid "Warning: Zero-length file %s"
-msgstr "Varovanie: Súbor %s má nulovú då¾ku"
+msgstr "Varovanie: Sï¿½bor %s mï¿½ nulovï¿½ dï¿½ï¿½ku"
 
-#: src/io.c:318
+#: src/io.c:367
 #, c-format
 msgid "File %s is too big to read"
-msgstr "Súbor %s je príli¹ veµký na èítanie"
+msgstr "Sï¿½bor %s je prï¿½liï¿½ veï¿½kï¿½ na ï¿½ï¿½tanie"
 
-#: src/io.c:326
+#: src/io.c:375
 #, c-format
 msgid "System problem reading file %s"
-msgstr "Systémový problém pri èítaní súboru %s"
+msgstr "Systï¿½movï¿½ problï¿½m pri ï¿½ï¿½tanï¿½ sï¿½boru %s"
 
-#: src/io.c:350
+#: src/io.c:399
 #, c-format
 msgid "Error reading input file %s"
-msgstr "Chyba pri èítaní vstupného súboru %s"
+msgstr "Chyba pri ï¿½ï¿½tanï¿½ vstupnï¿½ho sï¿½boru %s"
 
-#: src/io.c:355
+#: src/io.c:404
 #, c-format
 msgid "Error closeing input file %s"
-msgstr "Chyba pri zatváraní vstupného súboru %s"
+msgstr "Chyba pri zatvï¿½ranï¿½ vstupnï¿½ho sï¿½boru %s"
 
-#: src/io.c:541
+#: src/io.c:588
 #, c-format
 msgid "Warning: File %s contains NULL-characters\n"
-msgstr "Upozornenie: Súbor %s obsahuje nulové znaky\n"
+msgstr "Upozornenie: Sï¿½bor %s obsahuje nulovï¿½ znaky\n"
 
-#: src/lexi.c:767
+#: src/lexi.c:756
 msgid "Unterminated character constant"
-msgstr "Neukonèená znaková kon¹tanta"
+msgstr "Neukonï¿½enï¿½ znakovï¿½ konï¿½tanta"
 
-#: src/lexi.c:768
+#: src/lexi.c:757
 msgid "Unterminated string constant"
-msgstr "Neukonèená re»azcová kon¹tanta"
+msgstr "Neukonï¿½enï¿½ reï¿½azcovï¿½ konï¿½tanta"
 
-#. Something like x=-1, which can mean x -= 1 ("old style" in K&R1)
-#. * or x = -1 (ANSI).  Note that this is only an ambiguity if the
-#. * character can also be a unary operator.  If not, just produce
-#. * output code that produces a syntax error (the theory being that
-#. * people want to detect and eliminate old style assignments but
-#. * they don't want indent to silently change the meaning of their
-#. * code).
-#: src/lexi.c:1001
+#: src/lexi.c:999
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr ""
-"nejednoznaènos» priradenia starého ¹týlu v \"=%c\". Predpokladá sa \"= %c\"\n"
+"nejednoznaï¿½nosï¿½ priradenia starï¿½ho ï¿½tï¿½lu v \"=%c\". Predpokladï¿½ "
+"sa \"= %c\"\n"
 
-#: src/output.c:1067
+#: src/output.c:1148
 #, c-format
 msgid "indent: can't create %s\n"
-msgstr "indent: nemô¾em vytvori» %s\n"
+msgstr "indent: nemï¿½ï¿½em vytvoriï¿½ %s\n"
 
-#: src/output.c:1106
+#: src/output.c:1187
 #, c-format
 msgid "Can't close output file %s"
-msgstr "Nemô¾em zatvori» výstupný súbor %s"
+msgstr "Nemï¿½ï¿½em zatvoriï¿½ vï¿½stupnï¿½ sï¿½bor %s"
 
-#: src/output.c:1119
+#: src/output.c:1200
 #, c-format
 msgid "Can't preserve modification time on output file %s"
-msgstr "Nemô¾em zachova» èas zmeny výstupného súboru %s"
+msgstr "Nemï¿½ï¿½em zachovaï¿½ ï¿½as zmeny vï¿½stupnï¿½ho sï¿½boru %s"
 
-#: src/parse.c:397
+#: src/parse.c:399
 msgid "Unmatched 'else'"
-msgstr "Nezodpovedajúce 'else'"
+msgstr "Nezodpovedajï¿½ce 'else'"
 
-#: src/parse.c:423
+#: src/parse.c:425
 msgid "Stmt nesting error."
 msgstr "Chyba vnorenia stmt."
 
-#: src/parse.c:465
+#: src/parse.c:467
 msgid "Unknown code to parser"
-msgstr "Analyzátor nepozná tento kód"
+msgstr "Analyzï¿½tor nepoznï¿½ tento kï¿½d"
 
-#: src/parse.c:475
-#, fuzzy, c-format
+#: src/parse.c:477
+#, c-format
 msgid "ParseStack [%d]:\n"
-msgstr ""
-"\n"
-"Zásobník analyzátora [%d]:\n"
+msgstr "Zï¿½sobnï¿½k analyzï¿½tora [%d]:\n"
 
-#: src/parse.c:479
+#: src/parse.c:481
 #, c-format
 msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
-msgstr "  zásobník[%d] =>   zásobník: %d   ind_úroveò: %d\n"
+msgstr "  zï¿½sobnï¿½k[%d] =>   zï¿½sobnï¿½k: %d   ind_ï¿½roveï¿½: %d\n"
 
 #: src/wildexp.c:90
 msgid "CANNOT FIND '@' FILE!"
-msgstr "NEMÔ®EM NÁJS« SÚBOR '@'!"
+msgstr "NEMÔ®EM Nï¿½JSï¿½ Sï¿½BOR '@'!"

@@ -1,0 +1,32 @@
+#/bin/sh
+
+# First, make sure the executable exists
+
+if test -x ../indent; then
+  if test -d ./output; then
+    echo '****'
+    echo 'Errors remain; output directory still exists'
+    echo '****'
+    ls -ld ./output
+    exit 1
+  fi
+  echo -n "Regression testing "
+  ../indent --version
+  echo
+else
+  echo '****'
+  echo First, you must make ../indent
+  echo '****'
+  echo
+  exit 1
+fi
+
+for i in 1 2 3 4 5 6 7 8 9 10 ; do
+  cp indent.c time$i.c
+  sync
+  time ../indent -o foo time$i.c
+  rm -f foo
+  sync
+done
+
+rm -f time*.c foo

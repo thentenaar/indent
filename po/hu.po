@@ -1,0 +1,288 @@
+# Hungarian translate of the indent
+# Copyright (C) 2002 Free Software Foundation, Inc.
+# Gábor István <stive@mezobereny.hu>, 2002.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.7\n"
+"POT-Creation-Date: 2002-12-16 16:12+0000\n"
+"PO-Revision-Date: 2002-05-14 15:12GMT\n"
+"Last-Translator: Gábor István <stive@mezobereny.hu>\n"
+"Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.5\n"
+
+#: src/args.c:543
+msgid "usage: indent file [-o outfile ] [ options ]\n"
+msgstr "használat: indent fájl [-o kimenet ] [ opciók ]\n"
+
+#: src/args.c:544
+msgid "       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       indent fájl1 fájl2 ... fájlN [ opciók ]\n"
+
+#: src/args.c:609
+#, c-format
+msgid "indent: missing argument to parameter %s\n"
+msgstr "indent: hibás a %s paraméterezése \n"
+
+#: src/args.c:717
+#, c-format
+msgid "indent: unknown option \"%s\"\n"
+msgstr "indent: ismeretlen opció \"%s\"\n"
+
+#: src/args.c:728
+#, c-format
+msgid "option: %s\n"
+msgstr "opció:%s\n"
+
+#: src/args.c:744
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:827
+#, c-format
+msgid "indent: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: a  ``%s'' opció szám paramétert igényel\n"
+
+#: src/args.c:836
+#, c-format
+msgid "indent: set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: belsõ hiba: p_type %d\n"
+
+#: src/args.c:892
+#, fuzzy
+msgid "Profile contains an unterminated comment"
+msgstr "Profil oda nem illõ karaktert tartalmaz"
+
+#: src/args.c:929
+msgid "Profile contains unpalatable characters"
+msgstr "Profil oda nem illõ karaktert tartalmaz"
+
+#: src/backup.c:404
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Fõ verzió-ellenõrzõ érték\n"
+
+#: src/backup.c:405
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Valós számot használjon\n"
+
+#: src/backup.c:434
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: A  %s -rõl nem lehet biztonsági mentést készíteni\n"
+
+#: src/backup.c:442
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Nem lehet megnyitni a %s biztonsági mentés fájlt"
+
+#: src/backup.c:449
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Nem lehet írni a %s biztonsági mentés fájlba"
+
+#: src/backup.c:463
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Nem lehet megõrizni a %s biztonsági mentés fájl módosításának idejét"
+
+#: src/globs.c:41 src/globs.c:64
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Virtuális memória elfogyott.\n"
+
+#: src/globs.c:79
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:93
+msgid "indent: Fatal Error: "
+msgstr "indent: Végzetes hiba: "
+
+#: src/globs.c:103
+msgid "indent: System Error: "
+msgstr "indent: Rendszer Hiba "
+
+#: src/globs.h:25
+msgid "Warning"
+msgstr "Figyelmeztetés"
+
+#: src/globs.h:29
+msgid "Error"
+msgstr "Hiba"
+
+#: src/indent.c:156
+msgid "Ran out of memory"
+msgstr "A memória kifutott"
+
+#: src/indent.c:588 src/indent.c:1248
+#, c-format
+msgid "Extra %c"
+msgstr "Extra %c"
+
+#: src/indent.c:1352 src/indent.c:1378 src/indent.c:2438
+msgid "Line broken"
+msgstr "Törött sor"
+
+#: src/indent.c:1969
+msgid "Unmatched #else"
+msgstr "Ki nem válogatott #else"
+
+#: src/indent.c:1970
+msgid "Unmatched #elif"
+msgstr "Ki nem válogatott #elif"
+
+#: src/indent.c:1997
+msgid "Unmatched #endif"
+msgstr "Ki nem válogatott #endif"
+
+#: src/indent.c:2381
+msgid "EOF encountered in comment"
+msgstr "Fájl vége a megjegyzésben"
+
+#: src/indent.c:2610
+msgid "Unexpected end of file"
+msgstr "Váratlan fájlvég"
+
+#: src/indent.c:2616
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Itt %d nem üres sor és %d megjegyzés van\n"
+
+#: src/indent.c:2620
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Sorok megjegyzéssel)(Sorok kóddal):%6.3f\n"
+
+#: src/indent.c:2644
+msgid "Line broken 2"
+msgstr "Törött sor 2"
+
+#: src/indent.c:2846
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: csak egy kimeneti fájl van (a második %s volt)\n"
+
+#: src/indent.c:2855 src/indent.c:2881
+msgid "indent: only one input file when output file is specified\n"
+msgstr ""
+"indent: csak egy bemeneti fájl lehet amikor a kimenet meg van határozva\n"
+
+#: src/indent.c:2869 src/indent.c:2916
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr ""
+"indent: nem lehet megadni fájlnevet amikor a standard bemenet van "
+"meghatározva\n"
+
+#: src/indent.c:2889
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: csak egy bemeneti fájl lehet amikor stdout használja\n"
+
+#: src/indent.c:3103
+#, c-format
+msgid "Read profile %s\n"
+msgstr "A %s profil olvasása\n"
+
+#: src/io.c:187
+msgid "Internal buffering error"
+msgstr "Belsõ puffer hiba"
+
+#: src/io.c:349
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Nem lehet megnyitni a %s fájlt"
+
+#: src/io.c:354
+#, fuzzy, c-format
+msgid "Can't stat input file %s"
+msgstr "Nem lehet a %s bemeneti fájlt megvizsgálni"
+
+#: src/io.c:359
+#, c-format
+msgid "Warning: Zero-length file %s"
+msgstr "Figyelmeztetés A %s nulla hosszú fájl"
+
+#: src/io.c:367
+#, c-format
+msgid "File %s is too big to read"
+msgstr "A %s fájl túl hosszú az olvasáshoz"
+
+#: src/io.c:375
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Rendszer probléma a %s fájl olvasása közben"
+
+#: src/io.c:399
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Hiba a %s bemeneti fájl olvasása közben"
+
+#: src/io.c:404
+#, c-format
+msgid "Error closeing input file %s"
+msgstr "Hiba a %s bemeneti fájl lezárásakor"
+
+#: src/io.c:588
+#, c-format
+msgid "Warning: File %s contains NULL-characters\n"
+msgstr "Figyelmeztetés A %s fájl   NULL karaktereket tartalmaz\n"
+
+#: src/lexi.c:756
+msgid "Unterminated character constant"
+msgstr "Befelyezetlen karakter konstans"
+
+#: src/lexi.c:757
+msgid "Unterminated string constant"
+msgstr "Befelyezetlen sztring konstans"
+
+#: src/lexi.c:999
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr ""
+"régi stílusú kétértelmû hozzárendelés \"=%c\".  A \"= %c\" elfogadható\n"
+
+#: src/output.c:1148
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: nem lehet létrehozni a %s\n"
+
+#: src/output.c:1187
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Nem lehet a %s kimeneti fájlt lezárni"
+
+#: src/output.c:1200
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Nem lehet a %s kimeneti fájl módosítási idejét megõrizni"
+
+#: src/parse.c:399
+msgid "Unmatched 'else'"
+msgstr "Hiányzó 'else'"
+
+#: src/parse.c:425
+msgid "Stmt nesting error."
+msgstr "Stmt hiba."
+
+#: src/parse.c:467
+msgid "Unknown code to parser"
+msgstr "Ismeretlen kód a feldolgozóban"
+
+#: src/parse.c:477
+#, fuzzy, c-format
+msgid "ParseStack [%d]:\n"
+msgstr ""
+"\n"
+"ParseStack [%d]:\n"
+
+#: src/parse.c:481
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  veres[%d] =>   veres: %d   ind_level: %d\n"
+
+#: src/wildexp.c:90
+msgid "CANNOT FIND '@' FILE!"
+msgstr "NINCS MEG A '@' FÁJL!"

@@ -1,0 +1,280 @@
+# Finnish translation for GNU indent.
+# Copyright © 2002 Free Software Foundation, Inc.
+# Lauri Nurmi <lanurmi@iki.fi>, 2002.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.8\n"
+"POT-Creation-Date: 2002-12-16 16:12+0000\n"
+"PO-Revision-Date: 2002-10-25 17:23+0300\n"
+"Last-Translator: Lauri Nurmi <lanurmi@iki.fi>\n"
+"Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/args.c:543
+msgid "usage: indent file [-o outfile ] [ options ]\n"
+msgstr "käyttö: indent tiedosto [-o tulostiedosto] [valitsimet]\n"
+
+#: src/args.c:544
+msgid "       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       indent tiedosto1 tiedosto2 ... tiedostoN [valitsimet]\n"
+
+#: src/args.c:609
+#, c-format
+msgid "indent: missing argument to parameter %s\n"
+msgstr "indent: puuttuva argumentti parametrille %s\n"
+
+#: src/args.c:717
+#, c-format
+msgid "indent: unknown option \"%s\"\n"
+msgstr "indent: tuntematon valitsin \"%s\"\n"
+
+#: src/args.c:728
+#, c-format
+msgid "option: %s\n"
+msgstr "valitsin: %s\n"
+
+#: src/args.c:744
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:827
+#, c-format
+msgid "indent: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: valitsin \"%s\" vaatii numeerisen parametrin\n"
+
+#: src/args.c:836
+#, c-format
+msgid "indent: set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: sisäinen virhe: p_type %d\n"
+
+#: src/args.c:892
+msgid "Profile contains an unterminated comment"
+msgstr "Profiilissa on päättämätön kommentti"
+
+#: src/args.c:929
+msgid "Profile contains unpalatable characters"
+msgstr "Profiilissa on epämiellyttäviä merkkejä"
+
+#: src/backup.c:404
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Outo versionhallinta-arvo\n"
+
+#: src/backup.c:405
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Käytetään numeroitua-olemassaolevaa\n"
+
+#: src/backup.c:434
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Ei voi luoda varmistustiedoston nimeä tiedostolle %s\n"
+
+#: src/backup.c:442
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Ei voi avata varmistustiedostoa %s"
+
+#: src/backup.c:449
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Ei voi kirjoittaa varmistustiedostoon %s"
+
+#: src/backup.c:463
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Ei voi säilyttää varmistustiedoston %s muutosaikaa"
+
+#: src/globs.c:41 src/globs.c:64
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Virtuaalimuisti lopussa.\n"
+
+#: src/globs.c:79
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:93
+msgid "indent: Fatal Error: "
+msgstr "indent: Vakava virhe: "
+
+#: src/globs.c:103
+msgid "indent: System Error: "
+msgstr "indent: Järjestelmävirhe: "
+
+#: src/globs.h:25
+msgid "Warning"
+msgstr "Varoitus"
+
+#: src/globs.h:29
+msgid "Error"
+msgstr "Virhe"
+
+#: src/indent.c:156
+msgid "Ran out of memory"
+msgstr "Muisti loppui"
+
+#: src/indent.c:588 src/indent.c:1248
+#, c-format
+msgid "Extra %c"
+msgstr "Ylimääräinen %c"
+
+#: src/indent.c:1352 src/indent.c:1378 src/indent.c:2438
+msgid "Line broken"
+msgstr "Katkennut rivi"
+
+#: src/indent.c:1969
+msgid "Unmatched #else"
+msgstr "Pariton #else"
+
+#: src/indent.c:1970
+msgid "Unmatched #elif"
+msgstr "Pariton #elif"
+
+#: src/indent.c:1997
+msgid "Unmatched #endif"
+msgstr "Pariton #endif"
+
+#: src/indent.c:2381
+msgid "EOF encountered in comment"
+msgstr "Tiedoston loppu kesken kommentin"
+
+#: src/indent.c:2610
+msgid "Unexpected end of file"
+msgstr "Odottamaton tiedoston loppu"
+
+#: src/indent.c:2616
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Ei-tyhjiä tulosrivejä oli %d kappaletta, kommentteja %d kappaletta\n"
+
+#: src/indent.c:2620
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Kommentin sisältävät rivit)/(Koodia sisältävät rivit): %6.3f\n"
+
+#: src/indent.c:2644
+msgid "Line broken 2"
+msgstr "Katkennut rivi 2"
+
+#: src/indent.c:2846
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: vain yksi tulostiedosto (toinen oli %s)\n"
+
+#: src/indent.c:2855 src/indent.c:2881
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: vain yksi syötetiedosto, kun tulostiedosto on määritetty\n"
+
+#: src/indent.c:2869 src/indent.c:2916
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: tiedostonimiä ei voi käyttää, kun käytetään vakiosyötettä\n"
+
+#: src/indent.c:2889
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: vain yksi syötetiedosto, kun käytetään vakiotulostetta\n"
+
+#: src/indent.c:3103
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Luetaan profiili %s\n"
+
+#: src/io.c:187
+msgid "Internal buffering error"
+msgstr "Sisäinen puskurointivirhe"
+
+#: src/io.c:349
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Ei voi avata syötetiedostoa %s"
+
+#: src/io.c:354
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Ei voi lukea syötetiedoston %s tilaa"
+
+#: src/io.c:359
+#, c-format
+msgid "Warning: Zero-length file %s"
+msgstr "Varoitus: Nollan pituinen tiedosto %s"
+
+#: src/io.c:367
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Tiedosto %s on liian suuri luettavaksi"
+
+#: src/io.c:375
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Järjestelmäongelma luettaessa tiedostoa %s"
+
+#: src/io.c:399
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Virhe luettaessa syötetiedostoa %s"
+
+#: src/io.c:404
+#, c-format
+msgid "Error closeing input file %s"
+msgstr "Virhe suljettaessa syötetiedostoa %s"
+
+#: src/io.c:588
+#, c-format
+msgid "Warning: File %s contains NULL-characters\n"
+msgstr "Varoitus: Tiedostossa %s on NULL-merkkejä\n"
+
+#: src/lexi.c:756
+msgid "Unterminated character constant"
+msgstr "Päättämätön merkkivakio"
+
+#: src/lexi.c:757
+msgid "Unterminated string constant"
+msgstr "Päättämätön merkkijonovakio"
+
+#: src/lexi.c:999
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr "vanhan tyylin moniselitteinen sijoitus \"=%c\". Oletetaan \"= %c\"\n"
+
+#: src/output.c:1148
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: ei voi luoda %s\n"
+
+#: src/output.c:1187
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Ei voi sulkea tulostiedostoa %s"
+
+#: src/output.c:1200
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Ei voi säilyttää tulostiedoston %s muutosaikaa"
+
+#: src/parse.c:399
+msgid "Unmatched 'else'"
+msgstr "Pariton \"else\""
+
+#: src/parse.c:425
+msgid "Stmt nesting error."
+msgstr "Stmt-sisäkkäistysvirhe."
+
+#: src/parse.c:467
+msgid "Unknown code to parser"
+msgstr "Jäsentäjälle tuntematon koodi"
+
+#: src/parse.c:477
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ParseStack [%d]:\n"
+
+#: src/parse.c:481
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  stack[%d] =>   stack: %d   ind_level: %d\n"
+
+#: src/wildexp.c:90
+msgid "CANNOT FIND '@' FILE!"
+msgstr "\"@\"-TIEDOSTOA EI LÖYDY!"

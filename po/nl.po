@@ -4,88 +4,88 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: indent 1.9.1a\n"
-"POT-Creation-Date: 2002-03-21 21:44+0100\n"
-"PO-Revision-Date: 2001-01-17 16:25+01:00\n"
+"Project-Id-Version: indent 2.2.7\n"
+"POT-Creation-Date: 2002-12-16 16:12+0000\n"
+"PO-Revision-Date: 2002-01-28 18:23+01:00\n"
 "Last-Translator: Gerald Raucamp <cavey@vengeance.et.tudelft.nl>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/args.c:518
+#: src/args.c:543
+#, fuzzy
 msgid "usage: indent file [-o outfile ] [ options ]\n"
-msgstr "gebruik: bestand [-o uitvoerbestand ] [ argumenten ]\n"
+msgstr "gebruik: %s bestand [-o uitvoerbestand ] [ argumenten ]\n"
 
-#: src/args.c:519
+#: src/args.c:544
 msgid "       indent file1 file2 ... fileN [ options ]\n"
 msgstr "       indent bestand1 bestand2 ... bestandN [ argumenten ]\n"
 
-#: src/args.c:583
+#: src/args.c:609
 #, c-format
 msgid "indent: missing argument to parameter %s\n"
 msgstr "Indent: ontbrekend argument of parameter %s\n"
 
-#: src/args.c:682
+#: src/args.c:717
 #, c-format
 msgid "indent: unknown option \"%s\"\n"
 msgstr "indent: onbekend argument \"%s\"\n"
 
-#: src/args.c:693
+#: src/args.c:728
 #, c-format
 msgid "option: %s\n"
 msgstr "argument: %s\n"
 
-#. This is not really an error, but zero exit values are
-#. returned only when code has been successfully formatted.
-#: src/args.c:709
-#, c-format
+#: src/args.c:744
+#, fuzzy, c-format
 msgid "GNU indent %s\n"
-msgstr "GNU indent: %s\n"
+msgstr "indent: %s"
 
-#: src/args.c:786
+#: src/args.c:827
 #, c-format
 msgid "indent: option ``%s'' requires a numeric parameter\n"
 msgstr "indent: argument ``%s'' vereist een numerieke parameter\n"
 
-#: src/args.c:796
+#: src/args.c:836
 #, c-format
 msgid "indent: set_option: internal error: p_type %d\n"
 msgstr "indent: set_option: interne fout: p_type %d\n"
 
-#: src/args.c:852
+#: src/args.c:892
 #, fuzzy
 msgid "Profile contains an unterminated comment"
 msgstr "Profiel bevat foutieve karakters"
 
-#: src/args.c:889
+#: src/args.c:929
 msgid "Profile contains unpalatable characters"
 msgstr "Profiel bevat foutieve karakters"
 
-#: src/backup.c:381
+#: src/backup.c:404
 msgid "indent:  Strange version-control value\n"
 msgstr "indent:  Onbekende waarde voor versie-controle\n"
 
-#: src/backup.c:382
+#: src/backup.c:405
+#, fuzzy
 msgid "indent:  Using numbered-existing\n"
 msgstr "indent:  Gebruik makend van bestaande nummering\n"
 
-#: src/backup.c:410
+#: src/backup.c:434
 #, c-format
 msgid "indent: Can't make backup filename of %s\n"
 msgstr "indent: Kan geen reserve kopie maken van bestand %s\n"
 
-#: src/backup.c:418
+#: src/backup.c:442
 #, c-format
 msgid "Can't open backup file %s"
 msgstr "indent: Kan reserve kopie van bestand %s niet openen"
 
-#: src/backup.c:425
+#: src/backup.c:449
 #, c-format
 msgid "Can't write to backup file %s"
 msgstr "indent: Kan niet naar reserve kopie %s schrijven"
 
-#: src/backup.c:439
+#: src/backup.c:463
 #, c-format
 msgid "Can't preserve modification time on backup file %s"
 msgstr "Kan modificatie tijd van reserve kopie %s niet bewaren"
@@ -107,187 +107,185 @@ msgstr "indent: Fatale Fout: "
 msgid "indent: System Error: "
 msgstr "indent: Systeem Fout: "
 
-#. Warning messages:  indent continues
 #: src/globs.h:25
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#. Error messages: indent stops processing the current file.
 #: src/globs.h:29
 msgid "Error"
 msgstr "Fout"
 
-#: src/indent.c:141
+#: src/indent.c:156
 msgid "Ran out of memory"
 msgstr "Onvoldoende geheugen beschikbaar"
 
-#: src/indent.c:444
-msgid "EOF encountered in comment"
-msgstr "EOF geconstateerd binnen commentaar blok"
-
-#: src/indent.c:500 src/indent.c:1562 src/indent.c:1584
-msgid "Line broken"
-msgstr "Gebroken regel"
-
-#: src/indent.c:581
-msgid "Unexpected end of file"
-msgstr "Onverwachts bestands einde"
-
-#: src/indent.c:587
-#, c-format
-msgid "There were %d non-blank output lines and %d comments\n"
-msgstr "Er waren %d uitvoer regels en %d commentaar regels\n"
-
-#: src/indent.c:591
-#, c-format
-msgid "(Lines with comments)/(Lines with code): %6.3f\n"
-msgstr "(Regels met commentaar)/(Regels met code): %6.3f\n"
-
-#: src/indent.c:612
-msgid "Line broken 2"
-msgstr "Gebroken regel 2"
-
-#: src/indent.c:909 src/indent.c:1486
+#: src/indent.c:588 src/indent.c:1248
 #, c-format
 msgid "Extra %c"
 msgstr "Extra %c"
 
-#: src/indent.c:2205
+#: src/indent.c:1352 src/indent.c:1378 src/indent.c:2438
+msgid "Line broken"
+msgstr "Gebroken regel"
+
+#: src/indent.c:1969
+#, fuzzy
 msgid "Unmatched #else"
 msgstr "#else hoort nergens bij"
 
-#: src/indent.c:2206
+#: src/indent.c:1970
+#, fuzzy
 msgid "Unmatched #elif"
 msgstr "#endif hoort nergens bij"
 
-#: src/indent.c:2233
+#: src/indent.c:1997
+#, fuzzy
 msgid "Unmatched #endif"
 msgstr "#endif hoort nergens bij"
 
-#: src/indent.c:2385
-#, c-format
-msgid "indent: only one output file (2nd was %s)\n"
-msgstr "indent: slechts een uitvoer bestand (tweede was %s)\n"
+#: src/indent.c:2381
+msgid "EOF encountered in comment"
+msgstr "EOF geconstateerd binnen commentaar blok"
 
-#: src/indent.c:2394 src/indent.c:2420
+#: src/indent.c:2610
+msgid "Unexpected end of file"
+msgstr "Onverwachts bestands einde"
+
+#: src/indent.c:2616
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Er waren %d uitvoer regels en %d commentaar regels\n"
+
+#: src/indent.c:2620
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Regels met commentaar)/(Regels met code): %6.3f\n"
+
+#: src/indent.c:2644
+#, fuzzy
+msgid "Line broken 2"
+msgstr "Gebroken regel 2"
+
+#: src/indent.c:2846
+#, fuzzy, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "%s: slechts een uitvoer bestand (tweede was %s)\n"
+
+#: src/indent.c:2855 src/indent.c:2881
+#, fuzzy
 msgid "indent: only one input file when output file is specified\n"
 msgstr ""
-"indent: slechts een invoer bestand mogelijk als uitvoer bestand is gegeven\n"
+"%s: slechts een invoer bestand mogelijk als uitvoer bestand is gegeven\n"
 
-#: src/indent.c:2408 src/indent.c:2455
+#: src/indent.c:2869 src/indent.c:2916
 msgid "indent: can't have filenames when specifying standard input\n"
 msgstr ""
 "indent: bestandsnamen niet toegestaan bij gebruik van standaard invoer\n"
 
-#: src/indent.c:2428
+#: src/indent.c:2889
 msgid "indent: only one input file when stdout is used\n"
 msgstr ""
 "indent: slechts een invoer bestand mogelijk bij gebruik van standaard "
 "uitvoer\n"
 
-#: src/indent.c:2617
+#: src/indent.c:3103
 #, c-format
 msgid "Read profile %s\n"
 msgstr "Lees profiel %s\n"
 
-#: src/io.c:139
+#: src/io.c:187
 msgid "Internal buffering error"
 msgstr "Interne buffer fout"
 
-#: src/io.c:300
+#: src/io.c:349
 #, c-format
 msgid "Can't open input file %s"
-msgstr "Kan invoer bestand %s niet openen."
+msgstr "Kan bestand %s niet openen"
 
-#: src/io.c:305
-#, c-format
+#: src/io.c:354
+#, fuzzy, c-format
 msgid "Can't stat input file %s"
-msgstr "Kan cijfers van bestand %s niet lezen."
+msgstr "Kan invoer bestand %s niet statten"
 
-#: src/io.c:310
+#: src/io.c:359
 #, c-format
 msgid "Warning: Zero-length file %s"
 msgstr "Waarschuwing: Bestand %s heeft een lengte van nul"
 
-#: src/io.c:318
+#: src/io.c:367
 #, c-format
 msgid "File %s is too big to read"
 msgstr "Bestand %s is te groot om in te lezen"
 
-#: src/io.c:326
+#: src/io.c:375
 #, c-format
 msgid "System problem reading file %s"
 msgstr "Systeem heeft problemen met het lezen van bestand %s"
 
-#: src/io.c:350
+#: src/io.c:399
 #, c-format
 msgid "Error reading input file %s"
 msgstr "Fout opgetreden bij lezen van bestand %s"
 
-#: src/io.c:355
+#: src/io.c:404
 #, c-format
 msgid "Error closeing input file %s"
 msgstr "Fout opgetreden bij sluiten van invoer file %s"
 
-#: src/io.c:541
+#: src/io.c:588
 #, c-format
 msgid "Warning: File %s contains NULL-characters\n"
 msgstr "Waarschuwing: Bestand %s bevat NULL-karakters\n"
 
-#: src/lexi.c:767
+#: src/lexi.c:756
 msgid "Unterminated character constant"
 msgstr "Niet beeindigd karakter constante"
 
-#: src/lexi.c:768
+#: src/lexi.c:757
 msgid "Unterminated string constant"
 msgstr "Niet beeindigde string constante"
 
-#. Something like x=-1, which can mean x -= 1 ("old style" in K&R1)
-#. * or x = -1 (ANSI).  Note that this is only an ambiguity if the
-#. * character can also be a unary operator.  If not, just produce
-#. * output code that produces a syntax error (the theory being that
-#. * people want to detect and eliminate old style assignments but
-#. * they don't want indent to silently change the meaning of their
-#. * code).
-#: src/lexi.c:1001
-#, c-format
+#: src/lexi.c:999
+#, fuzzy, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr ""
 "dubbelzinnigheids toewijzing oude stijl in \"=%c\".  Aangenomen \"= %c\"\n"
 
-#: src/output.c:1067
+#: src/output.c:1148
 #, c-format
 msgid "indent: can't create %s\n"
 msgstr "indent: kan %s niet aanmaken\n"
 
-#: src/output.c:1106
+#: src/output.c:1187
 #, c-format
 msgid "Can't close output file %s"
 msgstr "Kan uitvoer bestand %s niet sluiten"
 
-#: src/output.c:1119
+#: src/output.c:1200
 #, c-format
 msgid "Can't preserve modification time on output file %s"
 msgstr "Kan modificatie tijd op uitvoer bestand %s niet bewaren"
 
-#: src/parse.c:397
+#: src/parse.c:399
 msgid "Unmatched 'else'"
 msgstr "'else' hoort nergens bij"
 
-#: src/parse.c:423
+#: src/parse.c:425
 msgid "Stmt nesting error."
 msgstr "Statement nestings fout."
 
-#: src/parse.c:465
+#: src/parse.c:467
 msgid "Unknown code to parser"
 msgstr "Onbekende code voor de verwerker"
 
-#: src/parse.c:475
-#, c-format
+#: src/parse.c:477
+#, fuzzy, c-format
 msgid "ParseStack [%d]:\n"
-msgstr "ParseStapel [%d]:\n"
+msgstr ""
+"\n"
+"ParseStack [%d]:\n"
 
-#: src/parse.c:479
+#: src/parse.c:481
 #, c-format
 msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
 msgstr "  stapel[%d] =>   stapel: %d   inspring_niveau: %d\n"
@@ -296,6 +294,7 @@ msgstr "  stapel[%d] =>   stapel: %d   inspring_niveau: %d\n"
 msgid "CANNOT FIND '@' FILE!"
 msgstr "KAN '@' BESTAND NIET VINDEN!"
 
+#, fuzzy
 #~ msgid "Stuff missing from end of file."
 #~ msgstr "Er mist wat spul aan het einde van het bestand."
 
@@ -309,9 +308,11 @@ msgstr "KAN '@' BESTAND NIET VINDEN!"
 #~ msgid "Standard input"
 #~ msgstr "Standaard invoer"
 
+#, fuzzy
 #~ msgid "indent: bad font specification: %s\n"
 #~ msgstr "indent: foutieve specificatie van het lettertype: %s\n"
 
+#, fuzzy
 #~ msgid ""
 #~ "\n"
 #~ "*** Debug output marker line ***\n"

@@ -15,7 +15,7 @@
 #ifndef INDENT_BACKUP_H
 #define INDENT_BACKUP_H
 
-RCSTAG_H (backup, "$Id: backup.h,v 1.10 2002/02/26 20:38:27 david Exp $");
+RCSTAG_H (backup, "$Id: backup.h,v 1.11 2002/08/04 17:08:40 david Exp $");
 
 #include <sys/stat.h>
 #include "io.h"
@@ -58,6 +58,8 @@ extern void initialize_backups (void);
 /* Make a backup copy of FILE, taking into account version-control.
  * See the description at the beginning of the file for details. */
 
-extern void make_backup (file_buffer_ty * file, const struct stat * file_stats);
+extern void make_backup (
+    file_buffer_ty * file, 
+    const struct stat * file_stats);
 
 #endif /* INDENT_BACKUP_H */

@@ -26,10 +26,13 @@ extern int           buf_break_used;
 extern int           prev_target_col_break;
 
 extern void clear_buf_break_list (void);
-extern void set_buf_break (bb_code_ty code);
+extern void set_buf_break (
+    bb_code_ty code,
+    int paren_targ);
 
 extern void dump_line (
-    int force_nl);
+    int  force_nl,
+    int *paren_targ);
 
 extern void flush_output(void);
 

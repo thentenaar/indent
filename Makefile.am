@@ -1,19 +1,21 @@
 ## Process this file with automake to produce Makefile.in
 AUTOMAKE_OPTIONS = no-texinfo.tex
 
-SUBDIRS = intl src doc po man
+SUBDIRS = intl m4 src doc po man
 
 BUILT_SOURCES = 
 
-EXTRA_DIST = ChangeLog-1990 ChangeLog-1998 ChangeLog-2001 \
+EXTRA_DIST = 	README \
+		config/config.rpath config/mkinstalldirs \
+		ChangeLog-1990 ChangeLog-1998 ChangeLog-2001 \
 		miscel/make-decc.com miscel/vaxc-make.com miscel/gnuc-make.com \
 		aclocal/UTIMBUF.m4 \
 		miscel/Makefile.mingw32 \
 		miscel/makefile.watcom \
 		miscel/README.vc++ \
 		miscel/README.VMS \
-		README \
-		bootstrap
+		bootstrap \
+		regression
 
 DISTCLEANFILES=config/config.cache config/config.log config.h
 
@@ -84,3 +86,5 @@ $(SPECFILE): rpm/$(SPECFILE).in configure.ac
 
 endif
 
+
+ACLOCAL_AMFLAGS = -I m4

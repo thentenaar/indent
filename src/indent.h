@@ -18,13 +18,17 @@
  * permission. THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
  * OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
+ *            Added --preprocessor-indentation (ppi)   if set, will indent nested
+ *            preprocessor-statements with n spaces per level.  overrides -lps.
  */
 
 #ifndef INDENT_INDENT_H
 #define INDENT_INDENT_H
 
 #include "sys.h"
-RCSTAG_H (indent, "$Id: indent.h,v 1.33 2002/03/15 07:48:46 david Exp $");
+RCSTAG_H (indent, "$Id: indent.h,v 1.37 2002/11/10 21:02:48 david Exp $");
 #include <config.h>
 
 #include <libgettext.h>
@@ -197,6 +201,7 @@ typedef struct user_options_st
     int paren_indent;        /* set to the indentation per open parens */
     int proc_calls_space;    /* If true, procedure calls look like: foo (bar) rather than foo(bar) */
     int leave_preproc_space; /* if true, leave the spaces between  '#' and preprocessor commands. */
+    int force_preproc_width; /* if this is >0, this becomes the preproc indent-level */
     int lineup_to_parens;    /* if true, continued code within parens will be lined up to the open paren */
     int honour_newlines;     /* True when positions at which we read a newline in the input file, should get
                               * a high priority to break long lines at. */
@@ -212,6 +217,8 @@ typedef struct user_options_st
     int comment_delimiter_on_blankline;
     int blank_after_sizeof; /* true iff a blank should always be inserted after sizeof */
     int break_function_decl_args;    /* true if declarations should have args on new lines */
+    int break_function_decl_args_end; /* true if declarations should have
+                                       * ")" after args on new lines */
     int leave_comma;         /* if true, never break declarations after commas */
     int break_before_boolean_operator;       /* True when we prefer to break a long line
                                               * before a '&&' or '||', instead of behind it.
@@ -242,6 +249,7 @@ typedef struct user_options_st
     int c_plus_plus; /* True if we're handling C++ code. */
     int com_ind;             /* the column in which comments to the right of code should start */
     int braces_on_struct_decl_line; /* when true, brace should be on same line as the struct declaration */
+    int braces_on_func_def_line; /* when true, brace should be on same line as the function definition */
     int btype_2; /* when true, brace should be on same line as if, while, etc */
     int brace_indent; /* number of spaces to indent braces from the suround if, while, etc. in -bl
                        * (bype_2 == 0) code */
@@ -259,21 +267,18 @@ extern int *di_stack;
 
 extern int else_or_endif; /* True if a #else or #endif has been encountered.  */
 
-extern int code_lines;          /* count of lines with code */
+extern int     code_lines;          /* count of lines with code */
 
-extern int out_lines;           /* the number of lines written, set by
+extern int     out_lines;           /* the number of lines written, set by
                                  * dump_line */
-extern int com_lines;           /* the number of lines with comments, set by
+extern int     com_lines;           /* the number of lines with comments, set by
                                  * dump_line */
 
 
-extern int had_eof;             /* set to true when input is exhausted */
-extern int line_no;             /* the current input line number. */
+extern BOOLEAN had_eof;             /* set to true when input is exhausted */
+extern int     line_no;             /* the current input line number. */
 
 
-/* The position that we will line the current line up with when it comes time
- * to print it (if we are lining up to parentheses).  */
-extern int paren_target;
 
 extern int use_stdinout; /* Nonzero if we should use standard input/output when files are not
                           * explicitly specified.  */
@@ -291,40 +296,43 @@ typedef struct parser_state
     codes_ty            * p_stack;
     int                   p_stack_size;
 
-    /* This stack stores indentation levels */
-    /* Currently allocated size is stored in p_stack_size.  */
+    /* This stack stores indentation levels 
+     * Currently allocated size is stored in p_stack_size.  */
+
     int                 * il;
 
     /* If the last token was an ident and is a reserved word,
-       remember the type. */
-    rwcodes_ty last_rw;
+     * remember the type. */
+
+    rwcodes_ty            last_rw;
 
     /* also, remember its depth in parentheses */
-    int last_rw_depth;
+
+    int                   last_rw_depth;
 
     /* Used to store case stmt indentation levels.  */
     /* Currently allocated size is stored in p_stack_size.  */
-    int *cstk;
+    int                  *cstk;
 
     /* Pointer to the top of stack of the p_stack, il and cstk arrays. */
-    int tos;
+    int                   tos;
 
-    int box_com;                  /* set to true when we are in a
-                                   * "boxed" comment. In that case, the
-                                   * first non-blank char should be
-                                   * lined up with the / in the comment
-                                   * closing delimiter */
+    int                   box_com; /* set to true when we are in a
+                                    * "boxed" comment. In that case, the
+                                    * first non-blank char should be
+                                    * lined up with the / in the comment
+                                    * closing delimiter */
 
-    int cast_mask;                /* indicates which close parens close off
-                                   * casts */
+    int                   cast_mask; /* indicates which close parens close off
+                                      * casts */
     /* A bit for each paren level, set if the open paren was in a context which
        indicates that this pair of parentheses is not a cast.  */
-    int noncast_mask;
+    int                   noncast_mask;
 
-    int sizeof_mask;              /* indicates which close parens close off
-                                   * sizeof''s */
-    int block_init;               /* set to 1 if inside a block initialization
-                                   * set to 2 if inside an enum declaration */
+    int                   sizeof_mask; /* indicates which close parens close off
+                                        * sizeof''s */
+    int                   block_init;  /* set to 1 if inside a block initialization
+                                        * set to 2 if inside an enum declaration */
     int block_init_level;         /* The level of brace nesting in an
                                    * initialization (0 in an enum decl) */
     int last_nl;                  /* this is true if the last thing scanned was
@@ -340,8 +348,6 @@ typedef struct parser_state
                                    * paren since the last semicolon. When true,
                                    * a '{' is starting a structure definition
                                    * or an initialization list */
-    int bl_line;                  /* set to 1 by dump_line if the line is
-                                   * blank */
     int col_1;                    /* set to true if the last token started in
                                    * column 1 */
     int com_col;                  /* this is the column in which the current
@@ -353,10 +359,11 @@ typedef struct parser_state
     int i_l_follow;               /* the level in spaces to which ind_level
                                    * should be set after the current line is
                                    * printed */
-    int in_decl;                  /* set to true when we are in a declaration
-                                   * stmt.  The processing of braces is then
+    BOOLEAN in_decl;              /* set to true when we are in a declaration
+                                   * statement.  The processing of braces is then
                                    * slightly different */
     int in_stmt;                  /* set to 1 while in a stmt */
+    int in_parameter_declaration;
     int ind_level;                /* the current indentation level in spaces */
     int ind_stmt;                 /* set to 1 if next line should have an extra
                                    * indentation level because we are in the
@@ -394,8 +401,6 @@ typedef struct parser_state
                                    * `want_blank'. */
     int its_a_keyword;
     int sizeof_keyword;
-    int dumped_decl_indent;
-    int in_parameter_declaration;
     char *procname;               /* The name of the current procedure */
     char *procname_end;           /* One char past the last one in procname */
     char *classname;              /* The name of the current C++ class */

@@ -28,47 +28,94 @@
 #include <ctype.h>
 #include <stdlib.h>
 #if defined (HAVE_UNISTD_H)
-#include <unistd.h>
+   #include <unistd.h>
 #endif
 #include <string.h>
+
 #ifdef VMS
-#include <file.h>
-#include <types.h>
-#include <stat.h>
+   #include <file.h>
+   #include <types.h>
+   #include <stat.h>
 #else /* not VMS */
-#include <sys/types.h>
-#include <sys/stat.h>
-/* POSIX says that <fcntl.h> should exist.  Some systems might need to use
-   <sys/fcntl.h> or <sys/file.h> instead.  */
-#include <fcntl.h>
-#if defined (_WIN32) && !defined (__CYGWIN__)
-#include <io.h>
-#endif
+   #include <sys/types.h>
+   #include <sys/stat.h>
+   /* POSIX says that <fcntl.h> should exist.  Some systems might need to use
+    * <sys/fcntl.h> or <sys/file.h> instead.  */
+   #include <fcntl.h>
+   #if defined (_WIN32) && !defined (__CYGWIN__)
+      #include <io.h>
+   #endif
 #endif /* not VMS */
+
 #include "indent.h"
 #include "io.h"
 #include "globs.h"
 #include "output.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.48 2002/03/15 07:48:46 david Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.50 2002/08/04 17:08:41 david Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
 
+/******************************************************************************/
 /* Stuff that needs to be shared with the rest of indent. Documented in
- * indent.h.  */
+ * indent.h.
+ */
 
-char          * in_prog_pos    = NULL;
-char          * buf_ptr        = NULL;
-char          * buf_end        = NULL;
-int             had_eof        = 0;
-int             out_lines      = 0;
-int             com_lines      = 0;
-int             paren_target   = 0;
+char          * in_prog_pos    = NULL;  /* used in output.c        io.c indent.c */
+char          * buf_ptr        = NULL;  /* used in output.c lexi.c io.c indent.c comments.c */
+char          * buf_end        = NULL;  /* used in output.c lexi.c io.c indent.c comments.c */
+BOOLEAN         had_eof        = false; /* used in output.c        io.c          comments.c parse.c */
+char          * cur_line       = NULL;  /* used in output.c        io.c */
 
+/******************************************************************************/
 
-char   * cur_line       = NULL;
+char * skip_horiz_space(const char * p)
+{
+    while ((*p == ' ') || (*p == TAB))
+    {
+        p++;
+    }
 
+    return (char *)p;
+}
+
+/******************************************************************************/
+
+void skip_buffered_space(void)
+{
+    while ((*buf_ptr == ' ') ||
+           (*buf_ptr == TAB))
+    {
+        buf_ptr++;
+        
+        if (buf_ptr >= buf_end)
+        {
+            fill_buffer ();
+        }
+    }
+}
+
+/******************************************************************************/
+
+static BOOLEAN is_comment_start(const char * p)
+{
+    BOOLEAN ret;
+    
+    if ((*p == '/') && ((*(p + 1) == '*') ||
+                        (*(p + 1) == '/')))
+    {
+        ret = true;
+    }
+    else
+    {
+        ret = false;
+    }
+    
+    return ret;
+}
+
+/******************************************************************************/
 
 int count_columns (
     int column,
@@ -79,27 +126,27 @@ int count_columns (
     {
         switch (*bp++)
         {
-            case EOL:
-            case 014:           /* form feed */
-                column = 1;
-                break;
-            case TAB:
-                column += settings.tabsize - (column - 1) % settings.tabsize;
-                break;
-            case 010:           /* backspace */
-                --column;
-                break;
+        case EOL:
+        case '\f':           /* form feed */
+            column = 1;
+            break;
+        case TAB:
+            column += settings.tabsize - (column - 1) % settings.tabsize;
+            break;
+        case 010:           /* backspace */
+            --column;
+            break;
 #ifdef COLOR_DEBUG
-            case '\e':          /* ANSI color */
-                while (*bp++ != 'm')
-                {
-                }
+        case '\e':          /* ANSI color */
+            while (*bp++ != 'm')
+            {
+            }
                 
-                break;
+            break;
 #endif
-            default:
-                ++column;
-                break;
+        default:
+            ++column;
+            break;
         }
     }
 
@@ -108,6 +155,7 @@ int count_columns (
 
 
 #ifdef VMS
+/******************************************************************************/
 /* Folks say VMS requires its own read routine.  Then again, some folks
  * say it doesn't.  Different folks have also sent me conflicting versions
  * of this function.  Who's right?
@@ -145,7 +193,8 @@ static int vms_read (
     return nbytes - nleft;
 }
 #endif /* VMS */
-
+
+/******************************************************************************/
 /* Return the column we are at in the input line. */
 
 int current_column (void)
@@ -195,12 +244,11 @@ int current_column (void)
     return column;
 }
 
-
-
-
+/******************************************************************************/
 /* Return the column in which we should place the code in s_code. */
 
-int compute_code_target (void)
+int compute_code_target (
+    int paren_targ)
 {
     int target_col;
 
@@ -208,22 +256,21 @@ int compute_code_target (void)
     {
         return prev_target_col_break;
     }
-  
 
-    if (parser_state_tos->procname[0] && s_code_corresponds_to == parser_state_tos->procname)
+    if (parser_state_tos->procname[0] &&
+        (s_code_corresponds_to == parser_state_tos->procname))
     {
         target_col = 1;
+        
         if (!parser_state_tos->paren_level)
         {
             return target_col;
         }
-      
     }
     else
     {
         target_col = parser_state_tos->ind_level + 1;
     }
-    
 
     if (!parser_state_tos->paren_level)
     {
@@ -241,9 +288,10 @@ int compute_code_target (void)
                 (settings.paren_indent * (parser_state_tos->paren_level - 1));
     }
 
-    return paren_target;
+    return paren_targ;
 }
 
+/******************************************************************************/
 int compute_label_target (void)
 {
     /* maybe there should be some option to tell indent where to put public:,
@@ -270,6 +318,7 @@ int compute_label_target (void)
     }
 }
 
+/******************************************************************************/
 /* VMS defines it's own read routine, `vms_read' */
 #ifndef INDENT_SYS_READ
 #define INDENT_SYS_READ read
@@ -365,7 +414,7 @@ file_buffer_ty * read_file (
         fileptr.size = size;
     }
 
-    if (fileptr.name != 0)
+    if (fileptr.name != NULL)
     {
         fileptr.name = (char *) xrealloc (fileptr.name, (unsigned) namelen + 1);
     }
@@ -375,15 +424,15 @@ file_buffer_ty * read_file (
     }
     
     (void)strncpy(fileptr.name, filename, namelen);
-    fileptr.name[namelen] = '\0';
+    fileptr.name[namelen] = EOS;
 
-    if (fileptr.data[fileptr.size - 1] != '\n')
+    if (fileptr.data[fileptr.size - 1] != EOL)
     {
-        fileptr.data[fileptr.size] = '\n';
+        fileptr.data[fileptr.size] = EOL;
         fileptr.size++;
     }
     
-    fileptr.data[fileptr.size] = '\0';
+    fileptr.data[fileptr.size] = EOS;
 
     return &fileptr;
 }
@@ -393,6 +442,7 @@ file_buffer_ty * read_file (
 #define BUFSIZ 1024
 #endif
 
+/******************************************************************************/
 /* Suck the standard input into a file_buffer structure, and
    return a pointer to that structure. */
 
@@ -411,7 +461,9 @@ file_buffer_ty * read_stdin (void)
 
     stdinptr.data = (char *) xmalloc (size + 1);
     stdinptr.size = 0;
+    
     p = stdinptr.data;
+    
     do
     {
         while (stdinptr.size < size)
@@ -437,11 +489,12 @@ file_buffer_ty * read_stdin (void)
 
     stdinptr.name = "Standard Input";
 
-    stdinptr.data[stdinptr.size] = '\0';
+    stdinptr.data[stdinptr.size] = EOS;
 
     return &stdinptr;
 }
 
+/******************************************************************************/
 /* Advance `buf_ptr' so that it points to the next line of input.
  *
  * If the next input line contains an indent control comment turning
@@ -459,8 +512,8 @@ file_buffer_ty * read_stdin (void)
 
 void fill_buffer (void)
 {
-    char *p;
-    int finished_a_line;
+    char    * p = NULL;
+    BOOLEAN   finished_a_line = false;
 
     /* indent() may be saving the text between "if (...)" and the following
      * statement.  To do so, it uses another buffer (`save_com').  Switch
@@ -480,7 +533,7 @@ void fill_buffer (void)
         }
     }
 
-    if (*in_prog_pos == '\0')
+    if (*in_prog_pos == EOS)
     {
         cur_line = buf_ptr = in_prog_pos;
         had_eof = true;
@@ -492,36 +545,30 @@ void fill_buffer (void)
      * safely. */
     
     p = cur_line = in_prog_pos;
-    finished_a_line = 0;
+    finished_a_line = false;
     
     do
     {
-        while (*p == ' ' || *p == TAB)
-        {
-            p++;
-        }
+        p = skip_horiz_space(p);
 
         /* If we are looking at the beginning of a comment, see
          * if it turns off formatting with off-on directives. */
         
-        if (*p == '/' && (*(p + 1) == '*' || *(p + 1) == '/'))
+        if (is_comment_start(p))
         {
             p += 2;
             
-            while (*p == ' ' || *p == TAB)
-            {
-                p++;
-            }
-
+            p = skip_horiz_space(p);
+            
             /* Skip all lines between the indent off and on directives. */
             
-            if (!strncmp (p, "*INDENT-OFF*", 12))
+            if (strncmp (p, "*INDENT-OFF*", 12) == 0)
             {
                 inhibit_indenting(true);
             }
         }
 
-        while (*p != '\0' && *p != EOL)
+        while ((*p != EOS) && *p != EOL)
         {
             p++;
         }
@@ -530,7 +577,7 @@ void fill_buffer (void)
         
         if (*p == EOL)
         {
-            finished_a_line = 1;
+            finished_a_line = true;
             in_prog_pos = p + 1;
         }
         
@@ -546,14 +593,17 @@ void fill_buffer (void)
         else
         {
             in_prog_pos = p;
-            finished_a_line = 1;
+            finished_a_line = true;
         }
     } while (!finished_a_line);
 
     buf_ptr = cur_line;
     buf_end = in_prog_pos;
-    if (buf_break && (buf_break->offset >= e_code - s_code || buf_break->offset <= 0))
+    
+    if (buf_break && ((buf_break->offset >= e_code - s_code) || (buf_break->offset <= 0)))
     {
         clear_buf_break_list ();
     }
 }
+
+

@@ -22,7 +22,6 @@
 
 @c !BEGIN INTRO
 @ifinfo
-@sp 10
 This is Edition @value{EDITION} of @cite{The @command{indent} Manual},
 for Indent Version @value{VERSION}, last updated @value{UPDATED}.
 @c !END INTRO
@@ -1014,10 +1013,20 @@ int a, b, c;
 @kindex --break-function-decl-args
 @kindex -nbfda
 @kindex --dont-break-function-decl-args
+@kindex -bfde
+@kindex --break-function-decl-args-end
+@kindex -nbfde
+@kindex --dont-break-function-decl-args-end
 The @option{-bfda} option causes a newline to be forced after the comma
 separating the arguments of a function declaration.  The arguments will
-appear at the current indention level matching the opening paren.  This 
-is particularly helpful for functions with long argument lists.   For 
+appear at one indention level deeper than the function declaration.  This 
+is particularly helpful for functions with long argument lists. 
+The option @option{-bfde} causes a newline to be forced before the closing 
+bracket of the function declaration. For both options the 'n' setting is the default:
+-nbdfa and -nbdfe.
+
+
+For 
 example,
 
 @example
@@ -1029,11 +1038,24 @@ void foo (int arg1, char arg2, int *arg3, long arg4, char arg5);
 With the @option{-bfda} option this would look like
 
 @example
-void foo (int arg1,
-          char arg2,
-          int *arg3,
-          long arg4,
-          char arg5);
+void foo (
+    int arg1,
+    char arg2,
+    int *arg3,
+    long arg4,
+    char arg5);
+@end example
+
+With, in addition, the @option{-bfde} option this would look like
+
+@example
+void foo (
+    int arg1,
+    char arg2,
+    int *arg3,
+    long arg4,
+    char arg5
+    );
 @end example
 
 @kindex -psl
@@ -1198,7 +1220,37 @@ is provided, which is equivalent to @option{-ip0}.
 ANSI C allows white space to be placed on preprocessor command lines
 between the character @samp{#} and the command name.  By default,
 @command{indent} removes this space, but specifying the @option{-lps} option
-directs @command{indent} to leave this space unmodified.
+directs @command{indent} to leave this space unmodified. The option @option{-ppi} 
+overrides  @option{-nlps} and  @option{-lps}.
+
+@kindex -ppi@var{n}
+@kindex --preprocessor-indentation@var{n}
+This option can be used to request that preprocessor conditional statements can
+be indented by to given number of spaces, for example with the option @option{-ppi 3}
+
+@example
+@group
+#if X
+#if Y
+#define Z 1
+#else
+#define Z 0
+#endif
+#endif
+@end group
+@end example
+becomes
+@example
+@group
+#if X
+#   if Y
+#      define Z 1
+#   else
+#      define Z 0
+#   endif
+#endif
+@end group
+@end example
 
 @node Breaking long lines, Disabling Formatting, Indentation, Indent Program
 @comment  node-name,  next,  previous,  up
@@ -1545,7 +1597,12 @@ of code to @var{n} spaces.@*
 
 @item -bfda
 @itemx --break-function-decl-args
-Align all arguments in a declaration with opening paren.@*
+Break the line before all arguments in a declaration.@*
+@xref{Declarations}.
+
+@item -bfde
+@itemx --break-function-decl-args
+Break the line after the last argument in a declaration.@*
 @xref{Declarations}.
 
 @item -di@var{n}
@@ -1869,6 +1926,7 @@ the corresponding short option.
 \line{ --break-after-boolean-operator \leaderfill     -nbbo\ \ }
 \line{ --break-before-boolean-operator \leaderfill    -bbo\ \ }
 \line{ --break-function-decl-args \leaderfill         -bfda} 
+\line{ --break-function-decl-args-end \leaderfill         -bfde} 
 \line{ --braces-on-if-line \leaderfill               -br\ \ }      
 \line{ --braces-on-struct-decl-line \leaderfill       -brs\ \ }
 \line{ --case-indentation \leaderfill            -cli@var{n}}
@@ -1882,6 +1940,7 @@ the corresponding short option.
 \line{ --declaration-comment-column \leaderfill  -cd@var{n}\ } 
 \line{ --declaration-indentation \leaderfill     -di@var{n}\ } 
 \line{ --dont-break-function-decl-args \leaderfill       -nbfda} 
+\line{ --dont-break-function-decl-args-end \leaderfill       -nbfde} 
 \line{ --dont-break-procedure-type \leaderfill           -npsl} 
 \line{ --dont-cuddle-do-while \leaderfill                -ncdw\ \ }
 \line{ --dont-cuddle-else \leaderfill                    -nce\ }  
@@ -1953,6 +2012,7 @@ the corresponding short option.
 --break-after-boolean-operator                  -nbbo
 --break-before-boolean-operator                 -bbo
 --break-function-decl-args                      -bfda
+--break-function-decl-args-end                  -bfde
 --case-indentation                              -cli@var{n}     
 --case-brace-indentation                        -cbi@var{n}
 --comment-delimiters-on-blank-lines             -cdb            
@@ -1964,6 +2024,7 @@ the corresponding short option.
 --declaration-comment-column                    -cd@var{n}      
 --declaration-indentation                       -di@var{n}      
 --dont-break-function-decl-args                 -nbfda
+--dont-break-function-decl-args-end             -nbfde
 --dont-break-procedure-type                     -npsl           
 --dont-cuddle-do-while                          -ncdw
 --dont-cuddle-else                              -nce            

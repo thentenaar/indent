@@ -1,4 +1,4 @@
-README for GNU `indent' 2.2.8.
+README for GNU `indent' 2.2.9.
 
   GNU indent changes the appearance of a C program by inserting or
   deleting whitespace according to a plethora of options.  Some
@@ -24,7 +24,7 @@ DOCUMENTATION
 
   For complete documentation on the Web, please visit:
 
-     http://home.hccnet.nl/d.ingamells/beautify.html
+     http://myweb.freeserve.com/indent/beautify.html
 
   GNU uses a language called "texinfo" for its documentation source
   which produces both an on-line, interactive version and a hardcopy

@@ -63,7 +63,7 @@
 #define PACKAGE  "indent"
 
 /* Version number of package */
-#define VERSION  "2.2.8"
+#define VERSION  "2.2.9"
 
 /* Define if compiler has function prototypes */
 #define PROTOTYPES

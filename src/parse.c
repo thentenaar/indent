@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.28 2002/03/04 20:31:30 david Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.31 2002/08/04 17:08:41 david Exp $");
 
 parser_state_ty *parser_state_tos = NULL;
 
@@ -57,54 +57,52 @@ void init_parser (void)
 
 void reset_parser (void)
 {
-    parser_state_tos->next         = 0;
-    parser_state_tos->tos          = 0;
-    parser_state_tos->p_stack[0]   = stmt;        /* this is the parser's stack */
-    parser_state_tos->last_nl      = true;        /* this is true if the last thing
-                                                     scanned was a newline */
-    parser_state_tos->last_token  = start_token;
-    parser_state_tos->last_saw_nl = false;
+    parser_state_tos->next             = 0;
+    parser_state_tos->tos              = 0;
+    parser_state_tos->p_stack[0]       = stmt;        /* this is the parser's stack */
+    parser_state_tos->last_nl          = true;        /* this is true if the last thing
+                                                   * scanned was a newline */
+    parser_state_tos->last_token       = start_token;
+    parser_state_tos->last_saw_nl      = false;
     parser_state_tos->broken_at_non_nl = false;
-    parser_state_tos->box_com     = false;
-    parser_state_tos->cast_mask = 0;
-    parser_state_tos->noncast_mask = 0;
-    parser_state_tos->sizeof_mask = 0;
-    parser_state_tos->block_init = 0;
+    parser_state_tos->box_com          = false;
+    parser_state_tos->cast_mask        = 0;
+    parser_state_tos->noncast_mask     = 0;
+    parser_state_tos->sizeof_mask      = 0;
+    parser_state_tos->block_init       = 0;
     parser_state_tos->block_init_level = 0;
-    parser_state_tos->col_1 = false;
-    parser_state_tos->com_col = 0;
-    parser_state_tos->dec_nest = 0;
-    parser_state_tos->i_l_follow = 0;
-    parser_state_tos->ind_level = 0;
-    parser_state_tos->last_u_d = false;
-    parser_state_tos->p_l_follow = 0;
-    parser_state_tos->paren_level = 0;
-    parser_state_tos->paren_depth = 0;
-    parser_state_tos->search_brace = false;
-    parser_state_tos->use_ff = false;
-    parser_state_tos->its_a_keyword = false;
-    parser_state_tos->sizeof_keyword = false;
-    parser_state_tos->dumped_decl_indent = false;
+    parser_state_tos->col_1            = false;
+    parser_state_tos->com_col          = 0;
+    parser_state_tos->dec_nest         = 0;
+    parser_state_tos->i_l_follow       = 0;
+    parser_state_tos->ind_level        = 0;
+    parser_state_tos->last_u_d         = false;
+    parser_state_tos->p_l_follow       = 0;
+    parser_state_tos->paren_level      = 0;
+    parser_state_tos->paren_depth      = 0;
+    parser_state_tos->search_brace     = false;
+    parser_state_tos->use_ff           = false;
+    parser_state_tos->its_a_keyword    = false;
+    parser_state_tos->sizeof_keyword   = false;
     parser_state_tos->in_parameter_declaration = false;
-    parser_state_tos->just_saw_decl = false;
-    parser_state_tos->in_decl = false;
-    parser_state_tos->decl_on_line = false;
-    parser_state_tos->in_or_st = false;
-    parser_state_tos->bl_line = true;
-    parser_state_tos->want_blank = false;
-    parser_state_tos->in_stmt = false;
-    parser_state_tos->ind_stmt = false;
-    parser_state_tos->procname = "\0";
-    parser_state_tos->procname_end = "\0";
-    parser_state_tos->classname = "\0";
-    parser_state_tos->classname_end = "\0";
-    parser_state_tos->pcase = false;
-    parser_state_tos->dec_nest = 0;
-    parser_state_tos->can_break = bb_none;
+    parser_state_tos->just_saw_decl    = 0;
+    parser_state_tos->in_decl          = false;
+    parser_state_tos->decl_on_line     = false;
+    parser_state_tos->in_or_st         = 0;
+    parser_state_tos->want_blank       = false;
+    parser_state_tos->in_stmt          = false;
+    parser_state_tos->ind_stmt         = false;
+    parser_state_tos->procname         = "\0";
+    parser_state_tos->procname_end     = "\0";
+    parser_state_tos->classname        = "\0";
+    parser_state_tos->classname_end    = "\0";
+    parser_state_tos->pcase            = false;
+    parser_state_tos->dec_nest         = 0;
+    parser_state_tos->can_break        = bb_none;
     parser_state_tos->saw_double_colon = false;
 
-    parser_state_tos->il[0] = 0;
-    parser_state_tos->cstk[0] = 0;
+    parser_state_tos->il[0]            = 0;
+    parser_state_tos->cstk[0]          = 0;
 
     save_com.len = save_com.column = 0;
 
@@ -243,16 +241,20 @@ exit_values_ty parse (
 
 
     switch (tk)
-    {                           /* go on and figure out what to do with the
-                                   input */
+    {
+        /* go on and figure out what to do with the input */
 
-        case decl:                      /* scanned a declaration word */
+        case decl:
+            /* scanned a declaration word */
             parser_state_tos->search_brace = settings.braces_on_struct_decl_line;
+
             /* indicate that following brace should be on same line */
             
             if ((parser_state_tos->p_stack[parser_state_tos->tos] != decl) &&
                 (parser_state_tos->block_init == 0))
-            {                   /* only put one declaration onto stack */
+            {
+                /* only put one declaration onto stack */
+
                 break_comma = true;     /* while in declaration, newline should be
                                          * forced after comma */
                 inc_pstack ();
@@ -606,9 +608,9 @@ void reduce (void)
 }
 
 /* This kludge is called from main.  It is just like parse(semicolon) except
-  * that it does not clear break_comma.  Leaving break_comma alone is
-  * necessary to make sure that "int foo(), bar()" gets formatted correctly
-  * under -bc.  */
+ * that it does not clear break_comma.  Leaving break_comma alone is
+ * necessary to make sure that "int foo(), bar()" gets formatted correctly
+ * under -bc.  */
 
 void parse_lparen_in_decl (void)
 {

@@ -18,8 +18,8 @@
 #ifndef INDENT_COMMENTS_H
 #define INDENT_COMMENTS_H
 
-RCSTAG_H (comments, "$Id: comments.h,v 1.5 2001/12/03 20:25:00 david Exp $");
+RCSTAG_H (comments, "$Id: comments.h,v 1.6 2002/08/04 17:08:41 david Exp $");
 
-extern void print_comment (void);
+extern void print_comment (int *paren_targ);
 
 #endif /* INDENT_COMMENTS_H */

@@ -34,7 +34,7 @@
 #include "indent.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: lexi.c,v 1.34 2002/03/04 20:31:30 david Exp $");
+RCSTAG_CC ("$Id: lexi.c,v 1.37 2002/08/04 17:08:41 david Exp $");
 
 /* Stuff that needs to be shared with the rest of indent. Documented in
  * indent.h.  */
@@ -230,13 +230,8 @@ codes_ty lexi (void)
     if (*buf_ptr == ' ' || *buf_ptr == TAB)
     {
         parser_state_tos->col_1 = false;
-        while (*buf_ptr == ' ' || *buf_ptr == TAB)
-        {
-            if (++buf_ptr >= buf_end)
-            {
-                fill_buffer ();
-            }
-        }
+
+        skip_buffered_space(); /* adjusts buf_ptr */
     }
 
     /* INCREDIBLY IMPORTANT WARNING!!!
@@ -339,13 +334,7 @@ codes_ty lexi (void)
             return (attribute);
 	}
 
-        while (*buf_ptr == ' ' || *buf_ptr == TAB)
-	{
-            if (++buf_ptr >= buf_end)
-            {
-                fill_buffer ();
-            }
-	}
+        skip_buffered_space(); /* adjusts buf_ptr */
 
         /* Handle operator declarations. */
 
@@ -363,11 +352,8 @@ codes_ty lexi (void)
 
             token_end = buf_ptr;
 
-            while (*buf_ptr == ' ' || *buf_ptr == TAB)
-	    {
-                if (++buf_ptr >= buf_end)
-                    fill_buffer ();
-	    }
+            skip_buffered_space(); /* adjusts buf_ptr */
+            
 	}
 
         parser_state_tos->its_a_keyword = false;
@@ -404,7 +390,7 @@ codes_ty lexi (void)
             p = is_reserved (token, token_end - token);
         }
 
-        if (!p && user_specials != 0)
+        if ((p == NULL) && (user_specials != 0))
 	{
             for (p = &user_specials[0]; p < &user_specials[0] + user_specials_idx; p++)
 	    {
@@ -445,14 +431,15 @@ codes_ty lexi (void)
 
             /* Didn't find anything in user_specials.  */
 
-            p = 0;
+            p = NULL;
 	}
+
+	found_keyword:
 
         if (p)
 	{			/* we have a keyword */
             codes_ty value;
 
-	found_keyword:
             value = ident;
             parser_state_tos->its_a_keyword = true;
             parser_state_tos->last_u_d      = true;
@@ -553,12 +540,12 @@ codes_ty lexi (void)
             
             if (parser_state_tos->last_token == ident && parser_state_tos->last_saw_nl)
             {
-                parser_state_tos->in_decl = 1;
+                parser_state_tos->in_decl = true;
             }
 
             /* Skip to the matching ')'.  */
             
-            for (tp = buf_ptr + 1; paren_count > 0 && tp < in_prog + in_prog_size; tp++)
+            for (tp = buf_ptr + 1; (paren_count > 0) && (tp < in_prog + in_prog_size); tp++)
 	    {
                 if (*tp == '(')
                 {
@@ -593,19 +580,21 @@ codes_ty lexi (void)
                     !strncmp (tp, "__attribute__", 13))
 		{
                     /* Found an __attribute__ after a function declaration */
-                    goto not_proc;	/* Must be a declaration */
+                    /* Must be a declaration */
 		}
-
-                /* If the next char is ';' or ',' or '(' we have a function
-                 * declaration, not a definition.
-                 *
-                 * I've added '=' to this list to keep from breaking
-                 * a non-valid C macro from libc.  -jla */
-                
-                if (*tp != ';' && *tp != ',' && *tp != '(' && *tp != '=')
-		{
-                    parser_state_tos->in_parameter_declaration = 1;
-		}
+                else
+                {
+                    /* If the next char is ';' or ',' or '(' we have a function
+                     * declaration, not a definition.
+                     *
+                     * I've added '=' to this list to keep from breaking
+                     * a non-valid C macro from libc.  -jla */
+                    
+                    if (*tp != ';' && *tp != ',' && *tp != '(' && *tp != '=')
+                    {
+                        parser_state_tos->in_parameter_declaration = 1;
+                    }
+                }
 	    }
 
 	not_proc:;
@@ -790,7 +779,10 @@ codes_ty lexi (void)
 
         case ('['):
             if (parser_state_tos->in_or_st)
+            {
                 parser_state_tos->in_or_st++;
+            }
+            
             unary_delim = true;
             code = lparen;
             break;
@@ -802,7 +794,10 @@ codes_ty lexi (void)
 
         case (']'):
             if (parser_state_tos->in_or_st > 1)
+            {
                 parser_state_tos->in_or_st--;
+            }
+            
             code = rparen;
             break;
 
@@ -912,7 +907,9 @@ codes_ty lexi (void)
             break;
 
         case '.':
-            if (parser_state_tos->in_decl && *buf_ptr == '.' && buf_ptr[1] == '.')
+            if (parser_state_tos->in_decl && 
+                (buf_ptr[0] == '.') && 
+                (buf_ptr[1] == '.'))
             {
                 /* check for '...' in a declaration */
                 if ((buf_ptr += 2) >= buf_end)
@@ -975,7 +972,8 @@ codes_ty lexi (void)
                                            switch */
 
         case '=':
-            if (parser_state_tos->in_or_st && parser_state_tos->last_token != cpp_operator)
+            if (parser_state_tos->in_or_st && 
+                (parser_state_tos->last_token != cpp_operator))
             {
                 parser_state_tos->block_init = 1;
                 parser_state_tos->block_init_level = 0;

@@ -1,3 +1,19 @@
+Release notes for GNU indent version 2.2.9, Aug 2002
+
+ * Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
+   Added support for -brf to place function opening brace after function
+   declaration.
+
+ * Cristalle Azundris Sabon <cristalle@azundris.com>
+   Added --preprocessor-indentation (ppi)   if set, will indent nested
+   preprocessor-statements with n spaces per level.  Overrides -lps.
+
+ * D.Ingamells <indent@dingamells.fsnet.co.uk> Added option break-function-decl-args-end 
+   (bfde) to break the function arguments list before the closing bracket.
+   -bdfa now causes a break after the opening bracket and before the first 
+   argument so that the first argument and subsequent argments are indented
+   one indentation step instead of being aligned with the opening bracket.
+  
 Release notes for GNU indent version 2.2.8, March 2002
 
 * Fixed bug where file got truncated if backup file was not writable.

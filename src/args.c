@@ -23,6 +23,13 @@
  *
  * HISTORY
  * 2002-03-14 DI restructured scan_profile and fixed bug handling comments
+ * 2002-06-13 DI fixed handling of missing int parameter.
+ * 2002-08-05 Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
+ *            Added support for -brf to place function opening brace after function
+ *            declaration.
+ * 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
+ *            Added --preprocessor-indentation (ppi)   if set, will indent nested
+ *            preprocessor-statements with n spaces per level.  overrides -lps.
  */
 
 /* Argument scanning and profile reading code.  Default parameters are set
@@ -38,7 +45,7 @@
 #include "args.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: args.c,v 1.38 2002/03/15 07:48:45 david Exp $");
+RCSTAG_CC ("$Id: args.c,v 1.42 2002/11/10 21:02:48 david Exp $");
 
 #define KR_SETTINGS_STRING (int *) \
      "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
@@ -88,6 +95,7 @@ static int exp_bbb  = 0;
 static int exp_bbo  = 0;
 static int exp_bc   = 0;
 static int exp_bl   = 0;
+static int exp_blf  = 0;
 static int exp_bli  = 0;
 static int exp_bls  = 0;
 static int exp_bs   = 0;
@@ -104,6 +112,7 @@ static int exp_cpp  = 0;
 static int exp_cs   = 0;
 static int exp_d    = 0;
 static int exp_bfda = 0;
+static int exp_bfde = 0;
 static int exp_di   = 0;
 static int exp_dj   = 0;
 static int exp_eei  = 0;
@@ -127,6 +136,7 @@ static int exp_pmt  = 0;
 static int exp_pro  = 0;
 static int exp_prs  = 0;
 static int exp_psl  = 0;
+static int exp_ppi  = 0;  /* force preprocessor indent at width... */
 static int exp_sai  = 0;
 static int exp_saf  = 0;
 static int exp_saw  = 0;
@@ -232,6 +242,7 @@ const pro_ty pro[] =
     {"ncdb",    PRO_BOOL,                            true,      OFF, &settings.comment_delimiter_on_blankline,   &exp_cdb},
     {"nbs",     PRO_BOOL,                           false,      OFF, &settings.blank_after_sizeof,               &exp_bs},
     {"nbfda",   PRO_BOOL,                           false,      OFF, &settings.break_function_decl_args,         &exp_bfda},
+    {"nbfde",   PRO_BOOL,                           false,      OFF, &settings.break_function_decl_args_end,     &exp_bfde},
     {"nbc",     PRO_BOOL,                            true,       ON, &settings.leave_comma,                      &exp_bc},
     {"nbbo",    PRO_BOOL,                            true,      OFF, &settings.break_before_boolean_operator,    &exp_bbo},
     {"nbbb",    PRO_BOOL,                           false,      OFF, &settings.blanklines_before_blockcomments,  &exp_bbb},
@@ -268,11 +279,14 @@ const pro_ty pro[] =
     {"c",       PRO_INT,                               33, ONOFF_NA, &settings.com_ind,                          &exp_c},
     {"bs",      PRO_BOOL,                           false,       ON, &settings.blank_after_sizeof,               &exp_bs},
     {"brs",     PRO_BOOL,                            true,       ON, &settings.braces_on_struct_decl_line,       &exp_bls},
+    {"brf",     PRO_BOOL,                           false,       ON, &settings.braces_on_func_def_line,		 &exp_blf},
     {"br",      PRO_BOOL,                            true,       ON, &settings.btype_2,                          &exp_bl},
     {"bls",     PRO_BOOL,                            true,      OFF, &settings.braces_on_struct_decl_line,       &exp_bls},
+    {"blf",     PRO_BOOL,                           false,      OFF, &settings.braces_on_func_def_line,          &exp_blf},
     {"bli",     PRO_INT,                                0, ONOFF_NA, &settings.brace_indent,                     &exp_bli},
     {"bl",      PRO_BOOL,                            true,      OFF, &settings.btype_2,                          &exp_bl},
     {"bfda",    PRO_BOOL,                           false,       ON, &settings.break_function_decl_args,         &exp_bfda},
+    {"bfde",    PRO_BOOL,                           false,       ON, &settings.break_function_decl_args_end,     &exp_bfde},
     {"bc",      PRO_BOOL,                            true,      OFF, &settings.leave_comma,                      &exp_bc},
     {"bbo",     PRO_BOOL,                            true,       ON, &settings.break_before_boolean_operator,    &exp_bbo},
     {"bbb",     PRO_BOOL,                           false,       ON, &settings.blanklines_before_blockcomments,  &exp_bbb},
@@ -281,6 +295,7 @@ const pro_ty pro[] =
     {"bad",     PRO_BOOL,                           false,       ON, &settings.blanklines_after_declarations,    &exp_bad},
     {"bacc",    PRO_BOOL,                           false,       ON, &settings.blanklines_around_conditional_compilation, &exp_bacc},
     {"T",       PRO_KEY,                                0, ONOFF_NA, 0,                                          &exp_T},
+    {"ppi",     PRO_INT,                                0, ONOFF_NA, &settings.force_preproc_width,              &exp_ppi},
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
 };
@@ -340,6 +355,7 @@ const pro_ty pro[] =
     {"ncdb",    PRO_BOOL,                           false,      OFF, &settings.comment_delimiter_on_blankline,   &exp_cdb},
     {"nbs",     PRO_BOOL,                           false,      OFF, &settings.blank_after_sizeof,               &exp_bs},
     {"nbfda",   PRO_BOOL,                           false,      OFF, &settings.break_function_decl_args,         &exp_bfda},
+    {"nbfde",   PRO_BOOL,                           false,      OFF, &settings.break_function_decl_args_end,     &exp_bfde},
     {"nbc",     PRO_BOOL,                            true,       ON, &settings.leave_comma,                      &exp_bc},
     {"nbbo",    PRO_BOOL,                            true,      OFF, &settings.break_before_boolean_operator,    &exp_bbo},
     {"nbbb",    PRO_BOOL,                           false,      OFF, &settings.blanklines_before_blockcomments,  &exp_bbb},
@@ -377,11 +393,14 @@ const pro_ty pro[] =
     {"c",       PRO_INT,                               33, ONOFF_NA, &settings.com_ind,                          &exp_c},
     {"bs",      PRO_BOOL,                           false,       ON, &settings.blank_after_sizeof,               &exp_bs},
     {"brs",     PRO_BOOL,                           false,       ON, &settings.braces_on_struct_decl_line,       &exp_bls},
-    {"br",      PRO_BOOL,                           false,       ON, &settings.btype_2,                          &exp_bl},
     {"bls",     PRO_BOOL,                           false,      OFF, &settings.braces_on_struct_decl_line,       &exp_bls},
+    {"brf",     PRO_BOOL,                           false,       ON, &settings.braces_on_func_def_line,          &exp_blf},
+    {"blf",     PRO_BOOL,                           false,      OFF, &settings.braces_on_func_def_line,          &exp_blf},
     {"bli",     PRO_INT,                                2, ONOFF_NA, &settings.brace_indent,                     &exp_bli},
+    {"br",      PRO_BOOL,                           false,       ON, &settings.btype_2,                          &exp_bl},
     {"bl",      PRO_BOOL,                           false,      OFF, &settings.btype_2,                          &exp_bl},
     {"bfda",    PRO_BOOL,                           false,       ON, &settings.break_function_decl_args,         &exp_bfda},
+    {"bfde",    PRO_BOOL,                           false,       ON, &settings.break_function_decl_args_end,     &exp_bfde},
     {"bc",      PRO_BOOL,                            true,      OFF, &settings.leave_comma,                      &exp_bc},
     {"bbo",     PRO_BOOL,                            true,       ON, &settings.break_before_boolean_operator,    &exp_bbo},
     {"bbb",     PRO_BOOL,                           false,       ON, &settings.blanklines_before_blockcomments,  &exp_bbb},
@@ -390,6 +409,7 @@ const pro_ty pro[] =
     {"bad",     PRO_BOOL,                           false,       ON, &settings.blanklines_after_declarations,    &exp_bad},
     {"bacc",    PRO_BOOL,                           false,       ON, &settings.blanklines_around_conditional_compilation, &exp_bacc},
     {"T",       PRO_KEY,                                0, ONOFF_NA, 0,                                          &exp_T},
+    {"ppi",     PRO_INT,                                0, ONOFF_NA, &settings.force_preproc_width,              &exp_ppi},
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
 };
@@ -398,8 +418,8 @@ const pro_ty pro[] =
 
 typedef struct long_option_conversion
 {
-  char *long_name;
-  char *short_name;
+    char *long_name;
+    char *short_name;
 } long_option_conversion_ty;
 
 const long_option_conversion_ty option_conversions[] =
@@ -480,6 +500,7 @@ const long_option_conversion_ty option_conversions[] =
     {"dont-cuddle-do-while",                        "ncdw"},
     {"dont-break-procedure-type",                   "npsl"},
     {"dont-break-function-decl-args",               "nbfda"},
+    {"dont-break-function-decl-args-end",           "nbfde"},
     {"declaration-indentation",                     "di"},
     {"declaration-comment-column",                  "cd"},
     {"cuddle-else",                                 "ce"},
@@ -493,11 +514,14 @@ const long_option_conversion_ty option_conversions[] =
     {"case-brace-indentation",                      "cbi"},
     {"c-plus-plus",                                 "c++"},
     {"break-function-decl-args",                    "bfda"},
+    {"break-function-decl-args-end",                "bfde"},
     {"break-before-boolean-operator",               "bbo"},
     {"break-after-boolean-operator",                "nbbo"},
     {"braces-on-struct-decl-line",                  "brs"},
+    {"braces-on-func-def-line",                     "brf"},
     {"braces-on-if-line",                           "br"},
     {"braces-after-struct-decl-line",               "bls"},
+    {"braces-after-func-def-line",                  "blf"},
     {"braces-after-if-line",                        "bl"},
     {"brace-indent",                                "bli"},
     {"blank-lines-before-block-comments",           "bbb"},
@@ -510,6 +534,7 @@ const long_option_conversion_ty option_conversions[] =
     {"berkeley-style",                              "orig"},
     {"berkeley",                                    "orig"},
     {"Bill-Shannon",                                "bs"},
+    {"preprocessor-indentation",                    "ppi"},
     {0,                                             0},
 };
 
@@ -524,21 +549,23 @@ static void usage (void)
    argument.  Compare the two, returning true if they are equal, and if they
    are equal set *START_PARAM to point to the argument in S2.  */
 
-static int eqin (
+static BOOLEAN eqin (
     const char   * s1,
     const char   * s2,
     const  char ** start_param)
 {
+    BOOLEAN ret = true;
+    
     while (*s1)
     {
         if (*s1++ != *s2++)
         {
-            return (false);
+            ret = false;
         }
     }
   
     *start_param = s2;
-    return (true);
+    return ret;
 }
 
 /* Set the defaults. */
@@ -554,7 +581,6 @@ void set_defaults (void)
             *p->p_obj = p->p_default;
         }
     }
-  
 }
 
 /* Set the defaults after options set */
@@ -590,6 +616,7 @@ static int option_prefix (
     char       ** prefixes    = option_prefixes;
     char        * this_prefix = *prefixes;
     const char  * argp        = arg;
+    int           ret         = 0;
 
     do
     {
@@ -604,12 +631,13 @@ static int option_prefix (
       
         if (*this_prefix == '\0')
         {
-            return this_prefix - *prefixes;
+            ret = this_prefix - *prefixes;
+            break;
         }
       
     } while (*++prefixes);
 
-    return 0;
+    return ret;
 }
 
 /* Process an option ARG (e.g. "-l60").  PARAM is a possible value
@@ -617,7 +645,10 @@ static int option_prefix (
  * argument is being explicitly specified (as opposed to being taken from a
  * PRO_SETTINGS group of settings).
  *
- * Returns 1 if the option had a value, returns 0 otherwise. */
+ * Returns 1 if the option had a value, returns 0 otherwise.
+ *
+ * 2002-06-13 D.Ingamells. Fixed check for int param without an int argument.
+ */
 
 int set_option (
     const char * option,
@@ -628,11 +659,11 @@ int set_option (
     const char   * param_start   = NULL;
     int            option_length = option_prefix (option);
     int            val           = 0;
-
+    BOOLEAN        found         = false;
   
     if (option_length > 0)
     {
-        if (option_length == 1 && *option == '-')
+        if ((option_length == 1) && (*option == '-'))
         {
             /* Short option prefix */
             option++;
@@ -642,7 +673,8 @@ int set_option (
                 if ((*p->p_name == *option) &&
                     eqin (p->p_name, option, &param_start))
                 {
-                    goto found;
+                    found = true;
+                    break;
                 }
             }
         }
@@ -672,51 +704,54 @@ int set_option (
                 {
                     if (!strcmp (p->p_name, o->short_name))
                     {
-                        goto found;
+                        found = true;
+                        break;
                     }
                 }
             }
         }
     }
 
-    fprintf (stderr, _("indent: unknown option \"%s\"\n"), option - 1);
-    exit (invocation_error);
-
-
- found:
-    /* If the parameter has been explicitly specified, we don't
-     * want a group of bundled settings to override the explicit
-     * setting.  */
-    
-    if (settings.verbose)
+    if (!found)
     {
-        fprintf (stderr, _("option: %s\n"), p->p_name);
+        fprintf (stderr, _("indent: unknown option \"%s\"\n"), option - 1);
+        exit (invocation_error);
     }
-  
-    if (explicit || !*(p->p_explicit))
+    else
     {
-        if (explicit)
+        /* If the parameter has been explicitly specified, we don't
+         * want a group of bundled settings to override the explicit
+         * setting.  */
+        
+        if (settings.verbose)
         {
-            *(p->p_explicit) = 1;
+            fprintf (stderr, _("option: %s\n"), p->p_name);
         }
-
-        switch (p->p_type)
+        
+        if (explicit || !*(p->p_explicit))
         {
-
+            if (explicit)
+            {
+                *(p->p_explicit) = 1;
+            }
+            
+            switch (p->p_type)
+            {
+                
             case PRO_PRSTRING:
                 /* This is not really an error, but zero exit values are
                    returned only when code has been successfully formatted. */
                 printf (_("GNU indent %s\n"), (char *) p->p_obj);
                 exit (invocation_error);
-
+                
             case PRO_FUNCTION:
                 ((void (*)()) p->p_obj) ();
                 break;
-
+                
             case PRO_SETTINGS:
                 {
                     char *t;            /* current position */
-
+                    
                     t = (char *) p->p_obj;
                     
                     do
@@ -768,9 +803,11 @@ int set_option (
                 break;
 
             case PRO_INT:
-                if (*param_start == 0)
+                if (*param_start == '\0')
                 {
-                    if (!(param_start = param))
+                    param_start = param;
+                    
+                    if (param_start == NULL)
                     {
                         arg_missing(option);
                     }
@@ -780,7 +817,11 @@ int set_option (
                     }
                 }
 
-                if (!isdigit (*param_start) && *param_start != '-')
+                if (isdigit (*param_start) || ((*param_start == '-') && isdigit (*(param_start + 1))))
+                {
+                    *p->p_obj = atoi (param_start);
+                }
+                else
                 {
                     fprintf (stderr,
                              _("indent: option ``%s'' requires a numeric parameter\n"),
@@ -788,7 +829,6 @@ int set_option (
                     exit (invocation_error);
                 }
                 
-                *p->p_obj = atoi (param_start);
                 break;
 
             default:
@@ -796,9 +836,9 @@ int set_option (
                          _("indent: set_option: internal error: p_type %d\n"),
                          (int) p->p_type);
                 exit (invocation_error);
+            }
         }
     }
-
     
     return val;
 }
