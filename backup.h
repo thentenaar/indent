@@ -11,6 +11,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
 
+RCSTAG_H(backup, "$Id")
 
 /* When to make backup files.  Analagous to 'version-control'
    in Emacs. */

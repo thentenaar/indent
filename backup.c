@@ -11,8 +11,6 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
 
-
-
 /* GNU/Emacs style backups --
    This behaviour is controlled by two environment variables,
    VERSION_CONTROL and SIMPLE_BACKUP_SUFFIX.
@@ -47,7 +45,21 @@
 
 #include "sys.h"
 #include "backup.h"
+#include "indent.h"
 #include <ctype.h>
+
+#include <stdlib.h>
+#if defined (HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <fcntl.h>
+#endif
+#include <string.h>
+
 
 #ifndef isascii
 #define ISDIGIT(c) (isdigit ((unsigned char) (c)))
@@ -55,34 +67,31 @@
 #define ISDIGIT(c) (isascii (c) && isdigit (c))
 #endif
 
-#ifndef NODIR
+RCSTAG_CC("$Id: backup.c,v 1.4 1999/06/05 13:53:11 carlo Exp $")
 
 #include <sys/types.h>
 
-#ifdef DIRENT
-#include <dirent.h>
-#ifdef direct
-#undef direct
-#endif
-#define direct dirent
-#define NLENGTH(direct) (strlen((direct)->d_name))
-#else /* !DIRENT */
-#define NLENGTH(direct) ((direct)->d_namlen)
-#ifdef USG
-#ifdef SYSNDIR
-#include <sys/ndir.h>
-#else /* !SYSNDIR */
-#include <ndir.h>
-#endif /* !SYSNDIR */
-#else /* !USG */
-#include <sys/dir.h>
-#endif /* !USG */
-#endif /* !DIRENT */
-
-#if defined (HAVE_UNISTD_H)
-#include <unistd.h>
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
+#else
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
+# if !defined(HAVE_SYS_NDIR_H) && !defined(HAVE_SYS_DIR_H) && !defined(HAVE_NDIR_H)
+#  define NODIR 1
+# endif
 #endif
 
+#ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
 /* POSIX does not require that the d_ino field be present, and some
    systems do not provide it. */
@@ -90,7 +99,6 @@
 #else
 #define REAL_DIR_ENTRY(dp) ((dp)->d_ino != 0)
 #endif
-
 #else /* NODIR */
 #define generate_backup_filename(v,f) simple_backup_name((f))
 #endif /* NODIR */
@@ -107,6 +115,7 @@
 #define BACKUP_SUFFIX_FORMAT "%s.~%d~"
 #endif
 
+extern void free ();
 
 /* Default backup file suffix to use */
 static char *simple_backup_suffix = BACKUP_SUFFIX_STR;
@@ -166,7 +175,7 @@ highest_version (filename, dirname)
      char *filename, *dirname;
 {
   DIR *dirp;
-  struct direct *dp;
+  struct dirent *dp;
   int highest_version;
   int this_version;
   int file_name_length;
@@ -180,7 +189,7 @@ highest_version (filename, dirname)
 
   while ((dp = readdir (dirp)) != 0)
     {
-      if (!REAL_DIR_ENTRY (dp) || NLENGTH (dp) <= file_name_length + 2)
+      if (!REAL_DIR_ENTRY (dp) || NAMLEN (dp) <= file_name_length + 2)
 	continue;
 
       this_version = version_number (filename, dp->d_name, file_name_length);
@@ -200,8 +209,8 @@ static int
 max_version (pathname)
      char *pathname;
 {
-  register char *p;
-  register char *filename;
+  char *p;
+  char *filename;
   int pathlen = strlen (pathname);
   int version;
 
@@ -212,7 +221,7 @@ max_version (pathname)
   if (*p == '/')
     {
       int dirlen = p - pathname;
-      register char *dirname;
+      char *dirname;
 
       filename = p + 1;
       dirname = xmalloc (dirlen + 1);
@@ -266,6 +275,7 @@ generate_backup_filename (version_control, pathname)
 static struct version_control_values values[] =
 {
   {none, "never"},		/* Don't make backups. */
+  {none, "none"},		/* Ditto */
   {simple, "simple"},		/* Only simple backups */
   {numbered_existing, "existing"},	/* Numbered if they already exist */
   {numbered_existing, "nil"},	/* Ditto */
@@ -325,8 +335,6 @@ initialize_backups ()
 #endif /* !NODIR */
 }
 
-/* Prints an error message using `perror' */
-extern void sys_error ();
 
 /* Make a backup copy of FILE, taking into account version-control.
    See the description at the beginning of the file for details. */
@@ -336,22 +344,25 @@ make_backup (file)
      struct file_buffer *file;
 {
   int fd;
-  register char *p = file->name + strlen (file->name) - 1;
   char *backup_filename;
-  char *new_backup_name;
+  unsigned int size;
+
+  if (version_control == none)
+    return;
 
   backup_filename = generate_backup_filename (version_control, file->name);
   if (!backup_filename)
     {
-      fprintf (stderr, "indent: Can't make backup filename of %s", file->name);
-      exit (1);
+      fprintf (stderr, "indent: Can't make backup filename of %s\n", file->name);
+      exit (system_error);
     }
 
   fd = creat (backup_filename, 0666);
   if (fd < 0)
-    sys_error (backup_filename);
-  if (write (fd, file->data, file->size) != file->size)
-    sys_error (backup_filename);
+    fatal ("Can't open backup file %s", backup_filename);
+  size = write (fd, file->data, file->size);
+  if (size != file->size)
+    fatal ("Can't write to backup file %s", backup_filename);
 
   close (fd);
   free (backup_filename);

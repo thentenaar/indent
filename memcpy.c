@@ -4,7 +4,7 @@
    if the source overlaps with the destination.
    Return DESTADDR. */
 
-#ifdef USG
+#ifndef HAVE_MEMCPY
 char *
 memcpy (destaddr, srcaddr, len)
      char *destaddr;
@@ -17,4 +17,4 @@ memcpy (destaddr, srcaddr, len)
     *destaddr++ = *srcaddr++;
   return dest;
 }
-#endif
+#endif /* HAVE_MEMCPY */

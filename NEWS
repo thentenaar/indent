@@ -1,4 +1,99 @@
-Release notes for GNU indent version 1.10.
+Release notes for GNU indent version 2.1, June 1999
+
+* Merged in the changes made by Joseph Arceneaux from 1.9.1 -> 2.0.
+  Thus: 1.10.0 == 1.9.1 + Carlo's patches
+        2.0    == 1.9.1 + Joseph's patches
+	2.1.0  == 1.9.1 + Joseph's patches + Carlo's patches.
+  Below you can find the release notes of 2.0, which thus also apply to 2.1:
+  The maintenance is now officially transfered to Carlo Wood.
+
+* GNU indent is now a lot more precise in honouring the --line-lengthN
+  option: It now joins lines when they fit on one line, and it won't
+  produce lines that are longer then the specified line length anymore
+  (except when no reasonable break point was found).
+
+* Two new options to accommodate breaking long lines:
+  -hnl, --honour-newlines :
+     Prefer to break long lines at positions where the lines were broken
+     in the input file.
+  -nhnl, --ignore-newlines:
+     Don't prefer that.
+
+  -bbo, --break-before-boolean-operator :
+     Prefer to break long lines before the boolean operators && and ||.
+  -nbbo, --break-after-boolean-operator :
+     Prefer to break long lines after the boolean operators && and ||.
+
+* The default is now not to indent the braces of struct, union and enum.
+  A new option -sbiN or --struct-brace-indentationN allows to indent it
+  nevertheless.
+   
+Release notes for GNU indent version 2.0, November 1998 
+
+* indent withstands the U. Wisconsin fuzz test. (See
+  http://www.cs.wisc.edu/Dienst/UI/2.0/Describe/ncstrl.uwmadison/CS-TR-95-1268
+  for details.)
+
+* indent compiles with gcc -Wall and MSVC++ with no warnings.
+
+* C++ code is handled to a great extent.  There is no special switch
+  or option. However, there are still several cases which are not
+  handled as well as they should be, and there are no options
+  controlling C++ formatting specifically.
+
+  There is only one case I'm aware of in which the output of indent
+  breaks compilation;  this is nested templates such as:
+
+    Aaa<int, Bbb<int> > anotherAB;
+
+  are transformed into:
+
+    Aaa < int, Bbb < int >>anotherAB;
+
+  which is problematic for some compilers.  This is, in my opinion,
+  the fault of the incredibly brain-dead design of C++, and it's not
+  clear when or if indent will deal properly with this example.
+
+* Wide strings and characters are now handled.
+
+* The manual page, indent.1, has been removed from the distribution
+  because it is not supported and is seriously out of date (it
+  corresponds to indent 1.4).
+
+* The "-bbb" option, which forces blanklines before boxed comments,
+  has been re-instated.
+
+* Trailing spaces are removed from output.
+
+* Line-breaking behaviour has been improved.
+
+* The troff option has been removed.
+
+* You may now put either C ("/* ... */") or C++ ("// ...") comments in
+  the indent profile.  Options within comments are ignored.
+
+* The K&R style of leaving procedure names on the same line as their
+  type is now better supported (the option "-psl").
+
+* The "-l" option now works more consistently.  This may change some
+  behaviour by breaking lines where they were not broken before.
+  Specifying an argument of "0" will turn off this option.
+
+* The unused options "-ps" and "-nps" were removed.
+
+* When `indent' completes its work successfully, it exits with a value
+  of 0.  Otherwise, one of the following values is returned:
+
+  1 : This means `indent' was incorrectly invoked.
+  2 : Errors occurred during formatting, but processing continued.
+  3 : An unrecoverable error occured during the processing of an input
+      file.  If there are more input files, indent will proceed to
+      process them, but will return the error value 3.
+  4 : A serious internal error occured.  All processing is terminated.
+  5 : A system error during processing occurred.  In this case,
+     `indent' terminates.
+
+Release notes for GNU indent version 1.10, May 1999.
 
 * New maintainer.
   New build environment, using automake now.

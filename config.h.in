@@ -7,6 +7,9 @@
 #undef _ALL_SOURCE
 #endif
 
+/* Define to empty if the keyword does not work.  */
+#undef const
+
 /* Define if on MINIX.  */
 #undef _MINIX
 
@@ -19,9 +22,6 @@
 
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
-
-/* Define this when dirent.h doesn't define DIR */
-#undef NODIR
 
 /* Define if you have the memcpy function.  */
 #undef HAVE_MEMCPY

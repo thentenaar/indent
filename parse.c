@@ -1,5 +1,5 @@
-/* Copyright (c) 1994, Joseph Arceneaux.  All rights reserved
-
+/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+   Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
    Copyright (c) 1985 Sun Microsystems, Inc. Copyright (c) 1980 The Regents
    of the University of California. Copyright (c) 1976 Board of Trustees of
    the University of Illinois. All rights reserved.
@@ -19,6 +19,8 @@
 #include "sys.h"
 #include "indent.h"
 
+RCSTAG_CC("$Id")
+
 struct parser_state *parser_state_tos;
 
 #define INITIAL_BUFFER_SIZE 1000
@@ -28,8 +30,8 @@ void
 init_parser ()
 {
   parser_state_tos
-  = (struct parser_state *) xmalloc (sizeof (struct parser_state));
-
+    = (struct parser_state *) xmalloc (sizeof (struct parser_state));
+  /* GDB_HOOK_parser_state_tos */
   parser_state_tos->p_stack_size = INITIAL_STACK_SIZE;
   parser_state_tos->p_stack
     = (enum codes *) xmalloc (INITIAL_STACK_SIZE * sizeof (enum codes));
@@ -37,7 +39,9 @@ init_parser ()
     = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
   parser_state_tos->cstk
     = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
-  parser_state_tos->paren_indents = (short *) xmalloc (sizeof (short));
+  parser_state_tos->paren_indents_size = 8;
+  parser_state_tos->paren_indents
+    = (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
 
   /* Although these are supposed to grow if we reach the end,
      I can find no place in the code which does this. */
@@ -47,6 +51,7 @@ init_parser ()
 
   save_com.size = INITIAL_BUFFER_SIZE;
   save_com.end = save_com.ptr = xmalloc (save_com.size);
+  save_com.len = save_com.column = 0;
 
   di_stack_alloc = 2;
   di_stack = (int *) xmalloc (di_stack_alloc * sizeof (*di_stack));
@@ -58,16 +63,17 @@ reset_parser ()
 {
   parser_state_tos->next = 0;
   parser_state_tos->tos = 0;
-  parser_state_tos->paren_indents_size = 1;
   parser_state_tos->p_stack[0] = stmt;	/* this is the parser's stack */
   parser_state_tos->last_nl = true;	/* this is true if the last thing
 					   scanned was a newline */
-  parser_state_tos->last_token = semicolon;
+  parser_state_tos->last_token = start_token;
+  parser_state_tos->last_saw_nl = false;
+  parser_state_tos->broken_at_non_nl = false;
   parser_state_tos->box_com = false;
   parser_state_tos->cast_mask = 0;
   parser_state_tos->noncast_mask = 0;
   parser_state_tos->sizeof_mask = 0;
-  parser_state_tos->block_init = false;
+  parser_state_tos->block_init = 0;
   parser_state_tos->block_init_level = 0;
   parser_state_tos->col_1 = false;
   parser_state_tos->com_col = 0;
@@ -94,8 +100,17 @@ reset_parser ()
   parser_state_tos->ind_stmt = false;
   parser_state_tos->procname = "\0";
   parser_state_tos->procname_end = "\0";
+  parser_state_tos->classname = "\0";
+  parser_state_tos->classname_end = "\0";
   parser_state_tos->pcase = false;
   parser_state_tos->dec_nest = 0;
+  parser_state_tos->can_break = bb_none;
+
+  parser_state_tos->il[0] = 0;
+  parser_state_tos->cstk[0] = 0;
+
+  save_com.len = save_com.column = 0;
+
   di_stack[parser_state_tos->dec_nest] = 0;
 
   l_com = combuf + INITIAL_BUFFER_SIZE - 5;
@@ -104,7 +119,6 @@ reset_parser ()
   combuf[0] = codebuf[0] = labbuf[0] = ' ';
   combuf[1] = codebuf[1] = labbuf[1] = '\0';
 
-  else_if = 1;
   else_or_endif = false;
   s_lab = e_lab = labbuf + 1;
   s_code = e_code = codebuf + 1;
@@ -138,6 +152,9 @@ inc_pstack ()
 	xrealloc ((char *) parser_state_tos->cstk,
 		  parser_state_tos->p_stack_size * sizeof (int));
     }
+
+  parser_state_tos->cstk[parser_state_tos->tos]
+    = parser_state_tos->cstk[parser_state_tos->tos - 1];
   return parser_state_tos->tos;
 }
 
@@ -173,6 +190,7 @@ debug_init ()
   debug_symbol_strings[decl] = "decl";
   debug_symbol_strings[sp_paren] = "sp_paren";
   debug_symbol_strings[sp_nparen] = "sp_nparen";
+  debug_symbol_strings[sp_else] = "sp_else";
   debug_symbol_strings[ifstmt] = "ifstmt";
   debug_symbol_strings[whilestmt] = "whilestmt";
   debug_symbol_strings[forstmt] = "forstmt";
@@ -189,11 +207,12 @@ debug_init ()
 
 #endif
 
-void
+enum exit_values
 parse (tk)
      enum codes tk;		/* the code for the construct scanned */
 {
   int i;
+  enum exit_values my_value = total_success;
 
 #ifdef DEBUG
   if (debug)
@@ -247,8 +266,7 @@ parse (tk)
       break;
 
     case ifstmt:		/* scanned if (...) */
-      if (parser_state_tos->p_stack[parser_state_tos->tos] == elsehead
-	  && else_if)		/* "else if ..." */
+      if (parser_state_tos->p_stack[parser_state_tos->tos] == elsehead)
 	parser_state_tos->i_l_follow
 	  = parser_state_tos->il[parser_state_tos->tos];
     case dolit:			/* 'do' */
@@ -260,7 +278,7 @@ parse (tk)
         = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
       if (tk != casestmt)
         parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
-							   should be indented 1 */
+							   should be indented */
       parser_state_tos->search_brace = btype_2;
       break;
 
@@ -273,16 +291,15 @@ parse (tk)
       else if (parser_state_tos->p_stack[parser_state_tos->tos] == decl)
 	{
 	  parser_state_tos->i_l_follow += ind_size;
-	  if (parser_state_tos->last_rw == rw_struct_like
-	      && parser_state_tos->block_init_level == 0
+	  if ((parser_state_tos->last_rw == rw_struct_like
+	      || parser_state_tos->last_rw == rw_enum)
+	      && (parser_state_tos->block_init != 1
+	          || parser_state_tos->block_init_level == 0)
 	      && parser_state_tos->last_token != rparen
 	      && !braces_on_struct_decl_line)
-#if 0
-	      && !parser_state_tos->col_1)
-#endif
 	    {
-	      parser_state_tos->ind_level += brace_indent;
-	      parser_state_tos->i_l_follow += brace_indent;
+	      parser_state_tos->ind_level += struct_brace_indent;
+	      parser_state_tos->i_l_follow += struct_brace_indent;
 	    }
 	}
       else if (parser_state_tos->p_stack[parser_state_tos->tos] == casestmt)
@@ -306,15 +323,16 @@ parse (tk)
 		{
 		  parser_state_tos->ind_level += brace_indent;
 		  parser_state_tos->i_l_follow += brace_indent;
+#if 0
 		  if (parser_state_tos->p_stack[parser_state_tos->tos]
 		      == swstmt)
 		    case_ind += brace_indent;
+#endif
 		}
 
 	      if (parser_state_tos->p_stack[parser_state_tos->tos] == swstmt
-		  && case_indent
-		  >= ind_size)
-		parser_state_tos->ind_level -= ind_size;
+		  && case_indent > 0)
+		parser_state_tos->i_l_follow += case_indent;
 	      /* for a switch, brace should be two levels out from the code */
 	    }
 	}
@@ -353,7 +371,10 @@ parse (tk)
     case elselit:		/* scanned an else */
 
       if (parser_state_tos->p_stack[parser_state_tos->tos] != ifhead)
-	diag (1, "Unmatched 'else'", 0, 0);
+	{
+	  ERROR ("Unmatched 'else'", 0, 0);
+	  my_value = indent_error;
+	}
       else
 	{
 	  /* indentation for else should be same as for if */
@@ -365,7 +386,7 @@ parse (tk)
 
 	  parser_state_tos->p_stack[parser_state_tos->tos] = elsehead;
 	  /* remember if with else */
-	  parser_state_tos->search_brace = btype_2 | else_if;
+	  parser_state_tos->search_brace = true;
 	}
       break;
 
@@ -378,21 +399,34 @@ parse (tk)
 	  parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
 	}
       else
-	diag (1, "Stmt nesting error.", 0, 0);
+	{
+	  ERROR ("Stmt nesting error.", 0, 0);
+	  my_value = indent_error;
+	}
       break;
 
     case swstmt:		/* had switch (...) */
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = swstmt;
+#if 0
       parser_state_tos->cstk[parser_state_tos->tos] = case_ind;
-      /* save current case indent level */
-      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
-      case_ind = parser_state_tos->i_l_follow + case_indent;	/* cases should be one
-								   level down from
-								   switch */
-      /* statements should be two levels in */
-      parser_state_tos->i_l_follow += case_indent + ind_size;
+#endif
+      parser_state_tos->cstk[parser_state_tos->tos]
+	= case_indent + parser_state_tos->i_l_follow;
+      if (! btype_2)
+	parser_state_tos->cstk[parser_state_tos->tos] += brace_indent;
 
+      /* save current case indent level */
+      parser_state_tos->il[parser_state_tos->tos]
+	= parser_state_tos->i_l_follow;
+      /* case labels should be one level down from switch, plus
+	 `case_indent' if any.  Then, statements should be the `ind_size'
+	 further. */
+#if 0
+      case_ind = parser_state_tos->i_l_follow + case_indent;
+      parser_state_tos->i_l_follow += case_indent + ind_size;
+#endif
+      parser_state_tos->i_l_follow += ind_size;
       parser_state_tos->search_brace = btype_2;
       break;
 
@@ -412,12 +446,10 @@ parse (tk)
 	}
       break;
 
-    default:			/* this is an error */
-      diag (1, "Unknown code to parser", 0, 0);
-      return;
-
-
-    }				/* end of switch */
+      /* This is a fatal error which cases the program to exit. */
+    default:
+      fatal ("Unknown code to parser", 0, 0);
+    }
 
   reduce ();			/* see if any reduction can be done */
 
@@ -433,7 +465,7 @@ parse (tk)
     }
 #endif
 
-  return;
+  return total_success;
 }
 
 /* NAME: reduce
@@ -471,10 +503,11 @@ HISTORY: initial coding 	November 1976	D A Willcox of CAC
 /*----------------------------------------------*\
 |   REDUCTION PHASE				    |
 \*----------------------------------------------*/
+
+void
 reduce ()
 {
-
-  register int i;
+  int i;
 
   for (;;)
     {				/* keep looping until there is nothing left
@@ -515,7 +548,9 @@ reduce ()
 
 	    case swstmt:
 	      /* <switch> <stmt> */
+#if 0
 	      case_ind = parser_state_tos->cstk[parser_state_tos->tos - 1];
+#endif
 
 	    case decl:		/* finish of a declaration */
 	    case elsehead:

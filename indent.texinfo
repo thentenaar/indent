@@ -21,7 +21,9 @@ for Indent Version @value{VERSION}, last updated @value{UPDATED}.
 @c !END INTRO
 
 @c !BEGIN COPYING
-Copyright (C) 1989, 1992, 1993, 1994, 1999 Free Software Foundation, Inc.
+Copyright (C) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
+Copyright (C) 1995, 1996 Joseph Arceneaux.
+Copyright (C) 1999 Carlo Wood.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -57,7 +59,12 @@ original English.
 @c !END AUTHORS
 @page
 @vskip 0pt plus1filll
-Copyright @copyright{} 1989, 1992, 1993, 1994 Free Software Foundation, Inc.
+Copyright @copyright{} 1989, 1992, 1993, 1994, 1995, 1996 Free Software
+Foundation, Inc.
+
+Copyright @copyright{} 1995, 1996 Joseph Arceneaux.
+
+Copyright @copyright{} 1999, Carlo Wood.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -132,6 +139,7 @@ the default.
 * Statements::                  Statements
 * Declarations::                Declarations
 * Indentation::                 Indentation
+* Breaking long lines::         Breaking long lines
 * Disabling Formatting::        Disabling Formatting
 * Miscellaneous options::       Miscellaneous options
 * Bugs::                 	Bugs
@@ -233,12 +241,17 @@ indent +braces-on-if-line +line-length185 test/metabolism.c
 @kindex -npro
 @kindex --ignore-profile
 If you find that you often use @code{indent} with the same options, you
-may put those options into a file called @file{.indent.pro}.
+may put those options into a file named @file{.indent.pro}.
 @code{indent} will first look for @file{.indent.pro} in the current
 directory and use that if found.  Otherwise, @code{indent} will search
 your home directory for @file{.indent.pro} and use that file if it is
 found.  This behaviour is different from that of other versions of
 @code{indent}, which load both files if they both exist.
+
+The format of @code{.indent.pro} is simply a list of options, just as
+they would appear on the command line, separated by white space (tabs,
+spaces, and newlines).  Options in @code{.indent.pro} may be surrounded by C
+or C++ comments, in which case they are ignored.
 
 Command line switches are handled @emph{after} processing
 @file{.indent.pro}.  Options specified later override arguments
@@ -309,9 +322,8 @@ error.  Option settings which correspond to the GNU style are:
 
 @example
 @group
--nbad -bap -nbc -bl -bli2 -bls -c33 -cd33 -ncdb -nce -cli0
--cp1 -di2 -nfc1 -nfca -i2 -ip5 -lp -pcs -psl -cs
--nsc -nsob -nss -ts8 -d0 -ci0 -l78
+-nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -psl -nsc -nsob
 @end group
 @end example
 
@@ -334,9 +346,9 @@ of options:
 
 @example
 @group
--nbad -bap -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4
--cli0 -cp33 -d0 -di1 -nfc1 -nfca -i4 -ip0 -l75 -lp
--npcs -npsl -nsc -nsob -nss -ts8 -cs
+-nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
+-cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
+-npsl -nsc -nsob -nss
 @end group
 @end example
 
@@ -356,9 +368,9 @@ long option name).  This style is equivalent to the following settings:
 
 @example
 @group
--nbap -nbad -bc -br -brs -c33 -cd33 -cdb -ce -ci4
--cli0 -cp33 -d4 -di16 -fc1 -fca -i4 -ip4 -l75 -lp 
--npcs -psl -sc -nsob -nss -ts8 -ncs
+-nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -psl -sc
+-nsob -nss -ts8
 @end group
 @end example
 
@@ -378,19 +390,12 @@ every block of declarations.  The @samp{-nbad} option causes
 The @samp{-bap} option forces a blank line after every procedure body.
 The @samp{-nbap} option forces no such blank line.
 
-@ignore
-@comment Using this variable actually did nothing, so I've disabled it.
-@comment jla 2/94
 @kindex -bbb
 @kindex --blank-lines-after-block-comments
 @kindex -nbbb
 @kindex --no-blank-lines-after-block-comments
-The @samp{-bbb} option forces a blank line before every block comment.
-A block comment is one which starts in column one when formatting of
-such comments is disabled, or one with @code{-} or @code{*} immediately
-following the @code{/*}.  The @samp{-nbbb} option does not force such
-blank lines.
-@end ignore
+The @samp{-bbb} option forces a blank line before every boxed comment.
+(@xref{Comments}) The @samp{-nbbb} option does not force such blank lines.
 
 @kindex -sob
 @kindex --swallow-optional-blank-lines
@@ -533,9 +538,8 @@ No blank line will be added after the procedure @code{foo}.
 @cindex Comments
 
 @code{indent} formats both C and C++ comments. C comments are begun with
-@samp{/*} and terminated with @samp{*/} and may contain newline
-characters.  C++ comments begin with the delimiter @samp{//} and end at
-the newline.
+@samp{/*}, terminated with @samp{*/} and may contain newline characters.
+C++ comments begin with the delimiter @samp{//} and end at the newline.
 
 @code{indent} handles comments differently depending upon their context.
 @code{indent} attempts to distinguish amongst comments which follow
@@ -544,14 +548,21 @@ preprocessor directives, and comments which are not preceded by code of
 any sort, i.e., they begin the text of the line (although not
 neccessarily in column 1).
 
-@code{indent} further attempts to leave @dfn{boxed comments}
-unmodified.  The general idea of such a comment is that it is enclosed
-in a rectangle or ''box'' of stars or dashes to visually set it apart.
-More precisely, boxed comments are defined as those in which the initial
-@samp{/*} is followed immediately by the character @samp{*}, @samp{=},
-@samp{_}, or @samp{-}, or those in which the beginning comment delimiter
-(@samp{/*}) is on a line by itself, and the following line begins with a
-@samp{*} in the same column as the star of the opening delimiter.
+@code{indent} further distinguishes between comments found outside of
+procecures and aggregates, and those found within them.  In particular,
+comments beginning a line found within a procedure will be indented to
+the column at which code is currently indented.  The exception to this a
+comment beginning in the leftmost column;  such a comment is output
+at that column.
+
+@code{indent} attempts to leave @dfn{boxed comments} unmodified.  The
+general idea of such a comment is that it is enclosed in a rectangle or
+''box'' of stars or dashes to visually set it apart.  More precisely,
+boxed comments are defined as those in which the initial @samp{/*} is
+followed immediately by the character @samp{*}, @samp{=}, @samp{_}, or
+@samp{-}, or those in which the beginning comment delimiter (@samp{/*})
+is on a line by itself, and the following line begins with a @samp{*} in
+the same column as the star of the opening delimiter.
 
 Examples of boxed comments are:
 
@@ -574,6 +585,9 @@ and its length is not checked in any way.  The only alteration made is
 that an embedded tab character may be converted into the appropriate
 number of spaces.
 
+If the @samp{-bbb} option is specified, all such boxed comments will be
+preceded by a blank line, unless such a comment is preceded by code.
+
 @kindex -fca
 @kindex --format-all-comments
 @kindex -nfca
@@ -582,38 +596,32 @@ number of spaces.
 @kindex --format-first-column-comments
 @kindex -nfc1
 @kindex --dont-format-first-column-comments
-@kindex -l@var{n}
-@kindex --line-length@var{n}
-Comments which are not boxed may be formatted, which means that the
-line is broken to fit within a right margin and left-filled with
-whitespace.  Single newlines are equivalent to a space, but blank
-lines (two or more newlines in a row) are taken to mean a paragraph
-break.  Formatting of comments which begin after the first column is
-enabled with the @samp{-fca} option.  To format those beginning in
-column one, specify @samp{-fc1}.  Such formatting is disabled
-by default.
+Comments which are not boxed comments may be formatted, which means that
+the line is broken to fit within a right margin and left-filled with
+whitespace.  Single newlines are equivalent to a space, but blank lines
+(two or more newlines in a row) are taken to mean a paragraph break.
+Formatting of comments which begin after the first column is enabled
+with the @samp{-fca} option.  To format those beginning in column one,
+specify @samp{-fc1}.  Such formatting is disabled by default.
 
-The right margin for formatting defaults to 78, but
-may be changed with the @samp{-lc} or the @samp{-l} option.  @samp{-l}
-specifies the right margin for all code, and @samp{-lc} specifies the
-margin for only for comments.  If @samp{-l} is used alone, comments will
-be formatted according to the margin specified with that option.
-
-If the margin specified does not allow the comment to be printed, the
-margin will be automatically extended for the duration of that
-comment.  The margin is not respected if the comment is not being
-formatted.
+The right margin for formatting defaults to 78, but may be changed with
+the @samp{-lc} option.  If the margin specified does not allow the
+comment to be printed, the margin will be automatically extended for the
+duration of that comment.  The margin is not respected if the comment is
+not being formatted.
 
 @kindex -d@var{n}
 @kindex --line-comments-indentation@var{n}
 If the comment begins a line (i.e., there is no program text to its
 left), it will be indented to the column it was found in unless the
-comment is within a block of code.  In that case, such a comment will
-be aligned with the indented code of that block.  This alignment may
-be affected by the @samp{-d} option, which specifies an amount by
-which such comments are moved to the @emph{left}, or unindented.  For
-example, @samp{-d2} places comments two spaces to the left of code.
-By default, comments are aligned with code.
+comment is within a block of code.  In that case, such a comment will be
+aligned with the indented code of that block (unless the comment began
+in the first column).  This alignment may be affected by the @samp{-d}
+option, which specifies an amount by which such comments are moved to
+the @emph{left}, or unindented.  For example, @samp{-d2} places comments
+two spaces to the left of code.  By default, comments are aligned with
+code, unless they begin in the first column, in which case they are left
+there by default -- to get them aligned with the code, specify @samp{-fc1}.
 
 @kindex -c@var{n}
 @kindex --comment-indentation@var{n}
@@ -698,32 +706,6 @@ if (x > 0)
 @end group
 @end example
 
-These options also affect structure and enumeration declarations.  The
-@samp{-br} option produces structure declarations like the following:
-
-@example
-@group
-struct Sname @{
-    int i;
-    char chp;
-@} Vname;
-@end group
-@end example
-
-The default behaviour, also obtained by specifying @samp{-bl}, would
-yield the following format for the same declaration:
-
-@example
-@group
-struct Sname
-  @{
-     int i;
-     char chp;
-  @}
-Vname;
-@end group
-@end example
-
 @kindex -bli@var{n}
 @kindex --brace-indent@var{n}
 If you use the @samp{-bl} option, you may also want to specify the
@@ -762,7 +744,7 @@ if (x > 0) @{
 @noindent
 With @samp{-br -nce} that code would appear as
 
-@smallexample
+@example
 @group
 if (x > 0) @{
   x--;
@@ -771,13 +753,72 @@ else @{
   fprintf (stderr, "...something wrong?\n");
 @}
 @end group
-@end smallexample
+@end example
 
 @kindex -cli@var{n}
 @kindex --case-indentation@var{n}
 The @samp{-cli} option specifies the number of spaces that case labels
 should be indented to the right of the containing @samp{switch}
 statement.
+
+@noindent
+The default gives code like:
+
+@example
+@group
+switch (i)
+  @{
+  case 0:
+    break;
+  case 1:
+    @{
+      ++i;
+    @}
+  default:
+    break;
+  @}
+@end group
+@end example
+
+Using the @samp{-cli2} that would become:
+
+@example
+@group
+switch (i)
+  @{
+    case 0:
+      break;
+    case 1:
+      @{
+	++i;
+      @}
+    default:
+      break;
+  @}
+@end group
+@end example
+
+@kindex -cbi@var{n}
+@kindex --case-brace-indentation@var{n}
+The indentation of the braces below a case statement can be
+controlled with the @samp{-cbi@var{n}} option.  For example,
+using @samp{-cli2 -cbi0} results in:
+
+@example
+@group
+switch (i)
+  @{
+    case 0:
+      break;
+    case 1:
+    @{
+      ++i;
+    @}
+    default:
+      break;
+  @}
+@end group
+@end example
 
 @kindex -ss
 @kindex --space-special-semicolon
@@ -884,8 +925,7 @@ of the @code{c-mode} functions of Emacs.
 
 @kindex -T
 @cindex Typenames
-If you are not using the @samp{-di1} option to place variables being
-declared immediately after their type, you need to use the @samp{-T}
+You must use the @samp{-T}
 option to tell @code{indent} the name of all the typenames in your
 program that are defined by @code{typedef}.  @samp{-T} can be specified
 more than once, and all names specified are used.  For example, if your
@@ -925,7 +965,7 @@ struct foo
 @end group
 @end example
 
-@node Indentation, Disabling Formatting, Declarations, Indent Program
+@node Indentation, Breaking long lines, Declarations, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Indentation
 
@@ -1031,12 +1071,95 @@ is provided, which is equivalent to @samp{-ip0}.
 @kindex --leave-preprocessor-space
 @kindex -nlps
 @kindex --remove-preprocessor-space
-ASCII C allows white space to be placed on preprocessor command lines
+ANSI C allows white space to be placed on preprocessor command lines
 between the character @samp{#} and the command name.  By default,
 @code{indent} removes this space, but specifying the @samp{-lps} option
 directs @code{indent} to leave this space unmodified.
 
-@node Disabling Formatting, Miscellaneous options, Indentation, Indent Program
+@node Breaking long lines, Disabling Formatting, Indentation, Indent Program
+@comment  node-name,  next,  previous,  up
+@section Breaking long lines
+
+@kindex -l@var{n}
+@kindex --line-length@var{n}
+With the option @code{-l@var{n}}, or @code{--line-length@var{n}}, it is
+possible to specify the maximum length of a line of C code, not including
+possible comments that follow it.
+
+When lines become longer then the specified line length, @code{GNU indent}
+tries to break the line at a logical place.  This is new as of version 2.1
+however and not very intelligent or flexible yet.
+
+@kindex -bbo
+@kindex --break-before-boolean-operator
+@kindex -nbbo
+@kindex --break-after-boolean-operator
+@kindex -hnl
+@kindex --honour-newlines
+@kindex -nhnl
+@kindex --ignore-newlines
+Currently there are two options that allows one to interfere with the
+algorithm that determines where to break a line.
+
+The @samp{-bbo} option causes @code{GNU indent} to prefer to break long
+lines before the boolean operators @code{&&} and @code{||}.  The @samp{-nbbo}
+option causes @code{GNU indent} not have that preference.  For example,
+the default option @samp{-bbo} (together with @samp{--line-length60} and
+@samp{--ignore-newlines}) makes code look like this:
+
+@example
+@group
+  if (mask
+      && ((mask[0] == '\0')
+          || (mask[1] == '\0'
+              && ((mask[0] == '0') || (mask[0] == '*')))))
+@end group
+@end example
+
+Using the option @samp{-nbbo} will make it look like this:
+
+@example
+@group
+  if (mask &&
+      ((mask[0] == '\0') ||
+       (mask[1] == '\0' &&
+        ((mask[0] == '0') || (mask[0] == '*')))))
+@end group
+@end example
+
+The default @samp{-hnl} however, honours newlines in the input file by
+giving them the highest possible priority to break lines at.  For example,
+when the input file looks like this:
+
+@example
+@group
+  if (mask
+      && ((mask[0] == '\0')
+      || (mask[1] == '\0' && ((mask[0] == '0') || (mask[0] == '*')))))
+@end group
+@end example
+
+then using the option @samp{-hnl}, or @samp{--honour-newlines}, together
+with the previously mentioned @samp{-nbbo} and @samp{--line-length60}, will
+cause the output not to be what is given in the last example but instead
+will prefer to break at the positions where the code was broken in the
+input file:
+
+@example
+@group
+  if (mask
+      && ((mask[0] == '\0')
+          || (mask[1] == '\0' &&
+              ((mask[0] == '0') || (mask[0] == '*')))))
+@end group
+@end example
+
+The idea behind this option is that lines which are too long, but are already
+broken up, will not be touched by @code{GNU indent}.  Really messy code
+should be run through @code{indent} at least once using the
+@samp{--ignore-newlines} option though.
+
+@node Disabling Formatting, Miscellaneous options, Breaking long lines, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Disabling Formatting
 
@@ -1080,21 +1203,6 @@ To find out what version of @code{indent} you have, use the command
 @code{indent -version}.  This will report the version number of
 @code{indent}, without doing any of the normal processing.
 
-@ignore
-This is intentionally undocumented because
-1.  Although GNU now has groff, it would be better to use TeX.
-
-2.  The output of indent -troff looks awful, so we have heard.  Perhaps
-    it would be reasonable to use this as a starting point to printing a
-    program.
-
-If you are printing your program, you may wish to use the @samp{-troff}
-option to produce output suitable for processing by the @code{troff}
-program.  When the @samp{-troff} option is specified, if the output file
-is not specified, the default is standard output, rather than formatting
-in place.
-@end ignore
-
 @kindex -v
 @kindex --verbose
 @kindex -nv
@@ -1110,9 +1218,20 @@ completion.
 @comment  node-name,  next,  previous,  up
 @section Bugs
 
-The "-troff" option is strongly deprecated, and is not supported.  A
-good thing for someone to do is to rewrite `indent' to generate TeX
-source as a hardcopy output option, amoung other things.
+When @code{indent} is run twice on a file, with the same profile,
+it should @emph{never} change that file the second time.  With the
+current design of @code{indent} this can not be garanteed however
+and it has not been extensively tested.
+
+@code{Indent} does not understand C.  In some cases this leads to
+the inability to join lines.  The result is that running a file
+through @code{indent} is @emph{irreversable}, even if the used input
+file was the result of running @code{indent} with a given profile
+(@file{.indent.pro}).
+
+While an attempt was made to get @code{indent} working for C++, is
+will not do a good job on any C++ source except the real simple
+(by coincidence thus).
 
 @node Copyright,  , Bugs, Indent Program
 @comment  node-name,  next,  previous,  up
@@ -1123,7 +1242,9 @@ The copyright and copying permissions for this manual appear near the
 beginning of indent.texinfo and indent.info, and near the end of indent.1.
 
 @display
-Copyright (c) 1989, 1992 Free Software Foundation
+Copyright (c) 1999 Carlo Wood.
+Copyright (c) 1995, 1996 Joseph Arceneaux.
+Copyright (c) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation
 Copyright (c) 1985 Sun Microsystems, Inc.
 Copyright (c) 1980 The Regents of the University of California.
 Copyright (c) 1976 Board of Trustees of the University of Illinois.
@@ -1170,6 +1291,11 @@ Force blank lines after procedure bodies.@*
 Force blank lines after block comments.@*
 @xref{Blank lines}.
 
+@item -bbo
+@itemx --break-before-boolean-operator
+Prefer to break long lines before boolean operators.@*
+@xref{Breaking long lines}.
+
 @item -bc
 @itemx --blank-lines-after-commas
 Force newline after comma in declaration.@*
@@ -1199,6 +1325,12 @@ Put braces on line with @code{if}, etc. and structure declarations.@*
 @itemx --braces-on-struct-decl-line
 Put braces on @code{struct} declaration line.@*
 @xref{Declarations}.
+
+@item -bs
+@itemx --Bill-Shannon
+@itemx --blank-before-sizeof
+Put a space between @code{sizeof} and its argument.@*
+@xref{Statements}
 
 @item -c@var{n}
 @itemx --comment-indentation@var{n}
@@ -1246,11 +1378,6 @@ Put comments to the right of @samp{#else} and
 Put a space after a cast operator.@*
 @xref{Statements}.
 
-@item -bs
-@itemx --blank-before-sizeof
-Put a space between @code{sizeof} and its argument.@*
-@xref{Statements}
-
 @item -d@var{n}
 @itemx --line-comments-indentation@var{n}
 Set indentation of comments not to the right 
@@ -1277,6 +1404,11 @@ Do not disable all formatting of comments.@*
 Use GNU coding style.  This is the default.@*
 @xref{Common styles}.
 
+@item -hnl
+@itemx --honour-newlines
+Prefer to break long lines at the position of newlines in the input.@*
+@xref{Breaking long lines}.
+
 @item -i@var{n}
 @itemx --indent-level@var{n}
 Set indentation level to @var{n} spaces.@*
@@ -1295,8 +1427,8 @@ Use Kernighan & Ritchie coding style.@*
 
 @item -l@var{n}
 @itemx --line-length@var{n}
-Set maximum line length to @var{n}.@*
-@xref{Comments}.
+Set maximum line length for non-comment lines to @var{n}.@*
+@xref{Breaking long lines}.
 
 @item -lc@var{n}
 @itemx --comment-line-length@var{n}
@@ -1331,6 +1463,11 @@ Do not force blank-lines after block comments.@*
 @xref{Blank lines}.
 @end ignore
 
+@item -nbbo
+@itemx --break-after-boolean-operator
+Do not prefer to break long lines before boolean operators.@*
+@xref{Breaking long lines}.
+
 @item -nbc
 @itemx --no-blank-lines-after-commas
 Do not force newlines after commas in declarations.@*
@@ -1360,6 +1497,11 @@ Do not format comments in the first column as normal.@*
 @itemx --dont-format-comments
 Do not format any comments.@*
 @xref{Comments}.
+
+@item -nhnl
+@itemx --ignore-newlines
+Do not prefer to break long lines at the position of newlines in the input.@*
+@xref{Breaking long lines}.
 
 @item -nip
 @itemx --no-parameter-indentation
@@ -1429,6 +1571,11 @@ statement is broken.
 Put the type of a procedure on the line before its name.@*
 @xref{Declarations}.
 
+@item -sbi@var{n}
+@itemx --struct-brace-indentation@var{n}
+Indent braces of a struct, union or enum N spaces.@*
+@xref{Statements}.
+
 @item -sc
 @itemx --start-left-side-of-comments
 Put the @samp{*} character at the left of comments.@*
@@ -1454,15 +1601,6 @@ Write to standard output.@*
 Tell @code{indent} the name of typenames.@*
 @xref{Declarations}.
 
-@c Ignore the following since it is not supported.  When someone
-@c rewrites this program, an effort could be made to generate TeX.
-@c
-@c item -troff
-@c Format the program for printing with @code{troff}.  Use of this option
-@c is not suggested.
-@c  xref   Miscellaneous options
-@c 
-@c
 @item -ts@var{n}
 @itemx --tab-size@var{n}
 Set tab size to @var{n} spaces.@*
@@ -1499,6 +1637,8 @@ the corresponding short option.
 \line{ --braces-after-if-line \leaderfill            -bl\ \ } 
 \line{ --brace-indent \leaderfill                -bli@var{n}}
 \line{ --braces-after-struct-decl-line \leaderfill   -bls\ \ }
+\line{ --break-after-boolean-operator \leaderfill    -nbbo\ \ }
+\line{ --break-before-boolean-operator \leaderfill   -bbo\ \ }
 \line{ --braces-on-if-line \leaderfill               -br\ \ }      
 \line{ --braces-on-struct-decl-line \leaderfill      -brs\ \ }
 \line{ --case-indentation \leaderfill            -cli@var{n}}
@@ -1521,6 +1661,8 @@ the corresponding short option.
 \line{ --format-all-comments \leaderfill                 -fca\ }  
 \line{ --format-first-column-comments \leaderfill        -fc1\ }  
 \line{ --gnu-style \leaderfill                           -gnu\ }  
+\line{ --honour-newlines \leaderfill                 -hnl\ \ }
+\line{ --ignore-newlines \leaderfill                 -nhnl\ \ }
 \line{ --ignore-profile \leaderfill                      -npro} 
 \line{ --indent-level \leaderfill                  -i@var{n}\ \ }
 \line{ --k-and-r-style \leaderfill                       -kr\ \ }
@@ -1549,6 +1691,7 @@ the corresponding short option.
 \line{ --space-special-semicolon \leaderfill       -ss\ \ } 
 \line{ --standard-output \leaderfill      -st\ \ } 
 \line{ --start-left-side-of-comments \leaderfill   -sc\ \ }
+\line{ --struct-brace-indentation \leaderfill      -sbi@var{n}}
 \line{ --swallow-optional-blank-lines \leaderfill  -sob\ } 
 \line{ --tab-size \leaderfill          -ts@var{n}\ }  
 \line{ --verbose \leaderfill       -v\ \ \ }  
@@ -1566,6 +1709,8 @@ the corresponding short option.
 --braces-after-struct-decl-line                 -bls
 --braces-on-if-line                             -br             
 --braces-on-struct-decl-line                    -brs
+--break-after-boolean-operator                  -nbbo
+--break-before-boolean-operator                 -bbo
 --case-indentation                              -cli@var{n}     
 --case-brace-indentation                        -cbi@var{n}
 --comment-delimiters-on-blank-lines             -cdb            
@@ -1586,6 +1731,8 @@ the corresponding short option.
 --format-all-comments                           -fca            
 --format-first-column-comments                  -fc1            
 --gnu-style                                     -gnu            
+--honour-newlines                               -hnl
+--ignore-newlines                               -nhnl
 --ignore-profile                                -npro           
 --indent-level                                  -i@var{n}       
 --k-and-r-style                                 -kr             
@@ -1614,6 +1761,7 @@ the corresponding short option.
 --space-special-semicolon                       -ss             
 --standard-output                               -st             
 --start-left-side-of-comments                   -sc             
+--struct-brace-indentation                      -sbi@var{n}
 --swallow-optional-blank-lines                  -sob            
 --tab-size                                      -ts@var{n}      
 --verbose                                       -v              

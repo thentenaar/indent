@@ -28,6 +28,13 @@
 #include "indent.h"
 #include <ctype.h>
 
+#if defined (HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+#include <string.h>
+
+RCSTAG_CC("$Id")
+
 /* Stuff that needs to be shared with the rest of indent. Documented in
    indent.h.  */
 char *token;
@@ -89,28 +96,41 @@ lexi ()
   enum codes code;		/* internal code to be returned */
   char qchar;			/* the delimiter character for a string */
 
+  static int count;		/* debugging counter */
+  count++;
+
   unary_delim = false;
   /* tell world that this token started in column 1 iff the last
      thing scanned was nl */
   parser_state_tos->col_1 = parser_state_tos->last_nl;
+  parser_state_tos->last_saw_nl = parser_state_tos->last_nl;
   parser_state_tos->last_nl = false;
 
-  while (*buf_ptr == ' ' || *buf_ptr == TAB)
-    {				/* get rid of blanks */
-      parser_state_tos->col_1 = false;	/* leading blanks imply token is not
-					   in column 1 */
-      if (++buf_ptr >= buf_end)
-	fill_buffer ();
+  if (buf_ptr >= buf_end)
+    fill_buffer ();
+
+  if  (*buf_ptr == ' ' || *buf_ptr == TAB)
+    {
+      parser_state_tos->col_1 = false;
+      while (*buf_ptr == ' ' || *buf_ptr == TAB)
+	if (++buf_ptr >= buf_end)
+	  fill_buffer ();
     }
 
+  /* INCREDIBLY IMPORTANT WARNING!!!
+
+     Note that subsequent calls to `fill_buffer ()' may switch `buf_ptr'
+     to a different buffer.  Thus when `token_end' gets set later, it
+     may be pointing into a different buffer than `token'. */
   token = buf_ptr;
 
   /* Scan an alphanumeric token */
-  if (chartype[*buf_ptr] == alphanum
+  if ((! (buf_ptr[0] == 'L' && (buf_ptr[1] == '"' || buf_ptr[1] == '\''))
+          && chartype[(int) *buf_ptr] == alphanum)
       || (buf_ptr[0] == '.' && isdigit (buf_ptr[1])))
     {
       /* we have a character or number */
-      register struct templ *p;
+      struct templ *p;
 
       if (isdigit (*buf_ptr) || (buf_ptr[0] == '.' && isdigit (buf_ptr[1])))
 	{
@@ -120,34 +140,38 @@ lexi ()
 	    {
 	      buf_ptr += 2;
 	      while (isxdigit (*buf_ptr))
-		buf_ptr++;
+		{
+		  buf_ptr++;
+		}
 	    }
 	  else
 	    while (1)
 	      {
 		if (*buf_ptr == '.')
-		  if (seendot)
-		    break;
-		  else
-		    seendot++;
+		  {
+		    if (seendot)
+		      break;
+		    else
+		      seendot++;
+		  }
 		buf_ptr++;
 		if (!isdigit (*buf_ptr) && *buf_ptr != '.')
-		  if ((*buf_ptr != 'E' && *buf_ptr != 'e') || seenexp)
-		    break;
-		  else
-		    {
-		      seenexp++;
-		      seendot++;
-		      buf_ptr++;
-		      if (*buf_ptr == '+' || *buf_ptr == '-')
+		  {
+		    if ((*buf_ptr != 'E' && *buf_ptr != 'e') || seenexp)
+		      break;
+		    else
+		      {
+			seenexp++;
+			seendot++;
 			buf_ptr++;
-		    }
+			if (*buf_ptr == '+' || *buf_ptr == '-')
+			  buf_ptr++;
+		      }
+		  }
 	      }
-	  /* Accept unsigned, unsigned long, and float constants
-	     (U, UL, and F suffixes).  I'm not sure if LU is ansii.
-	     11Jun93 - rdh@key.amdahl.com tells me LL and ULL are also
-	     acceptable. */
-	  if (*buf_ptr == 'F' || *buf_ptr == 'f')
+
+	  if (*buf_ptr == 'F' || *buf_ptr == 'f'
+	      || *buf_ptr == 'i' || *buf_ptr == 'j')
 	    buf_ptr++;
 	  else
 	    {
@@ -160,19 +184,22 @@ lexi ()
 	    }
 	}
       else
-	while (chartype[*buf_ptr] == alphanum)
+	while (chartype[(int) *buf_ptr] == alphanum)
 	  {			/* copy it over */
 	    buf_ptr++;
 	    if (buf_ptr >= buf_end)
 	      fill_buffer ();
 	  }
+
       token_end = buf_ptr;
+
       if (token_end - token == 13 && !strncmp(token, "__attribute__", 13))
-	{
-          last_code = decl;
-	  parser_state_tos->last_u_d = true;
-	  return (attribute);
-	}
+      {
+        last_code = decl;
+	parser_state_tos->last_u_d = true;
+	return (attribute);
+      }
+
       while (*buf_ptr == ' ' || *buf_ptr == TAB)
 	{
 	  if (++buf_ptr >= buf_end)
@@ -188,6 +215,8 @@ lexi ()
 	  l_struct = false;
 	  last_code = ident;
 	  parser_state_tos->last_u_d = true;
+	  if (parser_state_tos->last_token == cpp_operator)
+	    return overloaded;
 	  return (decl);
 	}
 
@@ -234,16 +263,26 @@ lexi ()
 
       if (p)
 	{			/* we have a keyword */
+	  enum codes value;
+
 	found_keyword:
+	  value = ident;
 	  parser_state_tos->its_a_keyword = true;
 	  parser_state_tos->last_u_d = true;
 	  parser_state_tos->last_rw = p->rwcode;
+	  parser_state_tos->last_rw_depth = parser_state_tos->paren_depth;
 	  switch (p->rwcode)
 	    {
+	    case rw_operator:	/* C++ operator overloading. */
+	      value = cpp_operator;
+	      parser_state_tos->in_parameter_declaration = 1;
+	      break;
 	    case rw_switch:	/* it is a switch */
-	      return (swstmt);
+	      value = (swstmt);
+	      break;
 	    case rw_case:	/* a case or default */
-	      return (casestmt);
+	      value = (casestmt);
+	      break;
 
 	    case rw_enum:
 	      l_enum = true; /* reset on '{' '}' or ';' */
@@ -273,100 +312,130 @@ lexi ()
 		  break;
 		}
 	      last_code = decl;
-	      return (decl);
+	      value = (decl);
+	      break;
 
 	    case rw_sp_paren:	/* if, while, for */
-	      return (sp_paren);
+	      value = (sp_paren);
+	      if (*token == 'i' && parser_state_tos->last_token == sp_else)
+	        parser_state_tos->i_l_follow -= ind_size;
+	      break;
 
-	    case rw_sp_nparen:	/* do, else */
-	      return (sp_nparen);
+	    case rw_sp_nparen:	/* do */
+	      value = (sp_nparen);
+	      break;
+
+	    case rw_sp_else:	/* else */
+	      value = (sp_else);
+	      break;
 
 	    case rw_sizeof:
 	      parser_state_tos->sizeof_keyword = true;
-	      return (ident);
+	      value = (ident);
+	      break;
 
 	    case rw_return:
 	    case rw_break:
 	    default:		/* all others are treated like any other
 				   identifier */
-	      return (ident);
+	      value = (ident);
 	    }			/* end of switch */
+
+	  if (parser_state_tos->last_token == cpp_operator)
+	    return overloaded;
+	  return value;
 	}			/* end of if (found_it) */
+      else if (*buf_ptr == '('
+	       && parser_state_tos->tos <= 1
+	       && parser_state_tos->ind_level == 0
+	       && parser_state_tos->paren_depth == 0)
+	  {
+	    /* We have found something which might be the name in a function
+	       definition.  */
+	    char *tp;
+	    int paren_count = 1;
 
-      if (*buf_ptr == '('
-	  && parser_state_tos->tos <= 1
-	  && parser_state_tos->ind_level == 0
-	  && parser_state_tos->paren_depth == 0)
-	{
-	  /* We have found something which might be the name in a function
-	     definition.  */
-	  register char *tp;
-	  int paren_count = 1;
+	    /* Skip to the matching ')'.  */
+	    for (tp = buf_ptr + 1;
+		 paren_count > 0 && tp < in_prog + in_prog_size;
+		 tp++)
+	      {
+		if (*tp == '(')
+		  paren_count++;
+		if (*tp == ')')
+		  paren_count--;
+		/* Can't occur in parameter list; this way we don't search the
+		   whole file in the case of unbalanced parens.  */
+		if (*tp == ';')
+		  goto not_proc;
+	      }
 
-	  /* Skip to the matching ')'.  */
-	  for (tp = buf_ptr + 1;
-	       paren_count > 0 && tp < in_prog + in_prog_size;
-	       tp++)
-	    {
-	      if (*tp == '(')
-		paren_count++;
-	      if (*tp == ')')
-		paren_count--;
-	      /* Can't occur in parameter list; this way we don't search the
-	         whole file in the case of unbalanced parens.  */
-	      if (*tp == ';')
-		goto not_proc;
-	    }
+	    if (paren_count == 0)
+	      {
+		parser_state_tos->procname = token;
+		parser_state_tos->procname_end = token_end;
 
-	  if (paren_count == 0)
-	    {
-	      while (isspace (*tp))
-		tp++;
-	      if (*tp == '_' && in_prog + in_prog_size - tp >= 13 &&
-		  !strncmp(tp, "__attribute__", 13))
-		{
-		  /* Found an __attribute__ after a function declaration */
-		  goto not_proc;	/* Must be a declaration */
-		}
-	      /* If the next char is ';' or ',' or '(' we have a function
-	         declaration, not a definition.
+		while (isspace (*tp))
+		  tp++;
 
-		 I've added '=' to this list to keep from breaking
-		 a non-valid C macro from libc.  -jla */
-	      if (*tp != ';' && *tp != ',' && *tp != '(' && *tp != '=')
-		{
-		  parser_state_tos->procname = token;
-		  parser_state_tos->procname_end = token_end;
-		  parser_state_tos->in_parameter_declaration = 1;
-		}
-	    }
+		if (*tp == '_' && in_prog + in_prog_size - tp >= 13 &&
+		    !strncmp(tp, "__attribute__", 13))
+		  {
+		    /* Found an __attribute__ after a function declaration */
+		    goto not_proc;		/* Must be a declaration */
+		  }
 
-	not_proc:;
-	}
+		/* If the next char is ';' or ',' or '(' we have a function
+		   declaration, not a definition.
+		   
+		   I've added '=' to this list to keep from breaking
+		   a non-valid C macro from libc.  -jla */
+		if (*tp != ';' && *tp != ',' && *tp != '(' && *tp != '=')
+		  {
+		    parser_state_tos->in_parameter_declaration = 1;
+		  }
+	      }
 
+	  not_proc:;
+	  }
+      else if (*buf_ptr == ':' && *(buf_ptr + 1) == ':'
+	       && parser_state_tos->tos <= 1
+	       && parser_state_tos->ind_level == 0
+	       && parser_state_tos->paren_depth == 0)
+	  {
+	    parser_state_tos->classname = token;
+	    parser_state_tos->classname_end = token_end;
+	  }
       /* The following hack attempts to guess whether or not the
 	 current token is in fact a declaration keyword -- one that
 	 has been typedef'd */
-      if (((*buf_ptr == '*' && buf_ptr[1] != '=')
-	   || isalpha (*buf_ptr) || *buf_ptr == '_')
-	  && !parser_state_tos->p_l_follow
-	  && !parser_state_tos->block_init
-	  && (parser_state_tos->last_token == rparen
-	      || parser_state_tos->last_token == semicolon
-	      || parser_state_tos->last_token == decl
-	      || parser_state_tos->last_token == lbrace
-	      || parser_state_tos->last_token == rbrace))
-	{
-	  parser_state_tos->its_a_keyword = true;
-	  parser_state_tos->last_u_d = true;
-	  last_code = decl;
-	  return decl;
-	}
+      else if (((*buf_ptr == '*' && buf_ptr[1] != '=')
+		|| isalpha (*buf_ptr) || *buf_ptr == '_')
+	       && !parser_state_tos->p_l_follow
+	       && !parser_state_tos->block_init
+	       && (parser_state_tos->last_token == rparen
+		   || parser_state_tos->last_token == semicolon
+		   || parser_state_tos->last_token == rbrace
+		   || parser_state_tos->last_token == decl
+		   || parser_state_tos->last_token == lbrace
+		   || parser_state_tos->last_token == start_token))
+	  {
+	      parser_state_tos->its_a_keyword = true;
+	      parser_state_tos->last_u_d = true;
+	      last_code = decl;
+	      if (parser_state_tos->last_token == cpp_operator)
+		  return overloaded;
+
+	      return decl;
+	  }
 
       if (last_code == decl)	/* if this is a declared variable, then
 				   following sign is unary */
 	parser_state_tos->last_u_d = true;	/* will make "int a -1" work */
       last_code = ident;
+      if (parser_state_tos->last_token == cpp_operator)
+	return overloaded;
+
       return (ident);		/* the ident is not in the list */
     }				/* end of procesing for alpanum character */
   /* Scan a non-alphanumeric token */
@@ -374,6 +443,11 @@ lexi ()
   /* If it is not a one character token, token_end will get changed later.  */
   token_end = buf_ptr + 1;
 
+  /* THIS MAY KILL YOU!!!
+
+     Note that it may be possible for this to kill us--if `fill_buffer'
+     at any time switches `buf_ptr' to the other input buffer, `token'
+     and `token_end' will point to different storage areas!!! */
   if (++buf_ptr >= buf_end)
     fill_buffer ();
 
@@ -390,10 +464,24 @@ lexi ()
       code = newline;
       break;
 
+    /* Handle wide strings and chars. */
+    case 'L':
+      if (buf_ptr[0] != '"' && buf_ptr[0] != '\'')
+	{
+	  token_end = buf_ptr;
+	  code = ident;
+	  break;
+	}
+
+      qchar = buf_ptr[0];
+      buf_ptr++;
+      goto handle_string;
+
     case '\'':			/* start of quoted character */
     case '"':			/* start of string */
       qchar = *token;
 
+    handle_string:
       /* Find out how big the literal is so we can set token_end.  */
 
       /* Invariant:  before loop test buf_ptr points to the next */
@@ -414,12 +502,13 @@ lexi ()
 	  if (buf_ptr >= buf_end)
 	    fill_buffer ();
 	}
+
       if (*buf_ptr == EOL || *buf_ptr == 0)
 	{
-	  diag (1, (qchar == '\''
+	  WARNING ((qchar == '\''
 		    ? "Unterminated character constant"
 		    : "Unterminated string constant"),
-		0, 0);
+		   0, 0);
 	}
       else
 	{
@@ -429,6 +518,7 @@ lexi ()
 	    fill_buffer ();
 	}
 
+      token_end = buf_ptr;
       code = ident;
       break;
 
@@ -446,6 +536,15 @@ lexi ()
     case '#':
       unary_delim = parser_state_tos->last_u_d;
       code = preesc;
+
+      /* Make spaces between '#' and the directive be part of
+	 the token if user specified "-lps" */
+      if (leave_preproc_space)
+	{
+	  while (*buf_ptr == ' ' && buf_ptr < buf_end)
+	    buf_ptr++;
+	  token_end = buf_ptr;
+	}
       break;
 
     case '?':
@@ -454,6 +553,15 @@ lexi ()
       break;
 
     case (':'):
+      /* Deal with C++ class::method */
+      if (*buf_ptr == ':')
+	{
+	  code = doublecolon;
+	  buf_ptr++;
+	  token_end = buf_ptr;
+	  break;
+	}
+
       code = colon;
       unary_delim = true;
       if (squest && *e_com != ' ')
@@ -478,8 +586,18 @@ lexi ()
         parser_state_tos->matching_brace_on_same_line++;
       if (l_enum)
       {
-        parser_state_tos->block_init = true;
-	parser_state_tos->block_init_level = 1;
+        /* Keep all variables in the same column:
+	 *   ONE,
+	 *   TWO, etc
+	 * instead of
+	 *   ONE,
+	 *     TWO,
+	 * Use a special code for `block_init' however, because we still
+	 * want to do the line breaks when `braces_on_struct_decl_line'
+	 * is not set.
+         */
+        parser_state_tos->block_init = 2;
+	parser_state_tos->block_init_level = 0;
 	l_enum = false;
       }
       unary_delim = true;
@@ -513,10 +631,16 @@ lexi ()
 	  fill_buffer ();
         unary_delim = true;
         code = decl;
+	token_end = buf_ptr;
         break;
       }
       unary_delim = false;
-      code = period;
+      code = struct_delim;
+      if (*buf_ptr == '*')	/* object .* pointer-to-member */
+      {
+        ++buf_ptr;
+	token_end = buf_ptr;
+      }
       break;
 
     case '-':
@@ -543,18 +667,19 @@ lexi ()
 	{
 	  /* check for operator -> */
 	  buf_ptr++;
-	  if (!pointer_as_binop)
-	    {
-	      unary_delim = false;
-	      code = unary_op;
-	      parser_state_tos->want_blank = false;
-	    }
+	  code = struct_delim;
+	  /* check for operator ->* */
+	  if (*buf_ptr == '*')
+	    buf_ptr++;
 	}
+
+      token_end = buf_ptr;
       break;			/* buffer overflow will be checked at end of
 				   switch */
 
     case '=':
-      if (parser_state_tos->in_or_st)
+      if (parser_state_tos->in_or_st &&
+	  parser_state_tos->last_token != cpp_operator)
       {
 	parser_state_tos->block_init = 1;
 	parser_state_tos->block_init_level = 0;
@@ -574,13 +699,13 @@ lexi ()
 	     people want to detect and eliminate old style assignments but
 	     they don't want indent to silently change the meaning of their
 	     code).  */
-	  diag (0,
-	  "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n",
-		(int) *buf_ptr, (int) *buf_ptr);
+	  WARNING ("old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n",
+		   (int) *buf_ptr, (int) *buf_ptr);
 	}
 
       code = binary_op;
       unary_delim = true;
+      token_end = buf_ptr;
       break;
       /* can drop thru!!! */
 
@@ -603,7 +728,21 @@ lexi ()
 
       code = (parser_state_tos->last_u_d ? unary_op : binary_op);
       unary_delim = true;
+      token_end = buf_ptr;
       break;
+
+#if 0
+      /* Contributed by Beverly Brown, <beverly@norton.datacube.com> */
+    case '*':
+      /* If the * is part of a declaration such as char *,
+	 we're still a decl */
+      if(parser_state_tos->last_token == decl)
+	{
+	  unary_delim = parser_state_tos->last_u_d;
+	  last_code = decl;
+	  return decl;
+	}
+#endif
 
     default:
       if (token[0] == '/' && (*buf_ptr == '*' || *buf_ptr == '/'))
@@ -633,18 +772,26 @@ lexi ()
 	      }
 	    }
 	  unary_delim = parser_state_tos->last_u_d;
-	  break;
 	}
-
-      while (*(buf_ptr - 1) == *buf_ptr || *buf_ptr == '=')
+      else if (parser_state_tos->last_token == cpp_operator)
 	{
-	  /* handle ||, &&, etc, and also things as in int *****i */
-	  if (++buf_ptr >= buf_end)
-	    fill_buffer ();
+	  /* For C++ overloaded operators. */
+	  code = overloaded;
+	  last_code = overloaded;
 	}
-      code = (parser_state_tos->last_u_d ? unary_op : binary_op);
-      unary_delim = true;
+      else
+	{
+	  while (*(buf_ptr - 1) == *buf_ptr || *buf_ptr == '=')
+	    {
+	      /* handle ||, &&, etc, and also things as in int *****i */
+	      if (++buf_ptr >= buf_end)
+		fill_buffer ();
+	    }
+	  code = (parser_state_tos->last_u_d ? unary_op : binary_op);
+	  unary_delim = true;
+	}
 
+      token_end = buf_ptr;
 
     }				/* end of switch */
 
@@ -653,20 +800,23 @@ lexi ()
       l_struct = false;
       last_code = code;
     }
-  token_end = buf_ptr;
-  if (buf_ptr >= buf_end)	/* check for input buffer empty */
+
+  if (buf_ptr >= buf_end)
     fill_buffer ();
   parser_state_tos->last_u_d = unary_delim;
 
+  if (parser_state_tos->last_token == cpp_operator)
+    return overloaded;
   return (code);
 }
 
-/* Add the given keyword to the keyword table, using val as the keyword type */
-addkey (key, val)
-     char *key;
-     enum rwcodes val;
+/* Add the given keyword to the keyword table, using val as
+   the keyword type */
+
+void
+addkey (char *key, enum rwcodes val)
 {
-  register struct templ *p;
+  struct templ *p;
 
   /* Check to see whether key is a reserved word or not. */
   if (is_reserved (key, strlen (key)) != 0)

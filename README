@@ -1,31 +1,92 @@
-This directory contains the 1.10.0 release of GNU indent.
+README for GNU `indent' 2.1.0.
 
-The last version prior to 1.10 was 1.9.1 that was released five years ago.
-I volunteered to start maintaining GNU indent because I wrote a patch for
-it a year ago that fixed quite some bugs and added a few new features
-(commandline options). I decided that the only way to let everyone benefit
-from my fixes is by making it an official release.
+  GNU indent changes the appearance of a C program by inserting or
+  deleting whitespace according to a plethora of options.  Some
+  canned styles of formatting are supported as well.  GNU indent is
+  a descendant of BSD indent.  This file is part of the GNU indent
+  distribution.
 
-If you find other bugs or have ideas for new features, then feel free to
-mail me at <carlo@gnu.org>, however I can't promise that I will add new
-features because I have only limited time available for this project.
-What really needs to be done is a total rewrite of indent, including support
-of C++.
+  GNU indent does NOT work for C++, if it does for you then you're
+  just lucky.  Don't ask for support for C++.
 
-For general building and installation instructions, see the file INSTALL.
+  Read the file NEWS for more information, especially to see what's
+  different from the last version, and what future versions may do.
 
-See the file NEWS for what has changed since previous releases.
+  To install indent, please read the file INSTALL included with the
+  distribution. If you are installing indent on VMS, see the file
+  VMS-README.
 
-GNU indent is fully documented in indent.texinfo.  See the section entitled
-`Problems and Bugs' for information on submitting bug reports.
+  For license and copying information, see the file COPYING.
 
-The file `texinfo.tex' has been removed from the indent package because it
-is much too big to be stored on all GNU packages imho.  If you need it to
-generate DVI files for printing the manual, then please download the latest
-version yourself from http://texinfo.org/.  Instead of killing a few trees
-by using paper, you should learn to use regular expressions and/or get used
-to the info program I think.  You can also generate HTML documentation from
-the file `texinfo.tex' with the program `texi2html'.
+DOCUMENTATION
 
-GNU indent is free software.  See the file COPYING for copying conditions.
+  For complete documentation on the Web, please visit:
 
+     http://www.xs4all.nl/~carlo17/indent/
+
+  GNU uses a language called "texinfo" for its documentation source
+  which produces both an on-line, interactive version and a hardcopy
+  version for printing.  An HTML version is now produced as well.
+
+  The on-line versions, `indent.info' and `indent.1', are installed
+  along with the executable by typing "make install".
+  Refer to the Texinfo manual for more information on the `info' system.
+
+  The hardcopy version is produced from the source file `indent.texinfo'
+  in as either a DVI or Postscript format file.  To produce the DVI
+  version, download the file `texinfo.tex' from http://texinfo.org/ into
+  the top directory, and type:
+
+    make indent.dvi
+
+  To produce the Postscript version, type:
+
+    make indent.ps
+
+  Note that you must have the TeX typographical system installed for
+  this to work.
+
+  The HTML version is included along with the distribution, and
+  consists of the files:
+
+     indent.html  indent_foot.html  indent_toc.html
+
+  which must be installed in the same directory.  These files can also
+  be accessed at the URL http://www.xs4all.nl/~carlo17/indent/indent.html
+
+  To create the HTML version from the texinfo version, type:
+
+     texi2html indent.texinfo
+
+BUG REPORTS
+
+  Please address bug-reports and suggestions or comments to:
+
+    indent@runaway.xs4all.nl
+
+  How to report bugs:
+
+  Please begin your bug report with a concise and factual description
+  of the behaviour you consider to be abberant.  If you have narrowed
+  the problem down to the use of a particular option, please mention
+  that.  In general, also be sure to mention the command line options
+  used to invoke indent, as well as the contents of your .indent.pro
+  if you are using one.
+
+  Then include the *smallest possible* piece of code which generates
+  the described symptom.  It is very helpful if you can manage to
+  reduce the size of the sample code.
+
+  Finally, if you have investigated the problem further, include
+  debugger stack traces, modifications, or speculation you have.
+
+SENDING CODE
+
+  If you send a patch as part of your bug fix, or send me code for new
+  features, please send them as diffs.  In particular, send me the
+  result of "diff -c <old_file> <new_file>".
+
+  Because of the regression testing I require of indent, it is
+  extremely unlikely that your code will be installed into indent
+  "as-is";  however it may still be helpful, and will likely have
+  solved your particular problem.

@@ -1,4 +1,4 @@
-/* Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/* Copyright (c) 1993 - 1998, Joseph Arceneaux.  All rights reserved.
 
    This file is subject to the terms of the GNU General Public License as
    published by the Free Software Foundation.  A copy of this license is
@@ -11,17 +11,19 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
 
-
-
 #include "sys.h"
 #include "indent.h"
+
+#include <string.h>
+
+RCSTAG_CC("$Id: comments.c,v 1.8 1999/06/25 14:22:38 carlo Exp $")
 
 /* Check the limits of the comment buffer, and expand as neccessary. */
 
 #define CHECK_COM_SIZE \
 	if (e_com >= l_com) \
           { \
-	    register nsize = l_com-s_com+400; \
+	    int nsize = l_com-s_com+400; \
 	    combuf = (char *) xrealloc (combuf, nsize); \
 	    e_com = combuf + (e_com-s_com) + 1; \
 	    l_com = combuf + nsize - 5; \
@@ -41,8 +43,8 @@ int out_coms;
    affecting the printing of comments are:
 
    `format_comments'                ("fca"):  Ignore newlines in the
-       comment and perform filling up to `max_col'.  Double newlines
-       indicate paragraph breaks.
+       comment and perform filling up to `comment_max_col'.  Double
+       newlines indicate paragraph breaks.
 
    `format_col1_comments'           ("fc1"):  Format comments which
        begin in column 1.
@@ -70,9 +72,6 @@ int out_coms;
        Formatted comments which extend past this column will be continued on
        the following line.  If this option is not specified, `max_col' is
        used.
-
-   `max_col'                        ("l"):  The length of a line.
-
    */
 
 void
@@ -81,17 +80,22 @@ print_comment ()
   register int column, format;
   enum codes comment_type;
 
-  int start_column, save_length, found_column;
+  int start_column, found_column;
   int first_comment_line, right_margin;
   int boxed_comment, stars, blankline_delims, paragraph_break,
       merge_blank_comment_lines;
-  char *line_break_ptr = 0;
+
+  int two_contiguous_comments = 0;
+  int save_length = 0;
   char *save_ptr = 0;
   char *text_on_line = 0;
+  char *line_break_ptr = 0;
   char *start_delim, *end_delim;
 
   char *line_preamble;
   int line_preamble_length, visible_preamble;
+
+  /* GDB_HOOK_print_comment() */
 
   /* Increment the parser stack, as we will store some things
      there for dump_line to use. */
@@ -119,41 +123,70 @@ print_comment ()
       blankline_delims = 0;
     }
   else if (*buf_ptr == '*' || *buf_ptr == '-'
-	   || *buf_ptr == '=' || *buf_ptr == '_')
-    /* Boxed comment */
+	   || *buf_ptr == '=' || *buf_ptr == '_'
+	   || (parser_state_tos->col_1 && ! format_col1_comments))
+    /* Boxed comment.  This block of code will return. */
     {
+      int comment_lines_count = 1;
+
       found_column = start_column = current_column () - 2;
+      parser_state_tos->box_com = 1;
       parser_state_tos->com_col = found_column;
-      parser_state_tos->box_com = boxed_comment;
+
+      if (blanklines_before_blockcomments)
+	prefix_blankline_requested = 1;
 
       *e_com++ = '/';
       *e_com++ = '*';
       while (1)
 	{
 	  do
+	  {
+	    if (*buf_ptr == EOL)	/* Count line numbers within comment blocks */
+	      ++line_no;
 	    *e_com++ = *buf_ptr++;
+	  }
 	  while (*buf_ptr != '*' && buf_ptr < buf_end);
 
+	  CHECK_COM_SIZE;
+
+	  /* We have reached the end of the comment, and it's all on
+             this line. */
 	  if (*buf_ptr == '*' && *(buf_ptr + 1) == '/')
 	    {
 	      if (buf_ptr == buf_end)
 		fill_buffer ();
+
 	      buf_ptr += 2;
+	      if (buf_ptr == buf_end)
+		fill_buffer ();
 
 	      *e_com++ = '*';
 	      *e_com++ = '/';
 	      *e_com = '\0';
 	      parser_state_tos->tos--;
-	      parser_state_tos->com_col = 1;
+
+	      /* If this is the only line of a boxed comment, it may
+		 be after some other text (e.g., #if foo <comment>),
+		 in which case we want to specify the correct column.
+		 In the other cases, the leading spaces account for
+		 the columns and we start it in column 1. */
+
+	      if (comment_lines_count > 1)
+		parser_state_tos->com_col = 1;
+	      else
+		parser_state_tos->com_col = found_column;
 	      return;
 	    }
 
+	  /* End of the line, or end of file. */
 	  if (buf_ptr == buf_end)
 	    {
 	      if (*(buf_ptr - 1) == EOL)
 		{
 		  *(--e_com) = '\0';
-		  dump_line ();
+		  dump_line (true);
+		  comment_lines_count++;
 		  parser_state_tos->com_col = 1;
 		}
 
@@ -167,17 +200,6 @@ print_comment ()
 		}
 	    }
 	}
-
-#if 0
-      start_delim = "/*";
-      end_delim = "*/";
-      line_preamble = " ";
-      line_preamble_length = 1;
-      visible_preamble = 0;
-      boxed_comment = 1;
-      stars = 0;
-      blankline_delims = 0;
-#endif
     }
   else
     {
@@ -199,88 +221,77 @@ print_comment ()
   /* Now, compute the correct indentation for this comment
      and whether or not it should be formatted. */
   found_column = current_column () - 2;
-  if (boxed_comment)
+
+  if ((s_lab == e_lab) && (s_code == e_code))
+    /* First handle comments which begin the line. */
     {
-      start_column = found_column;
-      format = 0;
-      blankline_delims = 0;
-    }
-  else
-    {
-      /* First handle comments which begin the line. */
-      if ((s_lab == e_lab) && (s_code == e_code))
+      if (parser_state_tos->col_1 && ! format_col1_comments)
 	{
-	  /* This is a top-level comment, not within some code. */
-	  if (parser_state_tos->ind_level <= 0)
-	    {
-	      if (parser_state_tos->col_1)
-		{
-		  format = format_col1_comments;
-		  start_column = 1;
-		}
-	      else
-		{
-		  format = format_comments;
-		  start_column = found_column;
-		}
-	    }
-	  /* Here for comments starting a line, in the middle of code. */
-	  else
-	    {
-	      if (parser_state_tos->col_1)
-		{
-		  format = format_col1_comments;
-		  start_column = 1;
-		}
-	      else
-		{
-		  format = format_comments;
-		  start_column = (parser_state_tos->ind_level
-				  - unindent_displace + 1);
-		  if (start_column < 0)
-		    start_column = 1;
-		}
-	    }
+	  format = format_col1_comments;
+	  start_column = 1;
+	}
+      else if (s_com != e_com)
+	/* The fool has a line consisting of two contiguous comments.
+	   In this case, we don't try too hard, 'cause nothing will
+	   look good. */
+	{
+	  format = 0;
+	  start_column = found_column;
+	  two_contiguous_comments = 1;
 	}
       else
-	/* This comment follows code of some sort. */
 	{
-	  int target;
-
-	  /* First, compute where the comment SHOULD go. */
-	  if (parser_state_tos->decl_on_line)
-	    target = decl_com_ind;
-	  else if (else_or_endif)
-	    target = else_endif_col;
-	  else
-	    target = com_ind;
-
-	  /* Now determine if the code on the line is short enough
-	     to allow the comment to begin where it should. */
-	  if (s_code != e_code)
-	    start_column = count_columns (compute_code_target (), s_code);
-	  else
-	    /* s_lab != e_lab : there is a label here. */
-	    start_column = count_columns (compute_label_target (), s_lab);
-
-	  if (start_column < target)
-	    start_column = target;
-	  else
-	    {
-	      /* If the too-long code is a pre-processor command,
-		 start the comment 1 space afterwards, otherwise
-		 start at the next tab mark. */
-	      if (else_or_endif)
-		{
-		  start_column++;
-		  else_or_endif = false;
-		}
-	      else
-		start_column += tabsize - ((start_column - 1) % tabsize);
-	    }
-
 	  format = format_comments;
+
+	  if (parser_state_tos->ind_level <= 0
+	      && (!parser_state_tos->in_stmt
+	          || (parser_state_tos->in_decl
+		      && parser_state_tos->paren_level == 0)))
+	    start_column = found_column;
+	  else
+	    start_column = compute_code_target();
 	}
+    }
+  else
+    /* This comment follows code of some sort. */
+    {
+      int target;
+
+      /* First, compute where the comment SHOULD go. */
+      if (parser_state_tos->decl_on_line)
+	target = decl_com_ind;
+      else if (else_or_endif)
+	target = else_endif_col;
+      else
+	target = com_ind;
+
+      /* Now determine if the code on the line is short enough
+	 to allow the comment to begin where it should. */
+      if (s_code != e_code)
+	start_column = count_columns (compute_code_target (),
+				      s_code, NULL_CHAR);
+      else
+	/* s_lab != e_lab : there is a label here. */
+	start_column = count_columns (compute_label_target (),
+				      s_lab, NULL_CHAR);
+
+      if (start_column < target)
+	start_column = target;
+      else
+	{
+	  /* If the too-long code is a pre-processor command,
+	     start the comment 1 space afterwards, otherwise
+	     start at the next tab mark. */
+	  if (else_or_endif)
+	    {
+	      start_column++;
+	      else_or_endif = false;
+	    }
+	  else
+	    start_column += tabsize - ((start_column - 1) % tabsize);
+	}
+
+      format = format_comments;
     }
 
   if (! line_preamble)
@@ -300,15 +311,8 @@ print_comment ()
 
   /* These are the parser stack variables used to communicate
      formatting information to dump_line (). */
-  parser_state_tos->com_col = start_column;
+  parser_state_tos->com_col = (two_contiguous_comments ? 1 : start_column);
   parser_state_tos->box_com = boxed_comment;
-  if (boxed_comment)
-    {				/* Why is this here?  Could these vars have
-				   been reset after the boxed_comment code
-				   above?  Check this out.  */
-      stars = 0;
-      blankline_delims = 0;
-    }
 
   /* Output the beginning comment delimiter.  They are both two
      characters long. */
@@ -322,7 +326,7 @@ print_comment ()
       char *p = buf_ptr;
 
       *e_com = '\0';
-      dump_line ();
+      dump_line (true);
 
       /* Check if the delimiter was already on a line by itself,
 	 and skip whitespace if formating. */
@@ -350,6 +354,8 @@ print_comment ()
   /* Iterate through the lines of the comment */
   while (! had_eof)
     {
+      int whitespace_character;	/* Mark if we've just seen whitespace or not */
+
       /* Iterate through the characters on one line */
       while (! had_eof)
 	{
@@ -359,6 +365,8 @@ print_comment ()
 	    {
 	    case ' ':
 	    case TAB:
+	      whitespace_character = 1;
+
 	      /* If formatting, and previous break marker is
 	         nonexistant, or before text on line, reset
 		 it to here. */
@@ -386,16 +394,16 @@ print_comment ()
 
 
 	    case EOL:
+	      whitespace_character = 1;
+
 	      /* We may be at the end of a C++ comment */
 	      if (comment_type == cplus_comment)
 		{
-		  dump_line ();
-		  buf_ptr++;
-		  if (buf_ptr >= buf_end)
-		    fill_buffer ();
-
+		cplus_exit:
 		  parser_state_tos->tos--;
-		  parser_state_tos->com_col = start_column;
+		  parser_state_tos->com_col
+		    = (two_contiguous_comments ? 1 : start_column);
+		  parser_state_tos->box_com = boxed_comment;
 		  return;
 		}
 
@@ -404,25 +412,34 @@ print_comment ()
 		  /* Newline and null are the two characters which
 		     end an input line, so check here if we need to
 		     get the next line. */
+	          if (*buf_ptr == EOL)
+		    ++line_no;
 		  buf_ptr++;
 		  if (buf_ptr >= buf_end)
 		    fill_buffer ();
 
-		  /* If this is "\n\n", it's a paragraph break. */
+		  /* If there are any spaces between the text and this
+		     newline character, remove them. */
+		  if (e_com > line_break_ptr
+		      && text_on_line < line_break_ptr)
+		    e_com = line_break_ptr;
+
+		  /* If this is "\n\n", or "\n<whitespace>\n",
+		     it's a paragraph break. */
+		  while (*buf_ptr == TAB || *buf_ptr == ' ')
+		    if (buf_ptr++ >= buf_end)
+		      fill_buffer ();
 		  if (*buf_ptr == EOL || ! text_on_line)
 		    {
 		      paragraph_break = 1;
 		      goto end_line;
 		    }
 
-		  /* This is a single newline.  Transform it, and any
-		     following whitespace into a single blank. */
+		  /* This is a single newline.  Transform it (and any
+		     following whitespace) into a single blank. */
 		  line_break_ptr = e_com;
 		  *e_com++ = ' ';
 		  column++;
-		  while (*buf_ptr == TAB || *buf_ptr == ' ')
-		    if (buf_ptr++ >= buf_end)
-		      fill_buffer ();
 		  continue;
 		}
 	      else
@@ -447,7 +464,7 @@ print_comment ()
 			      if (blankline_delims)
 				{
 				  *e_com = '\0';
-				  dump_line ();
+				  dump_line (true);
 				  *e_com++ = ' ';
 				}
 			      else
@@ -479,8 +496,9 @@ print_comment ()
 		      *e_com = '\0';
 
 		      /* Skip any whitespace following the comment.  If
-			 there is only whitespace after it, print the line. */
-		      /* NOTE:  We're not printing the line: TRY IT! */
+			 there is only whitespace after it, print the line.
+
+			 NOTE:  We're not printing the line: TRY IT! */
 		      buf_ptr += 2;
 		      while (*buf_ptr == ' ' || *buf_ptr == TAB)
 			buf_ptr++;
@@ -488,7 +506,9 @@ print_comment ()
 			  fill_buffer ();
 
 		      parser_state_tos->tos--;
-		      parser_state_tos->com_col = start_column;
+		      parser_state_tos->com_col
+			= (two_contiguous_comments ? 1 : start_column);
+		      parser_state_tos->box_com = boxed_comment;
 		      return;
 		    }
 
@@ -519,6 +539,7 @@ print_comment ()
 
 	    default:
 	      /* Some textual character. */
+	      whitespace_character = 0;
 	      text_on_line = e_com;
 	      *e_com++ = *buf_ptr;
 	      column++;
@@ -531,6 +552,8 @@ print_comment ()
 	  if (format && column > right_margin && line_break_ptr)
 	    {
 	      if (line_break_ptr < e_com - 1)
+		/* Here if we are really "breaking" the line:  the line
+		   break is before some text we've seen. */
 		{
 		  *line_break_ptr = '\0';
 		  save_ptr = line_break_ptr + 1;
@@ -543,10 +566,33 @@ print_comment ()
 		    right_margin = column - save_length;
 		}
 	      else
-		*e_com = '\0';
+		/* The line break is after the last text;  we're really
+		   truncating the line. */
+		{
+		  if (comment_type == cplus_comment)
+		    {
+		      while (*buf_ptr == TAB || *buf_ptr == ' ')
+			buf_ptr++;
+		      buf_ptr--;
+		      if (*buf_ptr == EOL)
+			goto cplus_exit;
+		    }
+		  else
+		    {
+		      while (*buf_ptr == TAB || *buf_ptr == ' '
+			     || *buf_ptr == EOL)
+			buf_ptr++;
+
+		      buf_ptr--;
+		    }
+
+		  *e_com = '\0';
+		}
 	      goto end_line;
 	    }
 
+	  if (*buf_ptr == EOL)
+	    ++line_no;
 	  buf_ptr++;
 	  if (buf_ptr == buf_end)
 	    fill_buffer ();
@@ -560,7 +606,7 @@ print_comment ()
 	  && ! (first_comment_line == com_lines))
 	e_com = s_com;
       *e_com = '\0';
-      dump_line ();
+      dump_line (true);
 
       /* If formatting (paragraph_break is only used for formatted
 	 comments) and user wants blank lines merged, kill all white
@@ -569,14 +615,20 @@ print_comment ()
 	{
 	  if (merge_blank_comment_lines)
 	    while (*buf_ptr == EOL || *buf_ptr == ' ' || *buf_ptr == TAB)
+	    {
+	      if (*buf_ptr == EOL)
+	        ++line_no;
 	      if (++buf_ptr >= buf_end)
 		fill_buffer ();
+	    }
 	  paragraph_break = 0;
 	}
       else
 	{
 	  /* If it was a paragraph break (`if' clause), we scanned ahead
 	     one character.  So, here in the `else' clause, advance buf_ptr. */
+	  if (*buf_ptr == EOL)
+	    ++line_no;
 	  buf_ptr++;
 	  if (buf_ptr >= buf_end)
 	    fill_buffer ();
@@ -592,7 +644,7 @@ print_comment ()
 	 user specified -sc. */
       if (line_preamble)
 	{
-	  memcpy (e_com, line_preamble, line_preamble_length);
+	  (void) memcpy (e_com, line_preamble, line_preamble_length);
 	  e_com += line_preamble_length;
 	  column = start_column + line_preamble_length;
 	}
@@ -610,13 +662,14 @@ print_comment ()
 	      save_ptr++;
 	      save_length--;
 	    }
-	  memcpy (e_com, save_ptr, save_length);
+	  (void) memcpy (e_com, save_ptr, save_length);
 	  text_on_line = e_com;
 	  e_com += save_length;
 	  /* We only break if formatting, in which cases there
 	     are no tabs, only spaces.*/
 	  column += save_length;
 	  save_ptr = 0;
+	  save_length = 0;
 	}
       else
 	{
@@ -628,5 +681,6 @@ print_comment ()
     }
 
   parser_state_tos->tos--;
-  parser_state_tos->com_col = start_column;
+  parser_state_tos->com_col = (two_contiguous_comments ? 1 : start_column);
+  parser_state_tos->box_com = boxed_comment;
 }

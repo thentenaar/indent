@@ -1,5 +1,5 @@
-/* Copyright (c) 1999, Carlo Wood. All rights reserved.
-   Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+   Copyright (c) 1993, 1994 Joseph Arceneaux.  All rights reserved.
 
    This file is subject to the terms of the GNU General Public License as
    published by the Free Software Foundation.  A copy of this license is
@@ -17,17 +17,17 @@
 #endif
 
 #ifdef STDC_HEADERS
-# include <string.h>
+#include <string.h>
 #else
-# ifndef HAVE_STRCHR
-#  define strchr index
-#  define strrchr rindex
-# endif
+#ifndef HAVE_STRCHR
+#define strchr index
+#define strrchr rindex
+#endif
 char *strchr(), *strrchr();
-# ifndef HAVE_MEMCPY
-#  define memcpy(d, s, n) bcopy ((s), (d), (n))
-#  define memmove(d, s, n) bcopy ((s), (d), (n))
-# endif
+#ifndef HAVE_MEMCPY
+#define memcpy(d, s, n) bcopy ((s), (d), (n))
+#define memmove(d, s, n) bcopy ((s), (d), (n))
+#endif
 #endif
 
 #include <stdio.h>
@@ -36,6 +36,7 @@ char *strchr(), *strrchr();
 #define TAB '\t'
 #define EOL '\n'
 #define BACKSLASH '\\'
+#define NULL_CHAR '\0'
 
 #ifdef DEBUG
 extern int debug;
@@ -49,7 +50,6 @@ extern int debug;
 
 #ifdef VMS
 # define ONE_DOT_PER_FILENAME 1
-# define NODIR 1
 # define PROFILE_FORMAT "%s%s"
 # define BACKUP_SUFFIX_STR    "_"
 # define BACKUP_SUFFIX_CHAR   '_'
@@ -62,17 +62,16 @@ extern int debug;
 
 #ifdef __MSDOS__
 # define ONE_DOT_PER_FILENAME 1
-# ifndef __GNUC__
-# define USG   1
-# endif
-# define NODIR 1
 #endif /* __MSDOS__ */
 
-/* configure defines USG if it can't find bcopy */
-
-#ifndef USG
-#define memcpy(dest,src,len) bcopy((src),(dest),len)
+/* Donated by Carlo Wood from `libr'.  All rights reserved. */
+#if !defined(__GNUC__) || (__GNUC__ < 2) || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
+#define __attribute__(x)
 #endif
+#define RCSTAG_CC(string) static char rcs_ident[] __attribute__ ((unused)) = string;
+#define RCSTAG_H(name, string) static const char rcs_ident_##name##_h[] __attribute__ ((unused)) = string;
+
+RCSTAG_H(sys, "$Id: sys.h,v 1.5 1999/06/03 18:00:12 carlo Exp $")
 
 struct file_buffer
 {
@@ -82,11 +81,3 @@ struct file_buffer
 };
 
 extern struct file_buffer *read_file (), *read_stdin ();
-
-/* Standard memory allocation routines.  */
-char *malloc ();
-char *realloc ();
-
-/* Similar, but abort with an error if out of memory (see globs.c).  */
-char *xmalloc ();
-char *xrealloc ();

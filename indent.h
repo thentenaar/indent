@@ -1,6 +1,6 @@
-/* Copyright (c) 1994, Joseph Arceneaux.  All rights reserved
-
-   Copyright (c) 1992, Free Software Foundation, Inc.  All rights reserved.
+/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+   Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
+   Copyright (c) 1992 Free Software Foundation, Inc.  All rights reserved.
 
    Copyright (c) 1985 Sun Microsystems, Inc. Copyright (c) 1980 The Regents
    of the University of California. Copyright (c) 1976 Board of Trustees of
@@ -19,6 +19,38 @@
    IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
    OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. */
 
+RCSTAG_H(indent, "$Id: indent.h,v 1.12 1999/07/04 16:51:24 carlo Exp $")
+
+/* Values that `indent' can return for exit status.
+
+    `total_success' means no errors or warnings were found during a successful
+      invocation of the program.
+
+    `invocation_error' is returned if an invocation problem (like an incorrect
+      option) prevents any formatting to occur.
+
+    `indent_error' is returned if errors occur during formatting which
+      do not prevent completion of the formatting, but which appear to be
+      manifested by incorrect code (i.e, code which wouldn't compile).
+
+    `indent_punt' is returned if formatting of a file is halted because of
+      an error with the file which prevents completion of formatting.  If more
+      than one input file was specified, indent continues to the next file.
+
+    `indent_fatal' is returned if a serious internal problem occurs and
+      the entire indent process is terminated, even if all specified files
+      have not been processed. */
+
+enum exit_values
+{
+  total_success = 0,
+  invocation_error = 1,
+  indent_error = 2,
+  indent_punt = 3,
+  indent_fatal = 4,
+  system_error = 5
+};
+
 enum codes
 {
   code_eof = 0,			/* end of file */
@@ -27,26 +59,60 @@ enum codes
 				   initialization.  */
   rparen,			/* ')' or ']'.  Also '}' in an
 				   initialization.  */
-  unary_op, binary_op, postop,
-  question, casestmt, colon, semicolon, lbrace, rbrace,
+  start_token,
+  unary_op,
+  binary_op,
+  postop,
+
+  question,
+  casestmt,
+  colon,
+  doublecolon,			/* For C++ class methods. */
+  semicolon,
+  lbrace,
+  rbrace,
+
   ident,			/* string or char literal,
 				   identifier, number */
+
+  overloaded,			/* For C++ overloaded operators (like +) */
+  cpp_operator,
+
   comma,
   comment,			/* A "slash-star" comment */
   cplus_comment,		/* A C++ "slash-slash" */
   swstmt,
   preesc,			/* '#'.  */
-  form_feed, decl,
+
+  form_feed,
+  decl,
+
   sp_paren,			/* if, for, or while token */
-  sp_nparen, ifstmt, whilestmt,
-  forstmt, stmt, stmtl, elselit, dolit, dohead, dostmt, ifhead,
-  elsehead, period,
+  sp_nparen,			/* do */
+  sp_else,			/* else */
+  ifstmt,
+  elseifstmt,
+  whilestmt,
+
+  forstmt,
+  stmt,
+  stmtl,
+  elselit,
+  dolit,
+  dohead,
+  dostmt,
+  ifhead,
+
+  elsehead,
+  struct_delim,			/* '.' or "->" */
+
   attribute			/* The '__attribute__' qualifier */
 };
 
 enum rwcodes
 {
   rw_none,
+  rw_operator,			/* For C++ operator overloading. */
   rw_break,
   rw_switch,
   rw_case,
@@ -54,13 +120,51 @@ enum rwcodes
   rw_enum,
   rw_decl,
   rw_sp_paren,			/* if, while, for */
-  rw_sp_nparen,			/* do, else */
+  rw_sp_nparen,			/* do */
+  rw_sp_else,			/* else */
   rw_sizeof,
   rw_return
 };
 
+enum bb_code
+{
+  bb_none,
+  bb_comma,
+  bb_embedded_comment_start,
+  bb_embedded_comment_end,
+  bb_proc_call,
+  bb_dec_ind,
+  bb_unary_op,
+  bb_binary_op,
+  bb_before_boolean_binary_op,
+  bb_after_boolean_binary_op,
+  bb_after_equal_sign,
+  bb_comparisation,
+  bb_question,
+  bb_colon,
+  bb_label,
+  bb_semicolon,
+  bb_lbrace,
+  bb_rbrace,
+  bb_overloaded,
+  bb_const_qualifier,
+  bb_ident,
+  bb_attribute,
+  bb_struct_delim,
+  bb_operator2,		/* member selection (bb_struct_delim `.' or `->') */
+  bb_operator4,		/* member selection (bb_struct_delim `.*' or `->*') */
+  bb_operator5,		/* multiply, divide or modulo */
+  bb_operator6,		/* add or subtract */
+  bb_doublecolon,
+  bb_cast
+};
+
 #define false 0
 #define true  1
+
+#define DEFAULT_RIGHT_MARGIN 78
+
+#define DEFAULT_RIGHT_COMMENT_MARGIN 78
 
 /* Name of input file.  */
 extern char *in_name;
@@ -78,7 +182,11 @@ extern char *cur_line;
 /* Size of the input program, not including the ' \n\0' we add at the end */
 extern unsigned long in_prog_size;
 
-extern FILE *output;		/* the output file */
+/* The output file. */
+extern FILE *output;
+
+/* True if we're handling C++ code. */
+extern int c_plus_plus;
 
 extern char *labbuf;		/* buffer for label */
 extern char *s_lab;		/* start ... */
@@ -87,6 +195,8 @@ extern char *l_lab;		/* limit of label buffer */
 
 extern char *codebuf;		/* buffer for code section */
 extern char *s_code;		/* start ... */
+extern char *s_code_corresponds_to;	/* If set, start of corresponding
+					   code in token buffer... */
 extern char *e_code;		/* .. and end of stored code */
 extern char *l_code;		/* limit of code section */
 
@@ -99,12 +209,15 @@ extern char *buf_ptr;		/* ptr to next character to be taken from
 				   in_buffer */
 extern char *buf_end;		/* ptr to first after last char in in_buffer */
 
+extern int  break_line;		/* Whether or not we should break the line. */
+
 /* pointer to the token that lexi() has just found */
 extern char *token;
 /* points to the first char after the end of token */
 extern char *token_end;
+
 /* Functions from lexi.c */
-enum codes lexi ();
+extern enum codes lexi ();
 
 /* Used to keep track of buffers.  */
 struct buf
@@ -114,8 +227,10 @@ struct buf
 				   one (e.g. is equal to ptr if the buffer is
 				   empty).  */
   int size;			/* how many chars are currently allocated.  */
+  int len;			/* how many chars we're actually using. */
   int start_column;		/* corresponding column of first character
-				   in the buffer. */
+  				   in the buffer. */
+  int column;			/* Column we were in when we switched buffers. */
 };
 
 /* Buffer in which to save a comment which occurs between an if(), while(),
@@ -136,6 +251,7 @@ extern char *be_save;		/* similarly saved value of buf_end */
 extern int use_stdout;
 extern int pointer_as_binop;
 extern int blanklines_after_declarations;
+extern int blanklines_before_blockcomments;
 extern int blanklines_after_procs;
 extern int blanklines_around_conditional_compilation;
 extern int swallow_optional_blanklines;
@@ -150,9 +266,6 @@ extern enum codes postfix_blankline_requested_code;	/* The code that caused
 							   requested */
 extern int break_comma;		/* when true and not in parens, break after a
 				   comma */
-
-extern int found_err;		/* flag set in diag() on error */
-
 
 /* True if there is an embedded comment on this code line */
 extern int embedded_comment_on_line;
@@ -178,11 +291,6 @@ extern int space_sp_semicolon;
 /* True if a #else or #endif has been encountered.  */
 extern int else_or_endif;
 
-extern int case_ind;		/* indentation level to be used for a "case
-				   n:" in spaces */
-extern int case_brace_indent;	/* indentation level to be used for a '{'
-				   directly following a "case n:" in spaces */
-
 extern int code_lines;		/* count of lines with code */
 
 extern int out_coms;		/* number of comments processed */
@@ -199,17 +307,16 @@ extern int max_col;		/* the maximum allowable line length */
 extern int verbose;		/* when true, non-essential error messages
 				   are printed */
 extern int cuddle_else;		/* true if else should cuddle up to '}' */
-extern int star_comment_cont;	/* true iff comment continuation lines should
+extern int star_comment_cont;	/* true if comment continuation lines should
 				   have stars at the beginning of each line. */
 extern int comment_delimiter_on_blankline;
-extern int troff;		/* true iff were generating troff input */
 extern int procnames_start_line;/* if true, the names of procedures being
 				   defined get placed in column 1 (ie. a
 				   newline is placed between the type of the
 				   procedure and its name) */
 extern int expect_output_file;	/* Means "-o" was specified. */
-extern int proc_calls_space;	/* If true, procedure calls look like: foo
-				   (bar) rather than foo(bar) */
+extern int proc_calls_space;	/* If true, procedure calls look like:
+				   foo (bar) rather than foo(bar) */
 extern int cast_space;		/* If true, casts look like: r				 *
 				   (char *) bar rather than (char *)bar */
 
@@ -218,7 +325,7 @@ extern int format_col1_comments;
 /* If any comments are to be reformatted */
 extern int format_comments;
 
-extern int suppress_blanklines;	/* set iff following blanklines should be
+extern int suppress_blanklines;	/* set if following blanklines should be
 				   suppressed */
 extern int continuation_indent;	/* set to the indentation between the edge of
 				   code and continuation lines in spaces */
@@ -256,6 +363,9 @@ extern int extra_expression_indent;	/* True if continuation lines from
 					   they don't conflict with the code
 					   that follows */
 
+/* Space after star in:  char * foo(); */
+extern int space_after_pointer_type;
+
 /* The following are all controlled by command line switches (as are some of
    the things above).  */
 extern int leave_comma;		/* if true, never break declarations after
@@ -264,6 +374,10 @@ extern int decl_com_ind;	/* the column in which comments after
 				   declarations should be put */
 extern int case_indent;		/* The distance to indent case labels from
 				   the switch statement */
+extern int case_brace_indent;	/* Indentation level to be used for a '{'
+				   directly following a case label. */
+extern int struct_brace_indent;	/* Indentation level to be used for a '{'
+				   directly following a struct, union or enum */
 extern int com_ind;		/* the column in which comments to the right
 				   of code should start */
 extern int decl_indent;		/* column to indent declared identifiers to */
@@ -272,8 +386,6 @@ extern int ljust_decl;		/* true if declarations should be left
 extern int unindent_displace;	/* comments not to the right of code will be
 				   placed this many indentation levels to the
 				   left of code */
-extern int else_if;		/* True iff else if pairs should be handled
-				   specially */
 /* Number of spaces to indent parameters.  */
 extern int indent_parameters;
 /* The size of one indentation level in spaces.  */
@@ -284,23 +396,11 @@ extern int tabsize;
    explicitly specified.  */
 extern int use_stdinout;
 
-/* -troff font state information */
-
-struct fstate
-{
-  char font[4];
-  char size;
-  int allcaps:1;
-};
-char *chfont ();
-
-extern struct fstate
-  keywordf,			/* keyword font */
-  stringf,			/* string font */
-  boxcomf,			/* Box comment font */
-  blkcomf,			/* Block comment font */
-  scomf,			/* Same line comment font */
-  bodyf;			/* major body font */
+extern int break_before_boolean_operator;	/* True when we prefer to break a long line
+						 * before a '&&' or '||', instead of behind it. */
+extern int honour_newlines;			/* True when positions at which we read a newline
+						   in the input file, should get a high priority
+						   to break long lines at. */
 
 /* This structure contains information relating to the state of parsing the
    code.  The difference is that the state is saved on #if and restored on
@@ -309,7 +409,6 @@ struct parser_state
 {
   struct parser_state *next;
   enum codes last_token;
-  struct fstate cfont;		/* Current font */
 
   /* This is the parsers stack, and the current allocated size.  */
   enum codes *p_stack;
@@ -323,6 +422,9 @@ struct parser_state
      remember the type. */
   enum rwcodes last_rw;
 
+  /* also, remember its depth in parentheses */
+  int last_rw_depth;
+
   /* Used to store case stmt indentation levels.  */
   /* Currently allocated size is stored in p_stack_size.  */
   int *cstk;
@@ -330,9 +432,11 @@ struct parser_state
   /* Pointer to the top of stack of the p_stack, il and cstk arrays. */
   int tos;
 
-  int box_com;			/* set to true when we are in a "boxed"
-				   comment. In that case, the first non-blank
-				   char should be lined up with the / in /* */
+  int box_com;			/* set to true when we are in a
+				   "boxed" comment. In that case, the
+				   first non-blank char should be
+				   lined up with the / in the comment
+				   closing delimiter */
 
   int cast_mask;		/* indicates which close parens close off
 				   casts */
@@ -342,11 +446,16 @@ struct parser_state
 
   int sizeof_mask;		/* indicates which close parens close off
 				   sizeof''s */
-  int block_init;		/* true iff inside a block initialization */
+  int block_init;		/* set to 1 if inside a block initialization
+  				   set to 2 if inside an enum declaration */
   int block_init_level;		/* The level of brace nesting in an
-				   initialization */
+				   initialization (0 in an enum decl) */
   int last_nl;			/* this is true if the last thing scanned was
 				   a newline */
+  int last_saw_nl;		/* this is true if the last non white space
+  				   scanned was a newline */
+  int broken_at_non_nl;		/* true when a line was broken at a place
+  				   where there was no newline in the input file */
   int in_or_st;			/* Will be true iff there has been a
 				   declarator (e.g. int or char) and no left
 				   paren since the last semicolon. When true,
@@ -400,12 +509,17 @@ struct parser_state
   int want_blank;		/* set to true when the following token
 				   should be prefixed by a blank. (Said
 				   prefixing is ignored in some cases.) */
+  enum bb_code can_break;	/* set when a break is ok before the following
+  				   token (is automatically implied by
+				   `want_blank'. */
   int its_a_keyword;
   int sizeof_keyword;
   int dumped_decl_indent;
   int in_parameter_declaration;
   char *procname;		/* The name of the current procedure */
   char *procname_end;		/* One char past the last one in procname */
+  char *classname;		/* The name of the current C++ class */
+  char *classname_end;		/* One char past the last one in classname */
   int just_saw_decl;
   int matching_brace_on_same_line;	/* Set to a value >= 0 if the the
 					   current '}' has a matching '{'
@@ -420,3 +534,28 @@ extern struct parser_state *parser_state_tos;
 /* The column in which comments to the right of #else and #endif should
    start.  */
 extern int else_endif_col;
+
+
+
+/* Declared in globs.c */
+extern char *xmalloc ();
+extern char *xrealloc ();
+extern void message ();
+extern void fatal ();
+
+/* Warning messages:  indent continues */
+#define WARNING(s,a,b) message ("Warning", s, a, b)
+
+/* Error messages: indent stops processing the current file. */
+#define ERROR(s,a,b) message ("Error", s, a, b)
+
+/* Declared in io.c */
+extern void fill_buffer ();
+extern void dump_line ();
+extern int current_column (), count_columns ();
+extern int compute_code_target (), compute_label_target ();
+
+/* Declared in parse.c */
+extern enum exit_values parse ();
+extern void reduce ();
+extern int inc_pstack ();

@@ -2,26 +2,34 @@
 AUTOMAKE_OPTIONS = no-texinfo.tex
 
 bin_PROGRAMS = indent
-indent_SOURCES = args.c comments.c indent.c lexi.c parse.c backup.c globs.c io.c memcpy.c sys.h backup.h indent.h
+indent_SOURCES = args.c comments.c indent.c lexi.c parse.c backup.c globs.c io.c memcpy.c
+noinst_HEADERS = backup.h indent.h sys.h
 info_TEXINFOS = indent.texinfo
 man_MANS = indent.1
 
-BUILT_SOURCES = indent.1 README ChangeLog gperf.c
-EXTRA_DIST = $(BUILT_SOURCES) indent.gperf ChangeLog-1990 ChangeLog-1994
+BUILT_SOURCES = indent.1 README ChangeLog gperf.c indent.html indent_foot.html indent_toc.html
+EXTRA_DIST = $(BUILT_SOURCES) indent.gperf ChangeLog-1990 ChangeLog-1998
 
-lexi.o: lexi.c @MAINTAINER_MODE_TRUE@ gperf.c
-	$(COMPILE) -c lexi.c
+lexi.o: $(srcdir)/lexi.c @MAINTAINER_MODE_TRUE@ gperf.c
+	$(COMPILE) -c $(srcdir)/lexi.c
 
 gperf.c: @MAINTAINER_MODE_TRUE@ indent.gperf
-	gperf -c -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
+	gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
 
-DISTCLEANFILES=config.cache config.log config.h README
+DISTCLEANFILES=config.cache config.log config.h
 
 # --------------- Maintainer's Section
 
 MAINTAINERCLEANFILES=aclocal.m4 Makefile.in config.h.in stamp-h.in configure \
 	ChangeLog texinfo2man indent.1 gperf.c \
 	indent-1.spec index.html cvslog-*.html indent.html indent_*.html
+
+## Use -g when in maintainer mode
+if MAINTAINER_MODE
+CFLAGS=-g
+else
+CFLAGS=@CFLAGS@
+endif
 
 ## Bug in automake: Can't use `if MAINTAINER_MODE'
 @MAINTAINER_MODE_TRUE@include $(srcdir)/maintMakefile
@@ -34,4 +42,4 @@ maintainer-clean-local:
 	echo -e "\taclocal" >> Makefile
 	echo -e "\tautoconf" >> Makefile
 	echo -e "\tautoheader" >> Makefile
-	echo -e "\tconfigure --enable-maintainer-mode" >> Makefile
+	echo -e "\tconfigure --enable-maintainer-mode --prefix=/home/carlo" >> Makefile

@@ -12,8 +12,8 @@ indent \- changes the appearance of a C program by inserting or deleting whitesp
 \-\-version
 .SH "DESCRIPTION"
 This man page is generated from the file \fIindent.texinfo\fR.
-This is Edition 1.10.0 of "The \fBindent\fR Manual",
-for Indent Version 1.10.0, last updated 26 May 1999.
+This is Edition  of "The \fBindent\fR Manual",
+for Indent Version , last updated .
 
 The \fBindent\fR program
 can be used to make code easier to read.  It can also convert from one
@@ -36,6 +36,9 @@ Force blank lines after procedure bodies.
 .B -bbb\fR, \fB--blank-lines-after-block-comments\fR
 Force blank lines after block comments.
 .TP
+.B -bbo\fR, \fB--break-before-boolean-operator\fR
+Prefer to break long lines before boolean operators.
+.TP
 .B -bc\fR, \fB--blank-lines-after-commas\fR
 Force newline after comma in declaration.
 .TP
@@ -53,6 +56,9 @@ Put braces on line with \fBif\fR, etc. and structure declarations.
 .TP
 .B -brs\fR, \fB--braces-on-struct-decl-line\fR
 Put braces on \fBstruct\fR declaration line.
+.TP
+.B -bs\fR, \fB--Bill-Shannon\fR, \fB--blank-before-sizeof\fR
+Put a space between \fBsizeof\fR and its argument.
 .TP
 .B -c\fIn\fB\fR, \fB--comment-indentation\fIn\fB\fR
 Put comments to the right of code in column \fIn\fR.
@@ -82,9 +88,6 @@ Put comments to the right of \`#else\' and \`
 .B -cs\fR, \fB--space-after-cast\fR
 Put a space after a cast operator.
 .TP
-.B -bs\fR, \fB--blank-before-sizeof\fR
-Put a space between \fBsizeof\fR and its argument.
-.TP
 .B -d\fIn\fB\fR, \fB--line-comments-indentation\fIn\fB\fR
 Set indentation of comments not to the right 
 of code to \fIn\fR spaces.
@@ -101,6 +104,9 @@ Do not disable all formatting of comments.
 .B -gnu\fR, \fB--gnu-style\fR
 Use GNU coding style.  This is the default.
 .TP
+.B -hnl\fR, \fB--honour-newlines\fR
+Prefer to break long lines at the position of newlines in the input.
+.TP
 .B -i\fIn\fB\fR, \fB--indent-level\fIn\fB\fR
 Set indentation level to \fIn\fR spaces.
 .TP
@@ -112,7 +118,7 @@ definitions by \fIn\fR spaces.
 Use Kernighan & Ritchie coding style.
 .TP
 .B -l\fIn\fB\fR, \fB--line-length\fIn\fB\fR
-Set maximum line length to \fIn\fR.
+Set maximum line length for non-comment lines to \fIn\fR.
 .TP
 .B -lc\fIn\fB\fR, \fB--comment-line-length\fIn\fB\fR
 Set maximum line length for comment formatting to \fIn\fR.
@@ -128,6 +134,9 @@ Do not force blank lines after declarations.
 .TP
 .B -nbap\fR, \fB--no-blank-lines-after-procedures\fR
 Do not force blank lines after procedure bodies.
+.TP
+.B -nbbo\fR, \fB--break-after-boolean-operator\fR
+Do not prefer to break long lines before boolean operators.
 .TP
 .B -nbc\fR, \fB--no-blank-lines-after-commas\fR
 Do not force newlines after commas in declarations.
@@ -146,6 +155,9 @@ Do not format comments in the first column as normal.
 .TP
 .B -nfca\fR, \fB--dont-format-comments\fR
 Do not format any comments.
+.TP
+.B -nhnl\fR, \fB--ignore-newlines\fR
+Do not prefer to break long lines at the position of newlines in the input.
 .TP
 .B -nip\fR, \fB--no-parameter-indentation\fR
 Zero width indentation for parameters.
@@ -188,6 +200,9 @@ statement is broken.See \fB\ STATEMENTS\fR.
 .TP
 .B -psl\fR, \fB--procnames-start-lines\fR
 Put the type of a procedure on the line before its name.
+.TP
+.B -sbi\fIn\fB\fR, \fB--struct-brace-indentation\fIn\fB\fR
+Indent braces of a struct, union or enum N spaces.
 .TP
 .B -sc\fR, \fB--start-left-side-of-comments\fR
 Put the \`*\' character at the left of comments.
@@ -302,12 +317,17 @@ indent +braces-on-if-line +line-length185 test/metabolism.c
 .fi
 
 If you find that you often use \fBindent\fR with the same options, you
-may put those options into a file called \`.indent.pro\'.
+may put those options into a file named \`.indent.pro\'.
 .B indent\fR will first look for \`.indent.pro\' in the current
 directory and use that if found.  Otherwise, \fBindent\fR will search
 your home directory for \`.indent.pro\' and use that file if it is
 found.  This behaviour is different from that of other versions of
 .B indent\fR, which load both files if they both exist.
+
+The format of \fB.indent.pro\fR is simply a list of options, just as
+they would appear on the command line, separated by white space (tabs,
+spaces, and newlines).  Options in \fB.indent.pro\fR may be surrounded by C
+or C++ comments, in which case they are ignored.
 
 Command line switches are handled \fIafter\fR processing
 \`.indent.pro\'.  Options specified later override arguments
@@ -372,9 +392,8 @@ error.  Option settings which correspond to the GNU style are:
 .in +5
 .nf
 .na
--nbad -bap -nbc -bl -bli2 -bls -c33 -cd33 -ncdb -nce -cli0
--cp1 -di2 -nfc1 -nfca -i2 -ip5 -lp -pcs -psl -cs
--nsc -nsob -nss -ts8 -d0 -ci0 -l78
+-nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -psl -nsc -nsob
 .in -5
 .ad
 .fi
@@ -394,9 +413,9 @@ of options:
 .in +5
 .nf
 .na
--nbad -bap -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4
--cli0 -cp33 -d0 -di1 -nfc1 -nfca -i4 -ip0 -l75 -lp
--npcs -npsl -nsc -nsob -nss -ts8 -cs
+-nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
+-cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
+-npsl -nsc -nsob -nss
 .in -5
 .ad
 .fi
@@ -413,9 +432,9 @@ long option name).  This style is equivalent to the following settings:
 .in +5
 .nf
 .na
--nbap -nbad -bc -br -brs -c33 -cd33 -cdb -ce -ci4
--cli0 -cp33 -d4 -di16 -fc1 -fca -i4 -ip4 -l75 -lp 
--npcs -psl -sc -nsob -nss -ts8 -ncs
+-nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -psl -sc
+-nsob -nss -ts8
 .in -5
 .ad
 .fi
@@ -433,6 +452,8 @@ every block of declarations.  The \`-nbad\' option causes
 The \`-bap\' option forces a blank line after every procedure body.
 The \`-nbap\' option forces no such blank line.
 
+The \`-bbb\' option forces a blank line before every boxed comment.
+(See \fBCOMMENTS\fR) The \`-nbbb\' option does not force such blank lines.
 
 The \`-sob\' option causes \fBindent\fR to swallow optional blank
 lines (that is, any optional blank lines present in the input will be
@@ -555,9 +576,8 @@ No blank line will be added after the procedure \fBfoo\fR.
 .SH "COMMENTS"
 
 .B indent\fR formats both C and C++ comments. C comments are begun with
-\`/*\' and terminated with \`*/\' and may contain newline
-characters.  C++ comments begin with the delimiter \`//\' and end at
-the newline.
+\`/*\', terminated with \`*/\' and may contain newline characters.
+C++ comments begin with the delimiter \`//\' and end at the newline.
 
 .B indent\fR handles comments differently depending upon their context.
 .B indent\fR attempts to distinguish amongst comments which follow
@@ -566,14 +586,21 @@ preprocessor directives, and comments which are not preceded by code of
 any sort, i.e., they begin the text of the line (although not
 neccessarily in column 1).
 
-.B indent\fR further attempts to leave \fIboxed comments\fR
-unmodified.  The general idea of such a comment is that it is enclosed
-in a rectangle or \'\'box\'\' of stars or dashes to visually set it apart.
-More precisely, boxed comments are defined as those in which the initial
-\`/*\' is followed immediately by the character \`*\', \`=\',
-\`_\', or \`-\', or those in which the beginning comment delimiter
-(\`/*\') is on a line by itself, and the following line begins with a
-\`*\' in the same column as the star of the opening delimiter.
+.B indent\fR further distinguishes between comments found outside of
+procecures and aggregates, and those found within them.  In particular,
+comments beginning a line found within a procedure will be indented to
+the column at which code is currently indented.  The exception to this a
+comment beginning in the leftmost column;  such a comment is output
+at that column.
+
+.B indent\fR attempts to leave \fIboxed comments\fR unmodified.  The
+general idea of such a comment is that it is enclosed in a rectangle or
+\'\'box\'\' of stars or dashes to visually set it apart.  More precisely,
+boxed comments are defined as those in which the initial \`/*\' is
+followed immediately by the character \`*\', \`=\', \`_\', or
+\`-\', or those in which the beginning comment delimiter (\`/*\')
+is on a line by itself, and the following line begins with a \`*\' in
+the same column as the star of the opening delimiter.
 
 Examples of boxed comments are:
 
@@ -598,34 +625,33 @@ and its length is not checked in any way.  The only alteration made is
 that an embedded tab character may be converted into the appropriate
 number of spaces.
 
-Comments which are not boxed may be formatted, which means that the
-line is broken to fit within a right margin and left-filled with
-whitespace.  Single newlines are equivalent to a space, but blank
-lines (two or more newlines in a row) are taken to mean a paragraph
-break.  Formatting of comments which begin after the first column is
-enabled with the \`-fca\' option.  To format those beginning in
-column one, specify \`-fc1\'.  Such formatting is disabled
-by default.
+If the \`-bbb\' option is specified, all such boxed comments will be
+preceded by a blank line, unless such a comment is preceded by code.
 
-The right margin for formatting defaults to 78, but
-may be changed with the \`-lc\' or the \`-l\' option.  \`-l\'
-specifies the right margin for all code, and \`-lc\' specifies the
-margin for only for comments.  If \`-l\' is used alone, comments will
-be formatted according to the margin specified with that option.
+Comments which are not boxed comments may be formatted, which means that
+the line is broken to fit within a right margin and left-filled with
+whitespace.  Single newlines are equivalent to a space, but blank lines
+(two or more newlines in a row) are taken to mean a paragraph break.
+Formatting of comments which begin after the first column is enabled
+with the \`-fca\' option.  To format those beginning in column one,
+specify \`-fc1\'.  Such formatting is disabled by default.
 
-If the margin specified does not allow the comment to be printed, the
-margin will be automatically extended for the duration of that
-comment.  The margin is not respected if the comment is not being
-formatted.
+The right margin for formatting defaults to 78, but may be changed with
+the \`-lc\' option.  If the margin specified does not allow the
+comment to be printed, the margin will be automatically extended for the
+duration of that comment.  The margin is not respected if the comment is
+not being formatted.
 
 If the comment begins a line (i.e., there is no program text to its
 left), it will be indented to the column it was found in unless the
-comment is within a block of code.  In that case, such a comment will
-be aligned with the indented code of that block.  This alignment may
-be affected by the \`-d\' option, which specifies an amount by
-which such comments are moved to the \fIleft\fR, or unindented.  For
-example, \`-d2\' places comments two spaces to the left of code.
-By default, comments are aligned with code.
+comment is within a block of code.  In that case, such a comment will be
+aligned with the indented code of that block (unless the comment began
+in the first column).  This alignment may be affected by the \`-d\'
+option, which specifies an amount by which such comments are moved to
+the \fIleft\fR, or unindented.  For example, \`-d2\' places comments
+two spaces to the left of code.  By default, comments are aligned with
+code, unless they begin in the first column, in which case they are left
+there by default -- to get them aligned with the code, specify \`-fc1\'.
 
 Comments to the right of code will appear by default in column 33.
 This may be changed with one of three options.  \`-c\' will specify
@@ -697,36 +723,6 @@ if (x > 0)
 .ad
 .fi
 
-These options also affect structure and enumeration declarations.  The
-\`-br\' option produces structure declarations like the following:
-
-.in +5
-.nf
-.na
-struct Sname {
-    int i;
-    char chp;
-} Vname;
-.in -5
-.ad
-.fi
-
-The default behaviour, also obtained by specifying \`-bl\', would
-yield the following format for the same declaration:
-
-.in +5
-.nf
-.na
-struct Sname
-  {
-     int i;
-     char chp;
-  }
-Vname;
-.in -5
-.ad
-.fi
-
 If you use the \`-bl\' option, you may also want to specify the
 \`-bli\' option.  This option specifies the number of spaces by
 which braces are indented.  \`-bli2\', the default, gives the
@@ -778,6 +774,68 @@ else {
 The \`-cli\' option specifies the number of spaces that case labels
 should be indented to the right of the containing \`switch\'
 statement.
+
+The default gives code like:
+
+.in +5
+.nf
+.na
+switch (i)
+  {
+  case 0:
+    break;
+  case 1:
+    {
+      ++i;
+    }
+  default:
+    break;
+  }
+.in -5
+.ad
+.fi
+
+Using the \`-cli2\' that would become:
+
+.in +5
+.nf
+.na
+switch (i)
+  {
+    case 0:
+      break;
+    case 1:
+      {
+	++i;
+      }
+    default:
+      break;
+  }
+.in -5
+.ad
+.fi
+
+The indentation of the braces below a case statement can be
+controlled with the \`-cbi\fIn\fR\' option.  For example,
+using \`-cli2 -cbi0\' results in:
+
+.in +5
+.nf
+.na
+switch (i)
+  {
+    case 0:
+      break;
+    case 1:
+    {
+      ++i;
+    }
+    default:
+      break;
+  }
+.in -5
+.ad
+.fi
 
 If a semicolon is on the same line as a \fBfor\fR or \fBwhile\fR
 statement, the \`-ss\' option will cause a space to be placed before
@@ -864,8 +922,7 @@ be placed on the line before the name of the procedure.  This style is
 required for the \fBetags\fR program to work correctly, as well as some
 of the \fBc-mode\fR functions of Emacs.
 
-If you are not using the \`-di1\' option to place variables being
-declared immediately after their type, you need to use the \`-T\'
+You must use the \`-T\'
 option to tell \fBindent\fR the name of all the typenames in your
 program that are defined by \fBtypedef\fR.  \`-T\' can be specified
 more than once, and all names specified are used.  For example, if your
@@ -1002,10 +1059,89 @@ create_world (x, y, scale)
 For compatibility with other versions of indent, the option \`-nip\'
 is provided, which is equivalent to \`-ip0\'.
 
-ASCII C allows white space to be placed on preprocessor command lines
+ANSI C allows white space to be placed on preprocessor command lines
 between the character \`#\' and the command name.  By default,
 .B indent\fR removes this space, but specifying the \`-lps\' option
 directs \fBindent\fR to leave this space unmodified.
+
+.SH "BREAKING LONG LINES"
+
+With the option \fB-l\fIn\fB\fR, or \fB--line-length\fIn\fB\fR, it is
+possible to specify the maximum length of a line of C code, not including
+possible comments that follow it.
+
+When lines become longer then the specified line length, \fBGNU indent\fR
+tries to break the line at a logical place.  This is new as of version 2.1
+however and not very intelligent or flexible yet.
+
+Currently there are two options that allows one to interfere with the
+algorithm that determines where to break a line.
+
+The \`-bbo\' option causes \fBGNU indent\fR to prefer to break long
+lines before the boolean operators \fB&&\fR and \fB||\fR.  The \`-nbbo\'
+option causes \fBGNU indent\fR not have that preference.  For example,
+the default option \`-bbo\' (together with \`--line-length60\' and
+\`--ignore-newlines\') makes code look like this:
+
+.in +5
+.nf
+.na
+  if (mask
+      && ((mask[0] == \'\\0\')
+          || (mask[1] == \'\\0\'
+              && ((mask[0] == \'0\') || (mask[0] == \'*\')))))
+.in -5
+.ad
+.fi
+
+Using the option \`-nbbo\' will make it look like this:
+
+.in +5
+.nf
+.na
+  if (mask &&
+      ((mask[0] == \'\\0\') ||
+       (mask[1] == \'\\0\' &&
+        ((mask[0] == \'0\') || (mask[0] == \'*\')))))
+.in -5
+.ad
+.fi
+
+The default \`-hnl\' however, honours newlines in the input file by
+giving them the highest possible priority to break lines at.  For example,
+when the input file looks like this:
+
+.in +5
+.nf
+.na
+  if (mask
+      && ((mask[0] == \'\\0\')
+      || (mask[1] == \'\\0\' && ((mask[0] == \'0\') || (mask[0] == \'*\')))))
+.in -5
+.ad
+.fi
+
+then using the option \`-hnl\', or \`--honour-newlines\', together
+with the previously mentioned \`-nbbo\' and \`--line-length60\', will
+cause the output not to be what is given in the last example but instead
+will prefer to break at the positions where the code was broken in the
+input file:
+
+.in +5
+.nf
+.na
+  if (mask
+      && ((mask[0] == \'\\0\')
+          || (mask[1] == \'\\0\' &&
+              ((mask[0] == \'0\') || (mask[0] == \'*\')))))
+.in -5
+.ad
+.fi
+
+The idea behind this option is that lines which are too long, but are already
+broken up, will not be touched by \fBGNU indent\fR.  Really messy code
+should be run through \fBindent\fR at least once using the
+\`--ignore-newlines\' option though.
 
 .SH "DISABLING FORMATTING"
 
@@ -1046,7 +1182,6 @@ To find out what version of \fBindent\fR you have, use the command
 .B indent -version\fR.  This will report the version number of
 .B indent\fR, without doing any of the normal processing.
 
-
 The \`-v\' option can be used to turn on verbose mode.  When in
 verbose mode, \fBindent\fR reports when it splits one line of input
 into two more more lines of output, and gives some size statistics at
@@ -1054,9 +1189,20 @@ completion.
 
 .SH "BUGS"
 
-The "-troff" option is strongly deprecated, and is not supported.  A
-good thing for someone to do is to rewrite \`indent\' to generate TeX
-source as a hardcopy output option, amoung other things.
+When \fBindent\fR is run twice on a file, with the same profile,
+it should \fInever\fR change that file the second time.  With the
+current design of \fBindent\fR this can not be garanteed however
+and it has not been extensively tested.
+
+.B Indent\fR does not understand C.  In some cases this leads to
+the inability to join lines.  The result is that running a file
+through \fBindent\fR is \fIirreversable\fR, even if the used input
+file was the result of running \fBindent\fR with a given profile
+(\`.indent.pro\').
+
+While an attempt was made to get \fBindent\fR working for C++, is
+will not do a good job on any C++ source except the real simple
+(by coincidence thus).
 
 .SH "COPYRIGHT"
 
@@ -1066,7 +1212,9 @@ beginning of indent.texinfo and indent.info, and near the end of indent.1.
 
 .nf
 .na
-Copyright (c) 1989, 1992 Free Software Foundation
+Copyright (c) 1999 Carlo Wood.
+Copyright (c) 1995, 1996 Joseph Arceneaux.
+Copyright (c) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation
 Copyright (c) 1985 Sun Microsystems, Inc.
 Copyright (c) 1980 The Regents of the University of California.
 Copyright (c) 1976 Board of Trustees of the University of Illinois.
@@ -1106,6 +1254,8 @@ the corresponding short option.
 --braces-after-struct-decl-line                 -bls
 --braces-on-if-line                             -br             
 --braces-on-struct-decl-line                    -brs
+--break-after-boolean-operator                  -nbbo
+--break-before-boolean-operator                 -bbo
 --case-indentation                              -cli\fIn\fR     
 --case-brace-indentation                        -cbi\fIn\fR
 --comment-delimiters-on-blank-lines             -cdb            
@@ -1126,6 +1276,8 @@ the corresponding short option.
 --format-all-comments                           -fca            
 --format-first-column-comments                  -fc1            
 --gnu-style                                     -gnu            
+--honour-newlines                               -hnl
+--ignore-newlines                               -nhnl
 --ignore-profile                                -npro           
 --indent-level                                  -i\fIn\fR       
 --k-and-r-style                                 -kr             
@@ -1150,6 +1302,7 @@ the corresponding short option.
 --space-special-semicolon                       -ss             
 --standard-output                               -st             
 --start-left-side-of-comments                   -sc             
+--struct-brace-indentation                      -sbi\fIn\fR
 --swallow-optional-blank-lines                  -sob            
 --tab-size                                      -ts\fIn\fR      
 --verbose                                       -v              
@@ -1175,7 +1328,9 @@ Jim Kingdon
 .SH "HISTORY"
 Derived from the UCB program "indent".
 .SH "COPYING"
-Copyright (C) 1989, 1992, 1993, 1994, 1999 Free Software Foundation, Inc.
+Copyright (C) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
+Copyright (C) 1995, 1996 Joseph Arceneaux.
+Copyright (C) 1999 Carlo Wood.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
