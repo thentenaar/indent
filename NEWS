@@ -1,3 +1,10 @@
+Release notes for GNU indent version 2.2.3, October 1999
+
+* Fixed bit-fields with types other then `int' (no type still won't work).
+  Fixed support for public:, private: and protected: labels.
+
+* Forgot to include the indent.dsp file in 2.2.2 (win32)
+
 Release notes for GNU indent version 2.2.2, September 1999
 
 * Added support for win32 (need VC++)

@@ -41,7 +41,7 @@
 #include "comments.h"
 #include "args.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.33 1999/09/03 11:33:40 carlo Exp $");
+RCSTAG_CC ("$Id: indent.c,v 1.34 1999/09/30 19:09:31 carlo Exp $");
 
 void
 usage ()
@@ -943,13 +943,54 @@ indent (this_file)
 	      parser_state_tos->want_blank = true;
 	      break;
 	    }
-	    
-	  if (parser_state_tos->in_decl && *s_code == 'i')
+	  
+	  /*            __ e_code
+	   *           |
+	   * "  private:\n"			C++, treat as label.
+	   *  ^^^	 ^
+	   *  |          |
+	   *  |          `- buf_ptr (in different buffer though!)
+	   *  `- s_code
+	   *
+	   * or
+	   *
+	   * "  unsigned int private:4\n"	C/C++, treat as bits.
+	   */
+	  if (parser_state_tos->in_decl)
+	  {
+	    if (!((e_code - s_code > 6 && !strncmp(&buf_ptr[-8], "private:", 8)) && !isdigit(*buf_ptr)) &&
+	        !((e_code - s_code > 8 && !strncmp(&buf_ptr[-10], "protected:", 10)) && !isdigit(*buf_ptr)) &&
+	        !((e_code - s_code > 5 && !strncmp(&buf_ptr[-7], "public:", 7)) && !isdigit(*buf_ptr)))
 	    {
 	      *e_code++ = ':';
 	      parser_state_tos->want_blank = false;
 	      break;
 	    }
+	    else if (*s_code == ' ')
+	    {
+	      /*
+	       * It is possible that dec_ind spaces have been inserted before
+	       * the `public:' etc. label because indent thinks it's of the
+	       * type:
+	       */
+#if 0
+	       struct foo {
+	         int w:28,		/* comment */
+	             public:4;
+	       };
+#endif
+	      /*
+	       * Only now we see the '4' isn't there.
+	       * Remove those spaces:
+	       */
+	      char *p1 = s_code;
+	      char *p2 = s_code + dec_ind;
+	      while (p2 < e_code)
+	        *p1++ = *p2++;
+	      e_code -= dec_ind;
+	      *e_code = '\0';
+	    }
+	  }
 	  parser_state_tos->in_stmt = false;	/* seeing a label does not
 						   imply we are in a stmt */
 	  for (t_ptr = s_code; *t_ptr; ++t_ptr)

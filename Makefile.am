@@ -9,16 +9,16 @@ info_TEXINFOS = indent.texinfo
 man_MANS = indent.1
 
 BUILT_SOURCES = indent.1 README README.vc++ ChangeLog gperf.c gperf-cc.c indent.html indent_foot.html indent_toc.html config.h.vc++
-EXTRA_DIST = $(BUILT_SOURCES) indent.gperf indent-cc.gperf ChangeLog-1990 ChangeLog-1998
+EXTRA_DIST = $(BUILT_SOURCES) indent.gperf indent-cc.gperf ChangeLog-1990 ChangeLog-1998 indent.dsp
 
 lexi.o: $(srcdir)/lexi.c $(srcdir)/sys.h config.h $(srcdir)/indent.h @MAINTAINER_MODE_TRUE@ gperf.c gperf-cc.c
 	$(COMPILE) -c $(srcdir)/lexi.c
 
 gperf.c: @MAINTAINER_MODE_TRUE@ indent.gperf
-	gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
+	gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
 
 gperf-cc.c: @MAINTAINER_MODE_TRUE@ indent-cc.gperf
-	gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf > gperf-cc.c
+	gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf > gperf-cc.c
 
 DISTCLEANFILES=config.cache config.log config.h
 

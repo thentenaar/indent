@@ -1,3 +1,21 @@
+1999-10-01  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Update for release of 2.2.3
+
+1999-09-30  Carlo Wood, Runaway  <carlo@jolan>
+
+	* Makefile.am: Argh. Forgot to add indent.dsp to the tar.
+
+	* configure.in: Bumped version number to 2.2.3
+
+	* NEWS: Updated NEWS
+
+	* Makefile.am, indent-cc.gperf, indent.c, indent.gperf:
+	Fixed bit fields - the "support" for public:/private:/protected: broke
+	bits fields when another type then `int' was used.  Thanks to Simon Munton
+	for the bug report!
+	Also fixed public:/private:/protected: labels really now.
+
 1999-09-28  Carlo Wood, Runaway  <carlo@jolan>
 
 	* NEWS: Updated

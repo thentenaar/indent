@@ -1,12 +1,12 @@
 /* C code produced by gperf version 2.7 */
-/* Command-line: gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf  */
+/* Command-line: gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf  */
 
-#define TOTAL_KEYWORDS 47
+#define TOTAL_KEYWORDS 48
 #define MIN_WORD_LENGTH 2
 #define MAX_WORD_LENGTH 9
 #define MIN_HASH_VALUE 4
-#define MAX_HASH_VALUE 70
-/* maximum key range = 67, duplicates = 1 */
+#define MAX_HASH_VALUE 63
+/* maximum key range = 60, duplicates = 1 */
 
 #ifdef __GNUC__
 __inline
@@ -18,32 +18,32 @@ hash_cc (str, len)
 {
   static unsigned char asso_values[] =
     {
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71,  4, 17,
-       5,  0,  9,  1, 37, 23, 71,  0,  0,  2,
-      19,  7, 71, 71, 16,  4, 34, 11, 55, 31,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
-      71, 71, 71, 71, 71, 71
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64,  8, 18,
+      14,  0,  9,  5,  0, 26, 64,  3,  0,  4,
+       1,  5, 64, 64, 18,  4, 33, 11, 45,  1,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+      64, 64, 64, 64, 64, 64
     };
   return len + asso_values[(unsigned char)str[len - 1]] + asso_values[(unsigned char)str[0]];
 }
@@ -56,67 +56,74 @@ is_reserved_cc (str, len)
      register const char *str;
      register unsigned int len;
 {
+  static unsigned char lengthtable[] =
+    {
+       4,  3,  5,  6,  4,  4,  6,  6,  4,  9,  4,  6,  5,  5,
+       5,  6,  6,  6,  2,  4,  5,  6,  6,  5,  6,  6,  3,  8,
+       6,  8,  7,  2,  5,  4,  8,  5,  6,  8,  5,  6,  7,  6,
+       7,  8,  7,  5,  3,  4
+    };
   static struct templ wordlist[] =
     {
       {"else", rw_sp_else,},
-      {"long", rw_decl,},
+      {"new", rw_return,},
+      {"while", rw_sp_paren,},
+      {"extern", rw_decl,},
       {"enum", rw_enum,},
+      {"long", rw_decl,},
+      {"switch", rw_switch,},
       {"global", rw_decl,},
       {"bool", rw_decl,},
-      {"break", rw_break,},
-      {"double", rw_decl,},
-      {"delete", rw_return,},
-      {"goto", rw_break,},
       {"signature", rw_struct_like,},
-      {"do", rw_sp_nparen,},
+      {"goto", rw_break,},
+      {"headof", rw_sizeof,},
+      {"break", rw_break,},
+      {"union", rw_struct_like,},
       {"sigof", rw_sizeof,},
       {"sizeof", rw_sizeof,},
-      {"friend", rw_decl,},
+      {"double", rw_decl,},
+      {"delete", rw_return,},
+      {"do", rw_sp_nparen,},
       {"case", rw_case,},
-      {"unsigned", rw_decl,},
-      {"extern", rw_decl,},
+      {"catch", rw_sp_paren,},
+      {"signed", rw_decl,},
+      {"return", rw_return,},
       {"class", rw_struct_like,},
       {"static", rw_decl,},
+      {"friend", rw_decl,},
       {"for", rw_sp_paren,},
-      {"inline", rw_decl,},
       {"operator", rw_operator,},
+      {"inline", rw_decl,},
+      {"unsigned", rw_decl,},
       {"classof", rw_sizeof,},
       {"if", rw_sp_paren,},
-      {"union", rw_struct_like,},
-      {"while", rw_sp_paren,},
+      {"throw", rw_return,},
       {"char", rw_decl,},
-      {"register", rw_decl,},
-      {"return", rw_return,},
       {"template", rw_decl,},
       {"short", rw_decl,},
       {"struct", rw_struct_like,},
-      {"default", rw_case,},
-      {"switch", rw_switch,},
+      {"register", rw_decl,},
       {"float", rw_decl,},
       {"typeof", rw_sizeof,},
       {"typedef", rw_decl,},
-      {"headof", rw_sizeof,},
-      {"new", rw_return,},
-      {"const", rw_decl,},
-      {"catch", rw_sp_paren,},
-      {"int", rw_decl,},
       {"va_dcl", rw_decl,},
       {"virtual", rw_decl,},
       {"volatile", rw_decl,},
-      {"void", rw_decl,},
-      {"throw", rw_return,}
+      {"default", rw_case,},
+      {"const", rw_decl,},
+      {"int", rw_decl,},
+      {"void", rw_decl,}
     };
 
   static short lookup[] =
     {
        -1,  -1,  -1,  -1,   0,   1,   2,   3,   4,   5,
-       -1, -63,   8,   9,  10, -41,  -2,  -1,  11,  12,
-       13,  14,  -1,  -1,  15,  16,  17,  18,  19,  20,
-       -1,  21,  -1,  22,  23,  24,  25,  26,  -1,  -1,
-       27,  28,  29,  30,  31,  -1,  32,  33,  34,  35,
-       36,  -1,  37,  38,  -1,  -1,  39,  -1,  -1,  40,
-       41,  42,  43,  44,  45,  -1,  -1,  -1,  -1,  -1,
-       46
+        6,   7,   8,   9,  10,  11,  12,  13,  14,  15,
+      -84,  18,  19,  20,  21,  22,  -1,  23,  24,  25,
+       26,  27,  28,  29,  30, -32,  -2,  31,  -1,  32,
+       33,  34,  35,  36,  37,  -1,  -1,  38,  39,  40,
+       -1,  41,  42,  43,  44,  -1,  45,  -1,  -1,  -1,
+       -1,  -1,  46,  47
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -129,23 +136,31 @@ is_reserved_cc (str, len)
 
           if (index >= 0)
             {
-              register const char *s = wordlist[index].rwd;
+              if (len == lengthtable[index])
+                {
+                  register const char *s = wordlist[index].rwd;
 
-              if (*str == *s && !strncmp (str + 1, s + 1, len - 1))
-                return &wordlist[index];
+                  if (*str == *s && !strncmp (str + 1, s + 1, len - 1))
+                    return &wordlist[index];
+                }
             }
           else if (index < -TOTAL_KEYWORDS)
             {
               register int offset = - 1 - TOTAL_KEYWORDS - index;
+              register const unsigned char *lengthptr = &lengthtable[TOTAL_KEYWORDS + lookup[offset]];
               register struct templ *wordptr = &wordlist[TOTAL_KEYWORDS + lookup[offset]];
               register struct templ *wordendptr = wordptr + -lookup[offset + 1];
 
               while (wordptr < wordendptr)
                 {
-                  register const char *s = wordptr->rwd;
+                  if (len == *lengthptr)
+                    {
+                      register const char *s = wordptr->rwd;
 
-                  if (*str == *s && !strncmp (str + 1, s + 1, len - 1))
-                    return wordptr;
+                      if (*str == *s && !strncmp (str + 1, s + 1, len - 1))
+                        return wordptr;
+                    }
+                  lengthptr++;
                   wordptr++;
                 }
             }
