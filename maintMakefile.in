@@ -173,7 +173,6 @@ release: cvslog tar index.html @PACKAGE@.lsm rpm
 	rm cvslog-@VERSION@*.html
 	cvs tag $(TAG)
 	echo "$(TAG)" > .prevtag
-	date +%j > .release_day
 
 ##----------------------------------------------------------------------------
 ## indent specific stuff:

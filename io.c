@@ -44,7 +44,7 @@
 #include "io.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.23 1999/08/27 13:51:44 carlo Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.24 1999/09/28 15:29:08 carlo Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
@@ -595,7 +595,6 @@ dump_line (force_nl)
 				   level, followed by any comments */
   int cur_col;
   int target_col = 0;
-  static int not_first_line;
   int not_truncated = 1;
   int target_col_break = -1;
 
@@ -639,8 +638,7 @@ dump_line (force_nl)
     {
       suppress_blanklines = 0;
       parser_state_tos->bl_line = false;
-      if (prefix_blankline_requested && not_first_line
-	  && n_real_blanklines == 0)
+      if (prefix_blankline_requested && n_real_blanklines == 0)
 	n_real_blanklines = 1;
       else if (swallow_optional_blanklines && n_real_blanklines > 1)
 	n_real_blanklines = 1;
@@ -885,7 +883,6 @@ dump_line (force_nl)
     }
   else
     paren_target = 0;
-  not_first_line = 1;
 
   if (inhibited)
     {

@@ -8,7 +8,7 @@ noinst_HEADERS = backup.h indent.h sys.h lexi.h args.h comments.h globs.h io.h p
 info_TEXINFOS = indent.texinfo
 man_MANS = indent.1
 
-BUILT_SOURCES = indent.1 README ChangeLog gperf.c gperf-cc.c indent.html indent_foot.html indent_toc.html
+BUILT_SOURCES = indent.1 README README.vc++ ChangeLog gperf.c gperf-cc.c indent.html indent_foot.html indent_toc.html config.h.vc++
 EXTRA_DIST = $(BUILT_SOURCES) indent.gperf indent-cc.gperf ChangeLog-1990 ChangeLog-1998
 
 lexi.o: $(srcdir)/lexi.c $(srcdir)/sys.h config.h $(srcdir)/indent.h @MAINTAINER_MODE_TRUE@ gperf.c gperf-cc.c
@@ -37,6 +37,14 @@ endif
 
 ## Bug in automake: Can't use `if MAINTAINER_MODE'
 @MAINTAINER_MODE_TRUE@include $(srcdir)/maintMakefile
+
+if MAINTAINER_MODE
+README.vc++: Makefile.am README.vc++.in config.status
+	sed -e 's%!VERSION!%'`grep 's%@VERSION' config.status | cut -d% -f3`'%g' README.vc++.in > README.vc++
+
+config.h.vc++: Makefile.am config.h.vc++.in config.status
+	sed -e 's%!VERSION!%'`grep 's%@VERSION' config.status | cut -d% -f3`'%g' config.h.vc++.in > config.h.vc++
+endif
 
 ## Can't put this in the maintMakefile for some reason.
 maintainer-clean-local:

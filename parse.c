@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.15 1999/07/29 13:49:43 carlo Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.16 1999/09/28 15:29:08 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -134,6 +134,7 @@ reset_parser ()
   be_save = 0;
   if (tabsize <= 0)
     tabsize = 1;
+  prefix_blankline_requested = 0;
 }
 
 /* like ++parser_state_tos->tos but checks for stack overflow and extends

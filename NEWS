@@ -1,3 +1,10 @@
+Release notes for GNU indent version 2.2.2, September 1999
+
+* Added support for win32 (need VC++)
+
+* Indent was sometimes adding a blank line at the top of an indented
+  file when indenting multiple files at once.  This bug has been fixed.
+
 Release notes for GNU indent version 2.2.1, September 1999
 
 * Indent got confused when a function declaration contained an enum

@@ -1,3 +1,20 @@
+1999-09-28  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Updated
+
+	* io.c, parse.c:
+	Fixed a problem when indenting multiple files: the second and subsequent
+	files specified on the command line had a blank line inserted at the top
+	of the file when the previous file ended on a function definition.
+	Thanks to Simon Munton for reporting this.
+
+	* .cvsignore, Makefile.am, README.vc++.in, config.h.vc++.in, indent.dsp, maintMakefile.in:
+	Added support for win32 - by Ben Bourner.
+
+	* configure.in: Bumped version to 2.2.2
+
+	* README.VMS, VMS-README: Renamed VMS-README to README.VMS
+
 1999-09-25  Carlo Wood, Runaway  <carlo@jolan>
 
 	* .cvsignore, maintMakefile.in: Got rid of .release_day
