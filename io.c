@@ -57,6 +57,7 @@ int com_lines;
 
 int suppress_blanklines = 0;
 static int comment_open;
+static int inhibited = 0;
 
 int paren_target;
 
@@ -143,12 +144,20 @@ INLINE int
 current_column ()
 {
   char *p;
-  int column = 1;
+  int column;
 
-  if (buf_ptr >= save_com.ptr && buf_ptr <= save_com.end)
+  /* Use save_com.size here instead of save_com.end, because save_com is
+     already emptied at this point. -Run */
+  if (buf_ptr >= save_com.ptr && buf_ptr < save_com.ptr + save_com.size)
+  {
     p = save_com.ptr;
+    column = save_com.start_column;
+  }
   else
+  {
     p = cur_line;
+    column = 1;
+  }
 
 #if 0
   /* Paranoia -- Turning this on breaks stuff, but I haven't yet
@@ -157,7 +166,6 @@ current_column ()
     abort ();
 #endif
 
-  column = 1;
   while (p < buf_ptr)
     switch (*p++)
       {
@@ -179,6 +187,10 @@ current_column ()
   return column;
 }
 
+/* Points to the current input buffer */
+extern struct file_buffer *current_input;
+INLINE void fill_buffer ();
+
 void
 dump_line ()
 {				/* dump_line is the routine that actually
@@ -242,10 +254,6 @@ dump_line ()
       while (--n_real_blanklines >= 0)
 	putc (EOL, output);
       n_real_blanklines = 0;
-      if (parser_state_tos->ind_level == 0)
-	parser_state_tos->ind_stmt = 0;	/* this is a class A kludge. dont do
-					   additional statement indentation
-					   if we are at bracket level 0 */
 
       if (e_lab != s_lab || e_code != s_code)
 	++code_lines;		/* keep count of lines with code */
@@ -408,6 +416,13 @@ dump_line ()
 	      register target = parser_state_tos->com_col;
 	      register char *com_st = s_com;
 
+	      if (parser_state_tos->paren_depth)
+		{
+		  target += continuation_indent;
+		  if (parser_state_tos->paren_depth > 1)
+		  target += (parser_state_tos->paren_depth - 1) * paren_indent;
+		}
+
 	      if (cur_col > target)
 		{
 		  putc (EOL, output);
@@ -439,10 +454,14 @@ dump_line ()
 	  && blanklines_after_declarations)
 	{
 	  prefix_blankline_requested = 1;
+	  prefix_blankline_requested_code = decl;
 	  parser_state_tos->just_saw_decl = 0;
 	}
       else
-	prefix_blankline_requested = postfix_blankline_requested;
+	{
+	  prefix_blankline_requested = postfix_blankline_requested;
+	  prefix_blankline_requested_code = postfix_blankline_requested_code;
+	}
       postfix_blankline_requested = 0;
     }
 
@@ -450,10 +469,8 @@ dump_line ()
      for proper comment indentation */
   parser_state_tos->decl_on_line = parser_state_tos->in_decl;
 
-  /* next line should be indented if we have not completed this
-     stmt and if we are not in the middle of a declaration */
-  parser_state_tos->ind_stmt = (parser_state_tos->in_stmt
-				& ~parser_state_tos->in_decl);
+  /* next line should be indented if we have not completed this stmt */
+  parser_state_tos->ind_stmt = parser_state_tos->in_stmt;
 
   parser_state_tos->dumped_decl_indent = 0;
   *(e_lab  = s_lab) = '\0';	/* reset buffers */
@@ -467,6 +484,76 @@ dump_line ()
   else
     paren_target = 0;
   not_first_line = 1;
+
+  if (inhibited)
+    {
+      char *p = cur_line;
+
+      while (--n_real_blanklines >= 0)
+	putc (EOL, output);
+      n_real_blanklines = 0;
+
+      do
+	{
+	  while (*p != '\0' && *p != EOL)
+	    putc (*p++, output);
+	  if (*p == '\0'
+	      && (p - current_input->data) == current_input->size)
+	    {
+	      buf_ptr = buf_end = in_prog_pos = p;
+	      had_eof = 1;
+	      return;
+	    }
+
+	  if (*p == EOL)
+            {
+	      cur_line = p + 1;
+              line_no++;
+            }
+	  putc (*p++, output);
+	  while (*p == ' ' || *p == TAB)
+	    putc (*p++, output);
+	  if (*p == '/' && (*(p + 1) == '*' || *(p + 1) == '/'))
+	    {
+	      /* We've hit a comment.  See if turns formatting
+		 back on. */
+	      putc (*p++, output);
+	      putc (*p++, output);
+	      while (*p == ' ' || *p == TAB)
+		putc (*p++, output);
+	      if (! strncmp (p, "*INDENT-ON*", 11))
+		{
+		  do
+		    {
+		      while (*p != '\0' && *p != EOL)
+			putc (*p++, output);
+		      if (*p == '\0' && ((p - current_input->data)
+					 == current_input->size))
+			{
+			  buf_ptr = buf_end = in_prog_pos = p;
+			  had_eof = 1;
+			  return;
+			}
+		      else
+			{
+			  if (*p == EOL)
+			    {
+			      inhibited = 0;
+			      cur_line = p + 1;
+              		      line_no++;
+			    }
+			  putc (*p++, output);
+			}
+		    }
+		  while (inhibited);
+		}
+	    }
+	}
+      while (inhibited);
+      
+      buf_ptr = buf_end = in_prog_pos = cur_line;
+      fill_buffer ();
+    }
 
   return;
 }
@@ -487,7 +574,7 @@ compute_code_target ()
     }
 
   if (!lineup_to_parens)
-    return target_col + (continuation_indent * parser_state_tos->paren_level);
+    return target_col + continuation_indent + (paren_indent * (parser_state_tos->paren_level - 1));
 
   t = paren_target;
   if ((w = count_columns (t, s_code) - max_col) > 0
@@ -621,16 +708,14 @@ read_stdin ()
   return &stdinptr;
 }
 
-/* Points to the current input buffer */
-extern struct file_buffer *current_input;
-
 /* Advance `buf_ptr' so that it points to the next line of input.
 
    If the next input line contains an indent control comment turning
    off formatting (a comment, C or C++, beginning with *INDENT-OFF*),
-   then simply print out input lines without formatting until we find
-   a corresponding comment containing *INDENT-0N* which re-enables
-   formatting.
+   disable indenting by settting `inhibited' to true; which will cause
+   `dump_line ()' to simply print out all input lines without formatting
+   until it finds a corresponding comment containing *INDENT-0N* which
+   re-enables formatting.
 
    Note that if this is a C comment we do not look for the closing
    delimiter.  Note also that older version of this program also
@@ -678,68 +763,7 @@ fill_buffer ()
 	  while (*p == ' ' || *p == TAB)
 	    p++;
 	  if (! strncmp (p, "*INDENT-OFF*", 12))
-	    {
-	      char *q = cur_line;
-	      int inhibited = 1;
-
-	      if (s_com != e_com || s_lab != e_lab || s_code != e_code)
-		dump_line ();
-	      while (q < p)
-		putc (*q++, output);
-	      do
-		{
-		  while (*p != '\0' && *p != EOL)
-		    putc (*p++, output);
-		  if (*p == '\0'
-		      && (p - current_input->data) == current_input->size)
-		    {
-		      buf_ptr = buf_end = in_prog_pos = p;
-		      had_eof = 1;
-		      return;
-		    }
-
-		  if (*p == EOL)
-		    cur_line = p + 1;
-		  putc (*p++, output);
-		  while (*p == ' ' || *p == TAB)
-		    putc (*p++, output);
-		  if (*p == '/' && (*(p + 1) == '*' || *(p + 1) == '/'))
-		    {
-		      /* We've hit a comment.  See if turns formatting
-			 back on. */
-		      putc (*p++, output);
-		      putc (*p++, output);
-		      while (*p == ' ' || *p == TAB)
-			putc (*p++, output);
-		      if (! strncmp (p, "*INDENT-ON*", 11))
-			{
-			  do
-			    {
-			      while (*p != '\0' && *p != EOL)
-				putc (*p++, output);
-			      if (*p == '\0' && ((p - current_input->data)
-						 == current_input->size))
-				{
-				  buf_ptr = buf_end = in_prog_pos = p;
-				  had_eof = 1;
-				  return;
-				}
-			      else
-				{
-				  if (*p == EOL)
-				    {
-				      inhibited = 0;
-				      cur_line = p + 1;
-				    }
-				  putc (*p++, output);
-				}
-			    }
-			  while (inhibited);
-			}
-		    }
-		}
-	      while (inhibited);
-	    }
+	    inhibited = 1;
 	}
 
       while (*p != '\0' && *p != EOL)

@@ -276,7 +276,7 @@ print_comment ()
 		  else_or_endif = false;
 		}
 	      else
-		start_column += (tabsize - (start_column % tabsize) + 1);
+		start_column += tabsize - ((start_column - 1) % tabsize);
 	    }
 
 	  format = format_comments;
@@ -500,6 +500,8 @@ print_comment ()
 		      && e_com == s_com + line_preamble_length
 		      && current_column () == found_column + 1)
 		    {
+		      /* Account for change in line_preamble_length: */
+		      column -= line_preamble_length - 1;
 		      line_preamble = " ";
 		      line_preamble_length = 1;
 		      boxed_comment = 1;

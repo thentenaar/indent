@@ -148,6 +148,7 @@ indent (this_file)
   sp_sw = force_nl = false;
   scase = false;
   squest = false;
+  n_real_blanklines = 0;
 
 #if 0
   if (com_ind <= 1)
@@ -182,6 +183,10 @@ indent (this_file)
       ljust_decl ? (com_ind <= 10 ? 2 : com_ind - 8) : com_ind;
   if (continuation_indent == 0)
     continuation_indent = ind_size;
+  if (paren_indent == -1)
+    paren_indent = continuation_indent;
+  if (case_brace_indent == -1)
+    case_brace_indent = ind_size;	/* This was the previous default */
   fill_buffer ();		/* get first batch of stuff into input buffer */
 
 #if 0
@@ -292,6 +297,7 @@ indent (this_file)
 		  if (save_com.end == save_com.ptr)
 		    {		/* if this is the first comment, we must set
 				   up the buffer */
+		      save_com.start_column = current_column ();
 		      save_com.ptr[0] = save_com.ptr[1] = ' ';
 		      save_com.end = save_com.ptr + 2;
 		    }
@@ -431,7 +437,9 @@ indent (this_file)
 	{
 	  if (force_nl &&
 	      (type_code != semicolon) &&
-	      (type_code != lbrace || !btype_2))
+	      (type_code != lbrace ||
+		(!parser_state_tos->in_decl && !btype_2) ||
+                (parser_state_tos->in_decl && !braces_on_struct_decl_line)))
 	    {
 	      /* we should force a broken line here */
 	      if (verbose && !flushed_nl)
@@ -499,10 +507,9 @@ indent (this_file)
 		|| parser_state_tos->p_l_follow > 0
 		|| parser_state_tos->block_init
 		|| s_com != e_com)
-	       && ((parser_state_tos->last_token != rbrace || !btype_2
-		    || ! parser_state_tos->in_decl)))
-	      || (compute_code_target () + (e_code - s_code)
-		  > max_col - tabsize))
+	      && (parser_state_tos->last_token != rbrace
+		|| !(braces_on_struct_decl_line && parser_state_tos->in_decl)))
+	    || (compute_code_target () + (e_code - s_code) > max_col - tabsize))
 	    {
 	      dump_line ();
 	      parser_state_tos->want_blank = false;
@@ -805,6 +812,7 @@ indent (this_file)
 	case casestmt:		/* got word 'case' or 'default' */
 	  scase = true;		/* so we can process the later colon
 				   properly */
+	  parse (casestmt);	/* Let parser know about it */
 	  goto copy_id;
 
 	case colon:		/* got a ':' */
@@ -920,7 +928,8 @@ indent (this_file)
 
 	  if (s_code != e_code && !parser_state_tos->block_init)
 	    {
-	      if (!btype_2)
+	      if ((!parser_state_tos->in_decl && !btype_2) ||
+		  (parser_state_tos->in_decl && !braces_on_struct_decl_line))
 		{
 		  dump_line ();
 		  parser_state_tos->want_blank = false;
@@ -984,7 +993,10 @@ indent (this_file)
 #if 0				/* Doesn't work currently. */
 	      if (blanklines_after_declarations_at_proctop
 		  && parser_state_tos->in_parameter_declaration)
-		postfix_blankline_requested = 1;
+                {
+		  postfix_blankline_requested = 1;
+		  postfix_blankline_requested_code = decl;
+                }
 #endif
 	      parser_state_tos->in_parameter_declaration = 0;
 	    }
@@ -1021,16 +1033,31 @@ indent (this_file)
 #endif
 
 	  parser_state_tos->just_saw_decl = 0;
-	  parser_state_tos->block_init_level--;
-	  if (s_code != e_code && !parser_state_tos->block_init)
-	    {			/* '}' must be first on line */
-	      if (verbose)
-		diag (0, "Line broken", 0, 0);
+          parser_state_tos->in_stmt = parser_state_tos->ind_stmt = false;
+	  if (parser_state_tos->block_init_level-- == 1 && s_code != e_code)
+          {
+	    /* Found closing brace of declaration initialisation, with
+	       code on the same line before the brace */ 
+            if (parser_state_tos->matching_brace_on_same_line < 0)
+            {
+	      /* The matching '{' is not on the same line:
+		 put the '}' on its own line. */
 	      dump_line ();
+            }
+            else
+	    {
+              /* The matching '{' is on the same line.  Find out if it is
+		 the first character on the current line or not, if it is
+		 we do indenting. */
+	      char *p = cur_line;
+	      while (p < buf_ptr && (*p == ' ' || *p == TAB))
+		++p;
+              if (*p == '{')	/* This must be the matching brace */
+                parser_state_tos->ind_stmt = parser_state_tos->in_stmt = true;
 	    }
+          }
 	  *e_code++ = '}';
 	  parser_state_tos->want_blank = true;
-	  parser_state_tos->in_stmt = parser_state_tos->ind_stmt = false;
 	  if (parser_state_tos->dec_nest > 0)
 	    {			/* we are in multi-level structure
 				   declaration */
@@ -1049,7 +1076,8 @@ indent (this_file)
 	  if ((parser_state_tos->p_stack[parser_state_tos->tos] == stmtl
 	       && ((parser_state_tos->last_rw != rw_struct_like
 		    && parser_state_tos->last_rw != rw_decl)
-		   || ! btype_2))
+		   || (!braces_on_struct_decl_line
+		       && !parser_state_tos->block_init)))
 	      || (parser_state_tos->p_stack[parser_state_tos->tos] == ifhead)
 	      || (parser_state_tos->p_stack[parser_state_tos->tos] == dohead
 		  && !btype_2))
@@ -1057,7 +1085,11 @@ indent (this_file)
 	  else if (parser_state_tos->tos <= 1
 		   && blanklines_after_procs
 		   && parser_state_tos->dec_nest <= 0)
-	    postfix_blankline_requested = 1;
+	    {
+	      postfix_blankline_requested = 1;
+	      postfix_blankline_requested_code =
+	        parser_state_tos->in_decl ? decl : rbrace;
+	    }
 
 #if 0
 	  parser_state_tos->search_brace
@@ -1134,7 +1166,6 @@ indent (this_file)
 		}
 	    }
 	  if (parser_state_tos->in_parameter_declaration
-	      && indent_parameters
 	      && parser_state_tos->dec_nest == 0
 	      && parser_state_tos->p_l_follow == 0)
 	    {
@@ -1148,7 +1179,8 @@ indent (this_file)
 	  if (!parser_state_tos->paren_depth)
 	    parser_state_tos->in_or_st = true;
 
-	  parser_state_tos->in_decl = parser_state_tos->decl_on_line = true;
+	  if (!parser_state_tos->sizeof_mask)
+	    parser_state_tos->in_decl = parser_state_tos->decl_on_line = true;
 #if 0
 	  if (!parser_state_tos->in_or_st && parser_state_tos->dec_nest <= 0)
 #endif
@@ -1179,7 +1211,7 @@ indent (this_file)
 	      if (parser_state_tos->want_blank)
 		*e_code++ = ' ';
 	      parser_state_tos->want_blank = false;
-	      if (is_procname == 0 || !procnames_start_line)
+	      if (is_procname == 0 || (!procnames_start_line && s_code != e_code))
 		{
 		  if (!parser_state_tos->block_init)
 		    if (troff && !parser_state_tos->dumped_decl_indent)
@@ -1288,8 +1320,7 @@ indent (this_file)
 	  break;
 
 	case comma:
-	  /* only put blank after comma if comma does not start the line */
-	  parser_state_tos->want_blank = (s_code != e_code);
+	  parser_state_tos->want_blank = true;
 	  if (parser_state_tos->paren_depth == 0
 	      && parser_state_tos->in_decl
 	      && is_procname == 0
@@ -1314,6 +1345,10 @@ indent (this_file)
 		       > max_col - tabsize)))
 		force_nl = true;
 	    }
+
+	  if (parser_state_tos->block_init)
+	    parser_state_tos->in_stmt = false;	/* Don't indent after comma */
+
 	  break;
 
 	case preesc:		/* got the character '#' */
@@ -1375,6 +1410,10 @@ indent (this_file)
 			  in_comment = 1;
 			*e_lab++ = *buf_ptr++;
 			com_start = e_lab - s_lab - 2;
+			/* Store the column that corresponds with the start
+			   of the buffer */
+			if (save_com.ptr == save_com.end)
+			  save_com.start_column = current_column () - 2;
 		      }
 		    break;
 
@@ -1446,6 +1485,7 @@ indent (this_file)
 		{
 		  register c;
 		  prefix_blankline_requested++;
+		  prefix_blankline_requested_code = preesc;
 		  while ((c = *in_prog_pos++) == EOL);
 		  in_prog_pos--;
 		}
@@ -1567,9 +1607,15 @@ indent (this_file)
 	      if (blanklines_around_conditional_compilation)
 		{
 		  postfix_blankline_requested++;
+		  postfix_blankline_requested_code = preesc;
 		  n_real_blanklines = 0;
 		}
 	    }
+
+	  /* Don't put a blank line after declarations if they are directly
+             followed by an #else or #endif -Run */
+          if (else_or_endif && prefix_blankline_requested_code == decl)
+	    prefix_blankline_requested = 0;
 
 	  /* Normally, subsequent processing of the newline character
 	     causes the line to be printed.  The following clause handles
@@ -1596,6 +1642,17 @@ indent (this_file)
 	      force_nl = false;
 	    }
 	  print_comment ();
+	  break;
+
+	  /* An __attribute__ qualifier */
+	case attribute:
+	  for (t_ptr = token; t_ptr < token_end; ++t_ptr)
+	    {
+	      CHECK_CODE_SIZE;
+	      *e_code++ = *t_ptr;
+	    }
+	  parser_state_tos->in_decl = false;
+	  parser_state_tos->want_blank = true;
 	  break;
 	}			/* end of big switch stmt */
 

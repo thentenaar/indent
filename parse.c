@@ -222,7 +222,7 @@ parse (tk)
 				   input */
 
     case decl:			/* scanned a declaration word */
-      parser_state_tos->search_brace = btype_2;
+      parser_state_tos->search_brace = braces_on_struct_decl_line;
       /* indicate that following brace should be on same line */
       if (parser_state_tos->p_stack[parser_state_tos->tos] != decl)
 	{			/* only put one declaration onto stack */
@@ -251,14 +251,16 @@ parse (tk)
 	  && else_if)		/* "else if ..." */
 	parser_state_tos->i_l_follow
 	  = parser_state_tos->il[parser_state_tos->tos];
-    case dolit:		/* 'do' */
+    case dolit:			/* 'do' */
     case forstmt:		/* for (...) */
+    case casestmt:		/* case n: */
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = tk;
       parser_state_tos->il[parser_state_tos->tos]
-	= parser_state_tos->ind_level = parser_state_tos->i_l_follow;
-      parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
-						   should be indented 1 */
+        = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
+      if (tk != casestmt)
+        parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
+							   should be indented 1 */
       parser_state_tos->search_brace = btype_2;
       break;
 
@@ -274,7 +276,7 @@ parse (tk)
 	  if (parser_state_tos->last_rw == rw_struct_like
 	      && parser_state_tos->block_init_level == 0
 	      && parser_state_tos->last_token != rparen
-	      && !btype_2)
+	      && !braces_on_struct_decl_line)
 #if 0
 	      && !parser_state_tos->col_1)
 #endif
@@ -283,6 +285,11 @@ parse (tk)
 	      parser_state_tos->i_l_follow += brace_indent;
 	    }
 	}
+      else if (parser_state_tos->p_stack[parser_state_tos->tos] == casestmt)
+      {
+	parser_state_tos->ind_level += case_brace_indent - ind_size;
+        parser_state_tos->i_l_follow += case_brace_indent;
+      }
       else
 	{
 	  if (s_code == e_code)
@@ -515,6 +522,8 @@ reduce ()
 	      /* <<if> <stmt> else> <stmt> */
 	    case forstmt:
 	      /* <for> <stmt> */
+	    case casestmt:
+	      /* <case n:> <stmt> */
 	    case whilestmt:
 	      /* <while> <stmt> */
 	      parser_state_tos->p_stack[--parser_state_tos->tos] = stmt;

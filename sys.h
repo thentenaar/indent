@@ -1,4 +1,5 @@
-/* Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/* Copyright (c) 1999, Carlo Wood. All rights reserved.
+   Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
 
    This file is subject to the terms of the GNU General Public License as
    published by the Free Software Foundation.  A copy of this license is
@@ -10,6 +11,24 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef STDC_HEADERS
+# include <string.h>
+#else
+# ifndef HAVE_STRCHR
+#  define strchr index
+#  define strrchr rindex
+# endif
+char *strchr(), *strrchr();
+# ifndef HAVE_MEMCPY
+#  define memcpy(d, s, n) bcopy ((s), (d), (n))
+#  define memmove(d, s, n) bcopy ((s), (d), (n))
+# endif
+#endif
 
 #include <stdio.h>
 

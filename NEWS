@@ -1,3 +1,19 @@
+Release notes for GNU indent version 1.10.
+
+* New maintainer.
+  New build environment, using automake now.
+  VMS support is removed (sorry).
+
+* Many bug fixes - if you had problems before, try this version!
+
+* New options have been added:
+    "-bls" ("--braces-after-struct-decl-line")
+    "-brs" ("--braces-on-struct-decl-line")
+    "-cbiN" ("--case-brace-indentationN")
+    "-piN" ("--paren-indentationN")
+
+* Generated and thus up to date man page (indent.1).
+
 Release notes for GNU indent version 1.9.
 
 * All reported bugs have been fixed.

@@ -40,7 +40,8 @@ enum codes
   sp_paren,			/* if, for, or while token */
   sp_nparen, ifstmt, whilestmt,
   forstmt, stmt, stmtl, elselit, dolit, dohead, dostmt, ifhead,
-  elsehead, period
+  elsehead, period,
+  attribute			/* The '__attribute__' qualifier */
 };
 
 enum rwcodes
@@ -49,7 +50,8 @@ enum rwcodes
   rw_break,
   rw_switch,
   rw_case,
-  rw_struct_like,		/* struct, enum, union */
+  rw_struct_like,		/* struct, union */
+  rw_enum,
   rw_decl,
   rw_sp_paren,			/* if, while, for */
   rw_sp_nparen,			/* do, else */
@@ -112,6 +114,8 @@ struct buf
 				   one (e.g. is equal to ptr if the buffer is
 				   empty).  */
   int size;			/* how many chars are currently allocated.  */
+  int start_column;		/* corresponding column of first character
+				   in the buffer. */
 };
 
 /* Buffer in which to save a comment which occurs between an if(), while(),
@@ -137,7 +141,13 @@ extern int blanklines_around_conditional_compilation;
 extern int swallow_optional_blanklines;
 extern int n_real_blanklines;
 extern int prefix_blankline_requested;
+extern enum codes prefix_blankline_requested_code;	/* The code that caused
+							   the blank line to be
+							   requested */
 extern int postfix_blankline_requested;
+extern enum codes postfix_blankline_requested_code;	/* The code that caused
+							   the blank line to be
+							   requested */
 extern int break_comma;		/* when true and not in parens, break after a
 				   comma */
 
@@ -158,6 +168,9 @@ extern int brace_indent;
 /* when true, brace should be on same line as if, while, etc */
 extern int btype_2;
 
+/* when true, brace should be on same line as the struct declaration */
+extern int braces_on_struct_decl_line;
+
 /* If true, a space is inserted between if, while, or for, and a semicolon
    for example while (*p++ == ' ') ; */
 extern int space_sp_semicolon;
@@ -167,6 +180,8 @@ extern int else_or_endif;
 
 extern int case_ind;		/* indentation level to be used for a "case
 				   n:" in spaces */
+extern int case_brace_indent;	/* indentation level to be used for a '{'
+				   directly following a "case n:" in spaces */
 
 extern int code_lines;		/* count of lines with code */
 
@@ -207,6 +222,7 @@ extern int suppress_blanklines;	/* set iff following blanklines should be
 				   suppressed */
 extern int continuation_indent;	/* set to the indentation between the edge of
 				   code and continuation lines in spaces */
+extern int paren_indent;	/* set to the indentation per open parens */
 extern int lineup_to_parens;	/* if true, continued code within parens will
 				   be lined up to the open paren */
 extern int leave_preproc_space;	/* if true, leave the spaces between
@@ -391,6 +407,9 @@ struct parser_state
   char *procname;		/* The name of the current procedure */
   char *procname_end;		/* One char past the last one in procname */
   int just_saw_decl;
+  int matching_brace_on_same_line;	/* Set to a value >= 0 if the the
+					   current '}' has a matching '{'
+					   on the same input line */
 };
 
 /* All manipulations of the parser state occur at the top of stack (tos). A

@@ -1,6 +1,3 @@
-%{
-/* Command-line: gperf -c -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf  */
-%}
 struct templ;
 %%
 switch, rw_switch,
@@ -8,7 +5,7 @@ case, rw_case,
 break, rw_break,
 struct, rw_struct_like,
 union, rw_struct_like,
-enum, rw_struct_like,
+enum, rw_enum,
 default, rw_case,
 int, rw_decl,
 char, rw_decl,

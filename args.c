@@ -26,7 +26,6 @@
 #include "sys.h"
 #include "indent.h"
 #include <ctype.h>
-#include "version.h"
 
 int else_endif_col;
 
@@ -68,7 +67,9 @@ static int exp_bbb = 0;
 static int exp_bc = 0;
 static int exp_bli = 0;
 static int exp_bl = 0;
+static int exp_bls = 0;
 static int exp_bs = 0;
+static int exp_cbi = 0;
 static int exp_cdb = 0;
 static int exp_cd = 0;
 static int exp_ce = 0;
@@ -100,6 +101,7 @@ static int exp_lp = 0;
 static int exp_l = 0;
 static int exp_lps = 0;
 static int exp_pcs = 0;
+static int exp_pi = 0;
 static int exp_psl = 0;
 static int exp_pro = 0;
 static int exp_ps = 0;
@@ -118,6 +120,7 @@ static int exp_version = 0;
 int leave_comma;
 int decl_com_ind;
 int case_indent;
+int case_brace_indent;
 int com_ind;
 int decl_indent;
 int ljust_decl;
@@ -134,9 +137,12 @@ int blanklines_around_conditional_compilation;
 int swallow_optional_blanklines;
 int n_real_blanklines;
 int prefix_blankline_requested;
+enum codes prefix_blankline_requested_code;
 int postfix_blankline_requested;
+enum codes postfix_blankline_requested_code;
 int brace_indent;
 int btype_2;
+int braces_on_struct_decl_line;
 
 int space_sp_semicolon;
 int case_ind;
@@ -152,6 +158,7 @@ int cast_space;
 int format_col1_comments;
 int format_comments;
 int continuation_indent;
+int paren_indent;
 int lineup_to_parens;
 int leave_preproc_space;
 int blank_after_sizeof;
@@ -203,8 +210,11 @@ struct pro pro[] =
   {"bc", PRO_BOOL, true, OFF, &leave_comma, &exp_bc},
   {"bli", PRO_INT, 0, ONOFF_NA, &brace_indent, &exp_bli},
   {"bl", PRO_BOOL, true, OFF, &btype_2, &exp_bl},
+  {"bls", PRO_BOOL, true, OFF, &braces_on_struct_decl_line, &exp_bls},
   {"br", PRO_BOOL, true, ON, &btype_2, &exp_bl},
+  {"brs", PRO_BOOL, true, ON, &braces_on_struct_decl_line, &exp_bls},
   {"bs", PRO_BOOL, false, ON, &blank_after_sizeof, &exp_bs},
+  {"cbi", PRO_INT, -1, ONOFF_NA, &case_brace_indent, &exp_cbi},
   {"cdb", PRO_BOOL, true, ON, &comment_delimiter_on_blankline, &exp_cdb},
   {"cd", PRO_INT, 33, ONOFF_NA, &decl_com_ind, &exp_cd},
   {"ce", PRO_BOOL, true, ON, &cuddle_else, &exp_ce},
@@ -227,14 +237,14 @@ struct pro pro[] =
   {"fk", PRO_FONT, 0, ONOFF_NA, (int *) &keywordf, &exp_fk},
   {"fs", PRO_FONT, 0, ONOFF_NA, (int *) &stringf, &exp_fs},
   {"gnu", PRO_SETTINGS, 0, ONOFF_NA,
-   (int *) "-nbad\0-bap\0-nbc\0-bl\0-ncdb\0-cs\0-nce\0-di2\0-ndj\0\
+   (int *) "-nbad\0-bap\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0-nce\0-di2\0-ndj\0\
 -ei\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-nps\0-psl\0-nsc\0-nsob\0-bli2\0\
 -cp1\0-nfca\0", &exp_gnu},
   {"h", PRO_FUNCTION, 0, 0, (int *) usage, &exp_version},
   {"ip", PRO_INT, 4, ON, &indent_parameters, &exp_ip},
   {"i", PRO_INT, 4, ONOFF_NA, &ind_size, &exp_i},
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
-   (int *) "-nbad\0-bap\0-nbc\0-br\0-c33\0-cd33\0-ncdb\0-ce\0\
+   (int *) "-nbad\0-bap\0-nbc\0-br\0-brs\0-c33\0-cd33\0-ncdb\0-ce\0\
 -ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0-npcs\0-npsl\0-cs\0\
 -nsc\0-nsc\0-nsob\0-nfca\0-cp33\0-nss\0", &exp_kr},
   {"lc", PRO_INT, 0, ONOFF_NA, &comment_max_col, &exp_lc},
@@ -272,6 +282,7 @@ struct pro pro[] =
   {"o", PRO_BOOL, false, ON, &expect_output_file, &expect_output_file},
 
   {"pcs", PRO_BOOL, false, ON, &proc_calls_space, &exp_pcs},
+  {"pi", PRO_INT, -1, ONOFF_NA, &paren_indent, &exp_pi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
   {"ps", PRO_BOOL, false, ON, &pointer_as_binop, &exp_ps},
   {"sc", PRO_BOOL, true, ON, &star_comment_cont, &exp_sc},
@@ -281,7 +292,7 @@ struct pro pro[] =
   {"troff", PRO_BOOL, false, ON, &troff, &exp_troff},
   {"ts", PRO_INT, 8, ONOFF_NA, &tabsize, &exp_ts},
   {"version", PRO_PRSTRING, 0, ONOFF_NA,
-   (int *) VERSION_STRING, &exp_version},
+   (int *) "GNU indent " VERSION, &exp_version},
   {"v", PRO_BOOL, false, ON, &verbose, &exp_v},
 
 /* Signify end of structure.  */
@@ -302,8 +313,11 @@ struct pro pro[] =
   {"bc", PRO_BOOL, true, OFF, &leave_comma, &exp_bc},
   {"bli", PRO_INT, 2, ONOFF_NA, &brace_indent, &exp_bli},
   {"bl", PRO_BOOL, true, OFF, &btype_2, &exp_bl},
+  {"bls", PRO_BOOL, true, OFF, &braces_on_struct_decl_line, &exp_bls},
   {"br", PRO_BOOL, false, ON, &btype_2, &exp_bl},
+  {"brs", PRO_BOOL, false, ON, &braces_on_struct_decl_line, &exp_bls},
   {"bs", PRO_BOOL, false, ON, &blank_after_sizeof, &exp_bs},
+  {"cbi", PRO_INT, -1, ONOFF_NA, &case_brace_indent, &exp_cbi},
   {"cdb", PRO_BOOL, false, ON, &comment_delimiter_on_blankline, &exp_cdb},
   {"cd", PRO_INT, 33, ONOFF_NA, &decl_com_ind, &exp_cd},
   {"ce", PRO_BOOL, false, ON, &cuddle_else, &exp_ce},
@@ -328,7 +342,7 @@ struct pro pro[] =
 
 /* This is now the default. */
   {"gnu", PRO_SETTINGS, 0, ONOFF_NA,
-   (int *) "-nbad\0-bap\0-nbc\0-bl\0-ncdb\0-cs\0-nce\0-di2\0-ndj\0\
+   (int *) "-nbad\0-bap\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0-nce\0-di2\0-ndj\0\
 -ei\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-nps\0-psl\0-nsc\0-nsob\0-bli2\0\
 -cp1\0-nfca\0", &exp_gnu},
 
@@ -336,7 +350,7 @@ struct pro pro[] =
   {"ip", PRO_INT, 5, ON, &indent_parameters, &exp_ip},
   {"i", PRO_INT, 2, ONOFF_NA, &ind_size, &exp_i},
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
-   (int *) "-nbad\0-bap\0-nbc\0-br\0-c33\0-cd33\0-ncdb\0-ce\0\
+   (int *) "-nbad\0-bap\0-nbc\0-br\0-brs\0-c33\0-cd33\0-ncdb\0-ce\0\
 -ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0-npcs\0-npsl\0-cs\0\
 -nsc\0-nsc\0-nsob\0-nfca\0-cp33\0-nss\0", &exp_kr},
   {"lc", PRO_INT, 0, ONOFF_NA, &comment_max_col, &exp_lc},
@@ -371,13 +385,14 @@ struct pro pro[] =
   {"nss", PRO_BOOL, false, OFF, &space_sp_semicolon, &exp_ss},
   {"nv", PRO_BOOL, false, OFF, &verbose, &exp_v},
   {"orig", PRO_SETTINGS, 0, ONOFF_NA,
-   (int *) "-nbap\0-nbad\0-bc\0-br\0-c33\0-cd33\0-cdb\0-ce\0-ci4\0\
--cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-ip4\0-l75\0-lp\0\
+   (int *) "-nbap\0-nbad\0-bc\0-br\0-brs\0-c33\0-cd33\0-cdb\0-ce\0-ci4\0\
+-cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-l75\0-lp\0\
 -npcs\0-psl\0-sc\0-nsob\0-nss\0-ts8\0", &exp_orig},
 
   {"o", PRO_BOOL, false, ON, &expect_output_file, &expect_output_file},
 
   {"pcs", PRO_BOOL, true, ON, &proc_calls_space, &exp_pcs},
+  {"pi", PRO_INT, -1, ONOFF_NA, &paren_indent, &exp_pi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
   {"ps", PRO_BOOL, false, ON, &pointer_as_binop, &exp_ps},
   {"sc", PRO_BOOL, false, ON, &star_comment_cont, &exp_sc},
@@ -387,7 +402,7 @@ struct pro pro[] =
   {"troff", PRO_BOOL, false, ON, &troff, &exp_troff},
   {"ts", PRO_INT, 8, ONOFF_NA, &tabsize, &exp_ts},
   {"version", PRO_PRSTRING, 0, ONOFF_NA,
-   (int *) VERSION_STRING, &exp_version},
+   (int *) "GNU indent " VERSION, &exp_version},
   {"v", PRO_BOOL, false, ON, &verbose, &exp_v},
 
 /* Signify end of structure.  */
@@ -411,9 +426,12 @@ struct long_option_conversion option_conversions[] =
   {"blank-lines-after-commas", "bc"},
   {"brace-indent", "bli"},
   {"braces-after-if-line", "bl"},
+  {"braces-after-struct-decl-line", "bls"},
   {"braces-on-if-line", "br"},
+  {"braces-on-struct-decl-line", "brs"},
   {"Bill-Shannon", "bs"},
   {"blank-before-sizeof", "bs"},
+  {"case-brace-indentation", "cbi"},
   {"comment-delimiters-on-blank-lines", "cdb"},
   {"declaration-comment-column", "cd"},
   {"cuddle-else", "ce"},
@@ -482,6 +500,7 @@ struct long_option_conversion option_conversions[] =
   {"berkeley-style", "orig"},
   {"berkeley", "orig"},
   {"space-after-procedure-calls", "pcs"},
+  {"paren-indentation", "pi"},
   {"procnames-start-lines", "psl"},
   {"pointer-as-binary-op", "ps"},
   {"start-left-side-of-comments", "sc"},
