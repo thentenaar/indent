@@ -48,7 +48,7 @@
 
 #endif /* not VMS */
 
-RCSTAG_CC("$Id: io.c,v 1.14 1999/07/04 16:51:24 carlo Exp $")
+RCSTAG_CC("$Id: io.c,v 1.15 1999/07/09 00:03:28 carlo Exp $")
 
 extern void free ();
 
@@ -1009,8 +1009,8 @@ compute_label_target ()
 }
 
 /* VMS defines it's own read routine, `vms_read' */
-#ifndef SYS_READ
-#define SYS_READ read
+#ifndef INDENT_SYS_READ
+#define INDENT_SYS_READ read
 #endif
 
 /* Read file FILENAME into a `fileptr' structure, and return a pointer to
@@ -1054,7 +1054,7 @@ read_file (filename)
   else
     fileptr.data = (char *) xmalloc ((unsigned) file_stats.st_size + 1);
 
-  size = SYS_READ (fd, fileptr.data, fileptr.size);
+  size = INDENT_SYS_READ (fd, fileptr.data, fileptr.size);
 #ifdef __MSDOS__
   if (size == 0xffff) /* -1 = 0xffff in 16-bit world */
 #else

@@ -54,7 +54,7 @@ extern int debug;
 # define BACKUP_SUFFIX_STR    "_"
 # define BACKUP_SUFFIX_CHAR   '_'
 # define BACKUP_SUFFIX_FORMAT "%s._%d_"
-# define SYS_READ vms_read	/* Defined in io.c */
+# define INDENT_SYS_READ vms_read	/* Defined in io.c */
 # ifdef VAXC
 #  include <unixio.h>
 # endif
@@ -71,7 +71,7 @@ extern int debug;
 #define RCSTAG_CC(string) static char rcs_ident[] __attribute__ ((unused)) = string;
 #define RCSTAG_H(name, string) static const char rcs_ident_##name##_h[] __attribute__ ((unused)) = string;
 
-RCSTAG_H(sys, "$Id: sys.h,v 1.5 1999/06/03 18:00:12 carlo Exp $")
+RCSTAG_H(sys, "$Id: sys.h,v 1.6 1999/07/09 00:03:28 carlo Exp $")
 
 struct file_buffer
 {

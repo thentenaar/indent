@@ -19,8 +19,9 @@
 
 #include <malloc.h>
 #include <stdlib.h>
+#include <errno.h>
 
-RCSTAG_CC("$Id: globs.c,v 1.2 1999/05/29 01:25:23 carlo Exp $")
+RCSTAG_CC("$Id: globs.c,v 1.3 1999/07/09 00:11:50 carlo Exp $")
 
 /* Like malloc but get error if no storage available.  size really should be
    size_t, but not all systems have size_t, so I hope "unsigned" will work.
@@ -75,8 +76,6 @@ message (kind, string, a0, a1, a2)
   fprintf (stderr, string, a0, a1, a2);
   fprintf (stderr, "\n");
 }
-
-extern int errno;
 
 /* Print a fatal error message and exit, or, if compiled with
    "DEBUG" defined, abort (). */

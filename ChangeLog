@@ -1,3 +1,20 @@
+Thu Jul 15 12:34:53 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* indent.texinfo:
+	Added comment to Bugs about comments getting too far to the right.
+
+	* indent.texinfo, texinfo2man.c:
+	Added `@dircategory' as per suggestion of Albert Chin-A-Young.
+
+Fri Jul  9 00:11:50 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* globs.c: Need to include <errno.h>, some OS define errno as macro.
+
+	* io.c, sys.h:
+	Renamed SYS_READ to INDENT_SYS_READ because of a name collision on HPUX.
+
+	* configure.in: Bumped version number to 2.1.1
+
 Sun Jul  4 23:45:04 1999  Carlo Wood, Runaway  <carlo@jolan>
 
 	* README.in, indent.texinfo:
