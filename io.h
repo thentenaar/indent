@@ -18,7 +18,7 @@
 #ifndef INDENT_IO_H
 #define INDENT_IO_H
 
-RCSTAG_H (io, "$Id: io.h,v 1.5 1999/07/22 14:15:36 carlo Exp $");
+RCSTAG_H (io, "$Id: io.h,v 1.6 1999/08/07 12:54:31 carlo Exp $");
 
 struct file_buffer
 {
@@ -62,7 +62,8 @@ enum bb_code
 
 extern struct buf_break_st *buf_break;
 
-extern struct file_buffer *read_file PARAMS ((char *filename));
+struct stat;
+extern struct file_buffer *read_file PARAMS ((char *filename, struct stat *));
 extern struct file_buffer *read_stdin PARAMS ((void));
 extern int count_columns PARAMS ((int column, char *bp, int stop_char));
 extern int current_column PARAMS ((void));

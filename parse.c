@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.14 1999/07/17 19:16:23 carlo Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.15 1999/07/29 13:49:43 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -247,7 +247,8 @@ parse (tk)
     case decl:			/* scanned a declaration word */
       parser_state_tos->search_brace = braces_on_struct_decl_line;
       /* indicate that following brace should be on same line */
-      if (parser_state_tos->p_stack[parser_state_tos->tos] != decl)
+      if (parser_state_tos->p_stack[parser_state_tos->tos] != decl
+          && parser_state_tos->block_init == 0)
 	{			/* only put one declaration onto stack */
 	  break_comma = true;	/* while in declaration, newline should be
 				   forced after comma */

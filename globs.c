@@ -18,11 +18,13 @@
 #include "indent.h"
 #include "globs.h"
 
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #include <stdlib.h>
 #include <errno.h>
 
-RCSTAG_CC ("$Id: globs.c,v 1.6 1999/07/17 19:16:23 carlo Exp $");
+RCSTAG_CC ("$Id: globs.c,v 1.7 1999/08/04 16:01:22 carlo Exp $");
 
 /* Like malloc but get error if no storage available.  size really should be
    size_t, but not all systems have size_t, so I hope "unsigned" will work.

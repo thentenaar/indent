@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-RCSTAG_CC ("$Id: args.c,v 1.15 1999/07/17 19:16:23 carlo Exp $");
+RCSTAG_CC ("$Id: args.c,v 1.18 1999/08/27 13:51:44 carlo Exp $");
 
 int else_endif_col;
 
@@ -58,56 +58,58 @@ enum on_or_off
 };
 
 /* Explicit flags for each option.  */
-static int exp_T = 0;
-static int exp_bacc = 0;
-static int exp_badp = 0;
-static int exp_bad = 0;
-static int exp_bap = 0;
-static int exp_bbb = 0;
-static int exp_bbo = 0;
-static int exp_bc = 0;
-static int exp_bli = 0;
-static int exp_bl = 0;
-static int exp_bls = 0;
-static int exp_bs = 0;
-static int exp_cbi = 0;
-static int exp_cdb = 0;
-static int exp_cd = 0;
-static int exp_ce = 0;
-static int exp_ci = 0;
-static int exp_cli = 0;
-static int exp_cp = 0;
-static int exp_cs = 0;
-static int exp_c = 0;
-static int exp_di = 0;
-static int exp_dj = 0;
-static int exp_d = 0;
-static int exp_eei = 0;
-static int exp_fc1 = 0;
-static int exp_fca = 0;
-static int exp_gnu = 0;
-static int exp_hnl = 0;
-static int exp_orig = 0;
-static int exp_ip = 0;
-static int exp_nip = 0;
-static int exp_i = 0;
-static int exp_lc = 0;
-static int exp_lp = 0;
-static int exp_l = 0;
-static int exp_lps = 0;
-static int exp_pcs = 0;
-static int exp_pi = 0;
-static int exp_psl = 0;
-static int exp_pro = 0;
-static int exp_kr = 0;
-static int exp_sbi = 0;
-static int exp_sc = 0;
-static int exp_sob = 0;
-static int exp_ss = 0;
-static int exp_st = 0;
-static int exp_ts = 0;
-static int exp_v = 0;
-static int exp_version = 0;
+static int exp_T;
+static int exp_bacc;
+static int exp_badp;
+static int exp_bad;
+static int exp_bap;
+static int exp_bbb;
+static int exp_bbo;
+static int exp_bc;
+static int exp_bli;
+static int exp_bl;
+static int exp_bls;
+static int exp_bs;
+static int exp_cbi;
+static int exp_cdb;
+static int exp_cd;
+static int exp_ce;
+static int exp_ci;
+static int exp_cli;
+static int exp_cp;
+static int exp_cs;
+static int exp_c;
+static int exp_di;
+static int exp_dj;
+static int exp_d;
+static int exp_eei;
+static int exp_fc1;
+static int exp_fca;
+static int exp_gnu;
+static int exp_hnl;
+static int exp_orig;
+static int exp_ip;
+static int exp_nip;
+static int exp_i;
+static int exp_lc;
+static int exp_lp;
+static int exp_l;
+static int exp_lps;
+static int exp_pcs;
+static int exp_pi;
+static int exp_pmt;
+static int exp_psl;
+static int exp_pro;
+static int exp_kr;
+static int exp_sbi;
+static int exp_sc;
+static int exp_sob;
+static int exp_ss;
+static int exp_st;
+static int exp_ts;
+static int exp_v;
+static int exp_version;
+static int exp_cpp;
 
 /* The following variables are controlled by command line parameters and
    their meaning is explained in indent.h.  */
@@ -139,6 +141,7 @@ int btype_2;
 int braces_on_struct_decl_line;
 int break_before_boolean_operator;
 int honour_newlines;
+int preserve_mtime;
 
 int space_sp_semicolon;
 int max_col;
@@ -162,6 +165,7 @@ int extra_expression_indent;
 int space_after_pointer_type;
 
 int expect_output_file;
+int c_plus_plus;
 
 /* N.B.: because of the way the table here is scanned, options whose names
    are substrings of other options must occur later; that is, with -lp vs -l,
@@ -203,6 +207,9 @@ struct pro pro[] = {
   {"sc", PRO_BOOL, true, ON, &star_comment_cont, &exp_sc},
   {"sbi", PRO_INT, 0, ONOFF_NA, &struct_brace_indent, &exp_sbi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
+#ifdef PRESERVE_MTIME
+  {"pmt", PRO_BOOL, false, ON, &preserve_mtime, &exp_pmt},
+#endif
   {"pi", PRO_INT, -1, ONOFF_NA, &paren_indent, &exp_pi},
   {"pcs", PRO_BOOL, false, ON, &proc_calls_space, &exp_pcs},
 
@@ -214,6 +221,9 @@ struct pro pro[] = {
   {"nsc", PRO_BOOL, true, OFF, &star_comment_cont, &exp_sc},
   {"npsl", PRO_BOOL, true, OFF, &procnames_start_line, &exp_psl},
   {"npro", PRO_IGN, 0, ONOFF_NA, 0, &exp_pro},
+#ifdef PRESERVE_MTIME
+  {"npmt", PRO_BOOL, false, OFF, &preserve_mtime, &exp_pmt},
+#endif
   {"npcs", PRO_BOOL, false, OFF, &proc_calls_space, &exp_pcs},
   {"nlps", PRO_BOOL, false, OFF, &leave_preproc_space, &exp_lps},
   {"nlp", PRO_BOOL, true, OFF, &lineup_to_parens, &exp_lp},
@@ -267,6 +277,7 @@ struct pro pro[] = {
   {"cdb", PRO_BOOL, true, ON, &comment_delimiter_on_blankline, &exp_cdb},
   {"cd", PRO_INT, 33, ONOFF_NA, &decl_com_ind, &exp_cd},
   {"cbi", PRO_INT, -1, ONOFF_NA, &case_brace_indent, &exp_cbi},
+  {"c++", PRO_BOOL, false, ON, &c_plus_plus, &exp_cpp},
   {"c", PRO_INT, 33, ONOFF_NA, &com_ind, &exp_c},
   {"bbo", PRO_BOOL, true, ON, &break_before_boolean_operator, &exp_bbo},
   {"bs", PRO_BOOL, false, ON, &blank_after_sizeof, &exp_bs},
@@ -301,6 +312,9 @@ struct pro pro[] = {
   {"sc", PRO_BOOL, false, ON, &star_comment_cont, &exp_sc},
   {"sbi", PRO_INT, 0, ONOFF_NA, &struct_brace_indent, &exp_sbi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
+#ifdef PRESERVE_MTIME
+  {"pmt", PRO_BOOL, false, ON, &preserve_mtime, &exp_pmt},
+#endif
   {"pi", PRO_INT, -1, ONOFF_NA, &paren_indent, &exp_pi},
   {"pcs", PRO_BOOL, true, ON, &proc_calls_space, &exp_pcs},
   {"orig", PRO_SETTINGS, 0, ONOFF_NA,
@@ -316,6 +330,9 @@ struct pro pro[] = {
   {"nsc", PRO_BOOL, false, OFF, &star_comment_cont, &exp_sc},
   {"npsl", PRO_BOOL, true, OFF, &procnames_start_line, &exp_psl},
   {"npro", PRO_IGN, 0, ONOFF_NA, 0, &exp_pro},
+#ifdef PRESERVE_MTIME
+  {"npmt", PRO_BOOL, false, OFF, &preserve_mtime, &exp_pmt},
+#endif
   {"npcs", PRO_BOOL, true, OFF, &proc_calls_space, &exp_pcs},
   {"nlps", PRO_BOOL, false, OFF, &leave_preproc_space, &exp_lps},
   {"nlp", PRO_BOOL, true, OFF, &lineup_to_parens, &exp_lp},
@@ -370,6 +387,7 @@ struct pro pro[] = {
   {"cdb", PRO_BOOL, false, ON, &comment_delimiter_on_blankline, &exp_cdb},
   {"cd", PRO_INT, 33, ONOFF_NA, &decl_com_ind, &exp_cd},
   {"cbi", PRO_INT, -1, ONOFF_NA, &case_brace_indent, &exp_cbi},
+  {"c++", PRO_BOOL, false, ON, &c_plus_plus, &exp_cpp},
   {"c", PRO_INT, 33, ONOFF_NA, &com_ind, &exp_c},
   {"bbo", PRO_BOOL, true, ON, &break_before_boolean_operator, &exp_bbo},
   {"bs", PRO_BOOL, false, ON, &blank_after_sizeof, &exp_bs},
@@ -413,6 +431,9 @@ struct long_option_conversion option_conversions[] = {
   {"space-after-cast", "cs"},
   {"remove-preprocessor-space", "nlps"},
   {"procnames-start-lines", "psl"},
+#ifdef PRESERVE_MTIME
+  {"preserve-mtime", "pmt"},
+#endif
   {"paren-indentation", "pi"},
   {"parameter-indentation", "ip"},
   {"output-file", "o"},
@@ -471,6 +492,7 @@ struct long_option_conversion option_conversions[] = {
   {"comment-delimiters-on-blank-lines", "cdb"},
   {"case-indentation", "cli"},
   {"case-brace-indentation", "cbi"},
+  {"c-plus-plus", "c++"},
   {"braces-on-struct-decl-line", "brs"},
   {"braces-on-if-line", "br"},
   {"braces-after-struct-decl-line", "bls"},

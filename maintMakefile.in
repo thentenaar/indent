@@ -121,8 +121,8 @@ index.html: index.html.in configure.in
 	)
 	grep -A2000 '^CHANGELOGLIST' index.html.in | grep -v '^CHANGELOGLIST' >> index.html
 
-README: README.in configure.in
-	sed -e 's%!VERSION!%@VERSION@%g' README.in > README
+README: maintMakefile README.in configure.in
+	sed -e 's%!VERSION!%'`grep 's%@VERSION' config.status | cut -d% -f3`'%g' README.in > README
 
 @PACKAGE@.lsm: @PACKAGE@.lsm.in configure.in
 	sed -e 's%!VERSION!%@VERSION@%g' @PACKAGE@.lsm.in > @PACKAGE@.lsm
@@ -137,13 +137,7 @@ rpm: tar $(SPECFILE)
 	rpm --rcfile /usr/lib/rpm/rpmrc:rpm/rpmrc --target $(TARGET) --sign --clean -ba $(SPECFILE)
 
 cvslog:
-	@( \
-	   D1=`cat .release_day`; \
-	   D2=`date +%j`; \
-	   DD=`echo "$$D1 $$D2" | awk '{ printf("%d\n", $$2 - $$1) }'`; \
-	   echo "Last release was $$DD days ago."; \
-	   cvs2html -e -r$(PREVTAG):HEAD -o cvslog-@VERSION@; \
-	 )
+	cvs2html -e -r$(PREVTAG):HEAD -o cvslog-@VERSION@;
 
 $(SPECFILE): $(SPECFILE).in configure.in
 	cvs commit $(SPECFILE).in

@@ -399,8 +399,8 @@ The @samp{-nbap} option forces no such blank line.
 @kindex --blank-lines-after-block-comments
 @kindex -nbbb
 @kindex --no-blank-lines-after-block-comments
-The @samp{-bbb} option forces a blank line before every boxed comment.
-(@xref{Comments}) The @samp{-nbbb} option does not force such blank lines.
+The @samp{-bbb} option forces a blank line before every boxed comment,
+@xref{Comments}. The @samp{-nbbb} option does not force such blank lines.
 
 @kindex -sob
 @kindex --swallow-optional-blank-lines
@@ -1219,6 +1219,16 @@ verbose mode, @code{indent} reports when it splits one line of input
 into two more more lines of output, and gives some size statistics at
 completion. 
 
+@kindex -pmt
+@kindex --preserve-mtime
+@kindex -npmt
+The @samp{-pmt} option causes @code{indent} to preserve the access
+and modification times on the output files.  Using this option
+has the advantage that running indent on all source and header
+files in a project won't cause @code{make} to rebuild all targets.
+This option is only available on Operating Systems that have the
+POSIX @code{utime(2)} function.
+
 @node Bugs, Copyright, Miscellaneous options, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Bugs
@@ -1245,6 +1255,11 @@ comments start on the first line of the break.
 
 @code{Indent} does not count lines and comments (see the @samp{-v} option)
 when @code{indent} is turned off with @code{/* *INDENT-OFF* */}.
+
+Comments of the form /*UPPERCASE*/ are not treated as comment but as an
+identifier, causing them to be joined with the next line. This renders
+comments of this type useless unless they are embedded in the code to
+begin with.
 
 @node Copyright,  , Bugs, Indent Program
 @comment  node-name,  next,  previous,  up
@@ -1343,7 +1358,7 @@ Put braces on @code{struct} declaration line.@*
 @itemx --Bill-Shannon
 @itemx --blank-before-sizeof
 Put a space between @code{sizeof} and its argument.@*
-@xref{Statements}
+@xref{Statements}.
 
 @item -c@var{n}
 @itemx --comment-indentation@var{n}
@@ -1410,7 +1425,7 @@ Format comments in the first column.@*
 @item -fca
 @itemx --format-all-comments
 Do not disable all formatting of comments.@*
-@xref{Comments}
+@xref{Comments}.
 
 @item -gnu
 @itemx --gnu-style
@@ -1519,7 +1534,7 @@ Do not prefer to break long lines at the position of newlines in the input.@*
 @item -nip
 @itemx --no-parameter-indentation
 Zero width indentation for parameters.@*
-@xref{Indentation}
+@xref{Indentation}.
 
 @item -nlp
 @itemx --dont-line-up-parentheses
@@ -1578,6 +1593,11 @@ procedure being called and the @samp{(}.@*
 Specify the extra indentation per open parentheses '(' when a
 statement is broken.
 @xref{Statements}.
+
+@item -pmt
+@itemx --preserve-mtime
+Preserve access and modification times on output files.
+@xref{Miscellaneous options}.
 
 @item -psl
 @itemx --procnames-start-lines
@@ -1698,6 +1718,7 @@ the corresponding short option.
 \line{ --original \leaderfill                      -orig}
 \line{ --parameter-indentation \leaderfill         -ip@var{n}\ } 
 \line{ --paren-indentation \leaderfill             -pi@var{n}\ }
+\line{ --preserve-mtime \leaderfill                -pmt\ }
 \line{ --procnames-start-lines \leaderfill         -psl\ }  
 \line{ --space-after-cast \leaderfill              -cs\ \ } 
 \line{ --space-after-procedure-calls \leaderfill   -pcs\ }  
@@ -1768,6 +1789,7 @@ the corresponding short option.
 --original                                      -orig
 --parameter-indentation                         -ip@var{n}      
 --paren-indentation                             -pi@var{n}
+--preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
 --space-after-procedure-calls                   -pcs            

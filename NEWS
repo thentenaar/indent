@@ -1,7 +1,37 @@
-Release notes for GNU indent version 2.2, July 1999
+Release notes for GNU indent version 2.2.1, September 1999
+
+* Indent got confused when a function declaration contained an enum
+  and did not contain a colon before using a '{' inside the function.
+
+  enum foobar		<-- returns enum
+  func (enum foobar)	<-- or uses an enum as parameter
+  {
+    if (1)
+      {			<-- uses '{' before any ';' was used
+       func (1);}	<-- fails here
+       ... etc.
+
+* A new option to stop `make' from rebuilding your whole project
+  after running `indent':
+
+  -pmt, --preserve-mtime :
+     Preserve modification time on output files.
+
+* Backup files now keep the same modification time as the
+  original.
+
+* New -c++, --c-plus-plus option to allow better C++ formatting:
+  Recognizes C++ keywords, including the GNU extension operators <?= and >?=.
+  (Patch by Malekith <malekith@topnet.pl>)
+  Note: In general C++ still does NOT work!
+
+* EBCDIC charset support for BS2000/POSIX (Siemens mainframe OS).
+  Contributed by <Martin.Kraemer@MchP.Siemens.De>.
+
+Release notes for GNU indent version 2.2.0, July 1999
 
 * Indent was detecting `const' errornous as function qualifier
-  in some cases. resulting in
+  in some cases. Resulting in
 
   void foo(fmt)
    constchar *fmt;

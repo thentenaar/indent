@@ -62,6 +62,10 @@ extern int debug;
 # endif
 #endif /* VMS */
 
+#ifdef _OSD_POSIX
+#define CHARSET_EBCDIC
+#endif
+
 #ifdef __MSDOS__
 # define ONE_DOT_PER_FILENAME 1
 #endif /* __MSDOS__ */
@@ -70,6 +74,10 @@ extern int debug;
 #define PARAMS(x) x
 #else
 #define PARAMS(x) ()
+#endif
+
+#if defined(HAVE_UTIME) && defined(HAVE_UTIME_H)
+#define PRESERVE_MTIME 1
 #endif
 
 /* Donated by Carlo Wood from `libcw'.  All rights reserved. */
@@ -82,4 +90,5 @@ extern int debug;
 #else
 #define RCSTAG_H(name, string) /**/
 #endif
-  RCSTAG_H (sys, "$Id: sys.h,v 1.10 1999/07/17 19:16:23 carlo Exp $");
+
+RCSTAG_H (sys, "$Id: sys.h,v 1.12 1999/08/27 14:12:15 carlo Exp $");

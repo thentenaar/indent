@@ -198,6 +198,9 @@ procedure being called and the \`(\'.
 Specify the extra indentation per open parentheses \'(\' when a
 statement is broken.See \fB\ STATEMENTS\fR.
 .TP
+.B -pmt\fR, \fB--preserve-mtime\fR
+Preserve access and modification times on output files.See \fB\ MISCELLANEOUS\ OPTIONS\fR.
+.TP
 .B -psl\fR, \fB--procnames-start-lines\fR
 Put the type of a procedure on the line before its name.
 .TP
@@ -452,8 +455,8 @@ every block of declarations.  The \`-nbad\' option causes
 The \`-bap\' option forces a blank line after every procedure body.
 The \`-nbap\' option forces no such blank line.
 
-The \`-bbb\' option forces a blank line before every boxed comment.
-(See \fBCOMMENTS\fR) The \`-nbbb\' option does not force such blank lines.
+The \`-bbb\' option forces a blank line before every boxed comment,
+See \fBCOMMENTS\fR. The \`-nbbb\' option does not force such blank lines.
 
 The \`-sob\' option causes \fBindent\fR to swallow optional blank
 lines (that is, any optional blank lines present in the input will be
@@ -1187,6 +1190,13 @@ verbose mode, \fBindent\fR reports when it splits one line of input
 into two more more lines of output, and gives some size statistics at
 completion. 
 
+The \`-pmt\' option causes \fBindent\fR to preserve the access
+and modification times on the output files.  Using this option
+has the advantage that running indent on all source and header
+files in a project won\'t cause \fBmake\fR to rebuild all targets.
+This option is only available on Operating Systems that have the
+POSIX \fButime(2)\fR function.
+
 .SH "BUGS"
 
 When \fBindent\fR is run twice on a file, with the same profile,
@@ -1211,6 +1221,11 @@ comments start on the first line of the break.
 
 .B Indent\fR does not count lines and comments (see the \`-v\' option)
 when \fBindent\fR is turned off with \fB/* *INDENT-OFF* */\fR.
+
+Comments of the form /*UPPERCASE*/ are not treated as comment but as an
+identifier, causing them to be joined with the next line. This renders
+comments of this type useless unless they are embedded in the code to
+begin with.
 
 .SH "COPYRIGHT"
 
@@ -1304,6 +1319,7 @@ the corresponding short option.
 --original                                      -orig
 --parameter-indentation                         -ip\fIn\fR      
 --paren-indentation                             -pi\fIn\fR
+--preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
 --space-after-procedure-calls                   -pcs            

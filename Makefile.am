@@ -8,21 +8,24 @@ noinst_HEADERS = backup.h indent.h sys.h lexi.h args.h comments.h globs.h io.h p
 info_TEXINFOS = indent.texinfo
 man_MANS = indent.1
 
-BUILT_SOURCES = indent.1 README ChangeLog gperf.c indent.html indent_foot.html indent_toc.html
-EXTRA_DIST = $(BUILT_SOURCES) indent.gperf ChangeLog-1990 ChangeLog-1998
+BUILT_SOURCES = indent.1 README ChangeLog gperf.c gperf-cc.c indent.html indent_foot.html indent_toc.html
+EXTRA_DIST = $(BUILT_SOURCES) indent.gperf indent-cc.gperf ChangeLog-1990 ChangeLog-1998
 
-lexi.o: $(srcdir)/lexi.c $(srcdir)/sys.h config.h $(srcdir)/indent.h @MAINTAINER_MODE_TRUE@ gperf.c
+lexi.o: $(srcdir)/lexi.c $(srcdir)/sys.h config.h $(srcdir)/indent.h @MAINTAINER_MODE_TRUE@ gperf.c gperf-cc.c
 	$(COMPILE) -c $(srcdir)/lexi.c
 
 gperf.c: @MAINTAINER_MODE_TRUE@ indent.gperf
 	gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
+
+gperf-cc.c: @MAINTAINER_MODE_TRUE@ indent-cc.gperf
+	gperf -D -c -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf > gperf-cc.c
 
 DISTCLEANFILES=config.cache config.log config.h
 
 # --------------- Maintainer's Section
 
 MAINTAINERCLEANFILES=aclocal.m4 Makefile.in config.h.in stamp-h.in configure \
-	ChangeLog texinfo2man indent.1 gperf.c \
+	ChangeLog texinfo2man indent.1 gperf.c gperf-cc.c \
 	indent-1.spec index.html cvslog-*.html indent.html indent_*.html
 
 ## Use -g when in maintainer mode

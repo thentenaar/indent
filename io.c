@@ -44,7 +44,7 @@
 #include "io.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.20 1999/07/22 14:15:36 carlo Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.23 1999/08/27 13:51:44 carlo Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
@@ -611,6 +611,7 @@ dump_line (force_nl)
       && s_code_corresponds_to == parser_state_tos->procname)
     {
       parser_state_tos->procname = "\0";
+      parser_state_tos->classname = "\0";
     }
 
   /* A blank line */
@@ -999,10 +1000,19 @@ compute_code_target ()
 int
 compute_label_target ()
 {
-  return
-    (parser_state_tos->pcase
-     ? parser_state_tos->cstk[parser_state_tos->tos] + 1
-     : (*s_lab == '#' ? 1 : parser_state_tos->ind_level - LABEL_OFFSET + 1));
+  /* maybe there should be some option to tell indent where to put public:,
+     private: etc. ? */
+  if (*s_lab == '#') 
+      return 1;
+  if (parser_state_tos->pcase)
+      return parser_state_tos->cstk[parser_state_tos->tos] + 1;
+  if (c_plus_plus && parser_state_tos->in_decl)
+  {
+      /* FIXME: does this belong here at all? */
+      return 1;
+  }
+  else 
+      return parser_state_tos->ind_level - LABEL_OFFSET + 1;
 }
 
 /* VMS defines it's own read routine, `vms_read' */
@@ -1016,40 +1026,40 @@ compute_label_target ()
 static struct file_buffer fileptr;
 
 struct file_buffer *
-read_file (filename)
+read_file (filename, file_stats)
      char *filename;
+     struct stat *file_stats;
 {
   int fd;
   /* Required for MSDOS, in order to read files larger than 32767
      bytes in a 16-bit world... */
   unsigned int size;
 
-  struct stat file_stats;
   int namelen = strlen (filename);
 
   fd = open (filename, O_RDONLY, 0777);
   if (fd < 0)
     fatal ("Can't open input file %s", filename);
 
-  if (fstat (fd, &file_stats) < 0)
+  if (fstat (fd, file_stats) < 0)
     fatal ("Can't stat input file %s", filename);
 
-  if (file_stats.st_size == 0)
+  if (file_stats->st_size == 0)
     ERROR ("Warning: Zero-length file %s", filename, 0);
 
 #ifdef __MSDOS__
-  if (file_stats.st_size < 0 || file_stats.st_size > (0xffff - 1))
+  if (file_stats->st_size < 0 || file_stats->st_size > (0xffff - 1))
     fatal ("File %s is too big to read", filename);
 #else
-  if (file_stats.st_size < 0)
+  if (file_stats->st_size < 0)
     fatal ("System problem reading file %s", filename);
 #endif
-  fileptr.size = file_stats.st_size;
+  fileptr.size = file_stats->st_size;
   if (fileptr.data != 0)
     fileptr.data = (char *) xrealloc (fileptr.data,
-				      (unsigned) file_stats.st_size + 1);
+				      (unsigned) file_stats->st_size + 1);
   else
-    fileptr.data = (char *) xmalloc ((unsigned) file_stats.st_size + 1);
+    fileptr.data = (char *) xmalloc ((unsigned) file_stats->st_size + 1);
 
   size = INDENT_SYS_READ (fd, fileptr.data, fileptr.size);
 #ifdef __MSDOS__

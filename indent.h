@@ -22,7 +22,7 @@
 #ifndef INDENT_INDENT_H
 #define INDENT_INDENT_H
 
-RCSTAG_H (indent, "$Id: indent.h,v 1.17 1999/07/22 12:55:08 carlo Exp $");
+RCSTAG_H (indent, "$Id: indent.h,v 1.18 1999/08/07 12:54:31 carlo Exp $");
 
 #include "lexi.h"
 #include "io.h"
@@ -298,6 +298,8 @@ extern int break_before_boolean_operator;	/* True when we prefer to break a long
 extern int honour_newlines;	/* True when positions at which we read a newline
 				   in the input file, should get a high priority
 				   to break long lines at. */
+extern int preserve_mtime;	/* True when the modification time of the files should
+				   be preserved. */
 
 /* This structure contains information relating to the state of parsing the
    code.  The difference is that the state is saved on #if and restored on

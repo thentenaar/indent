@@ -23,6 +23,13 @@
 #if defined (HAVE_UNISTD_H)
 #include <unistd.h>
 #endif
+#ifdef PRESERVE_MTIME
+#include <time.h>
+#ifdef HAVE_UTIME_H
+#include <utime.h>
+#endif
+#endif
+#include <sys/stat.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -34,7 +41,7 @@
 #include "comments.h"
 #include "args.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.29 1999/07/22 14:33:31 carlo Exp $");
+RCSTAG_CC ("$Id: indent.c,v 1.33 1999/09/03 11:33:40 carlo Exp $");
 
 void
 usage ()
@@ -43,10 +50,6 @@ usage ()
   fprintf (stderr, "       indent file1 file2 ... fileN [ options ]\n");
   exit (invocation_error);
 }
-
-
-/* True if we're handling C++ code. */
-int c_plus_plus = 0;
 
 /* Stuff that needs to be shared with the rest of indent.
    Documented in indent.h.  */
@@ -728,7 +731,7 @@ indent (this_file)
 	    parser_state_tos->paren_indents[0] = 2 * ind_size;
 	  parser_state_tos->want_blank = false;
 
-	  if (parser_state_tos->in_or_st
+	  if (parser_state_tos->in_or_st == 1
 	      && *token == '(' && parser_state_tos->tos <= 2)
 	    {
 	      /* this is a kluge to make sure that declarations will be
@@ -940,7 +943,8 @@ indent (this_file)
 	      parser_state_tos->want_blank = true;
 	      break;
 	    }
-	  if (parser_state_tos->in_decl)
+	    
+	  if (parser_state_tos->in_decl && *s_code == 'i')
 	    {
 	      *e_code++ = ':';
 	      parser_state_tos->want_blank = false;
@@ -1232,9 +1236,10 @@ indent (this_file)
 	      || (parser_state_tos->p_stack[parser_state_tos->tos] == dohead
 		  && !btype_2))
 	    force_nl = true;
-	  else if (parser_state_tos->tos <= 1
-		   && blanklines_after_procs
-		   && parser_state_tos->dec_nest <= 0)
+	  if (!parser_state_tos->in_decl
+	      && parser_state_tos->tos <= 0
+	      && blanklines_after_procs
+	      && parser_state_tos->dec_nest <= 0)
 	    {
 	      postfix_blankline_requested = 1;
 	      postfix_blankline_requested_code =
@@ -1922,10 +1927,6 @@ main (argc, argv)
   set_defaults ();
   for (i = 1; i < argc; ++i)
     {
-      if (strcmp (argv[i], "-c++") == 0
-	  || strcmp (argv[i], "--c-plus-plus") == 0)
-	c_plus_plus = 1;
-
       if (strcmp (argv[i], "-npro") == 0
 	  || strcmp (argv[i], "--ignore-profile") == 0
 	  || strcmp (argv[i], "+ignore-profile") == 0)
@@ -2028,9 +2029,10 @@ main (argc, argv)
       for (i = 0; input_files; i++, input_files--)
 	{
 	  enum exit_values status;
+	  struct stat file_stats;
 
 	  in_name = out_name = in_file_names[i];
-	  current_input = read_file (in_file_names[i]);
+	  current_input = read_file (in_file_names[i], &file_stats);
 	  output = fopen (out_name, "w");
 	  if (output == 0)
 	    {
@@ -2038,18 +2040,29 @@ main (argc, argv)
 	      exit (indent_fatal);
 	    }
 
-	  make_backup (current_input);
+	  make_backup (current_input, &file_stats);
 	  reset_parser ();
 	  status = indent (current_input);
 	  if (status > exit_status)
 	    exit_status = status;
 	  if (fclose (output) != 0)
 	    fatal ("Can't close output file %s", out_name);
+#ifdef PRESERVE_MTIME
+          else if (preserve_mtime)
+	    {
+              struct utimbuf buf;
+	      buf.actime = time(NULL);
+	      buf.modtime = file_stats.st_mtime;
+	      if (utime(out_name, &buf) != 0)
+	        WARNING ("Can't preserve modification time on output file %s", out_name, 0);
+	    }
+#endif
 	}
     }
   else
     {
       /* One input stream -- specified file, or stdin */
+      struct stat file_stats;
 
       if (input_files == 0 || using_stdin)
 	{
@@ -2062,11 +2075,11 @@ main (argc, argv)
 	/* 1 input file */
 	{
 	  in_name = in_file_names[0];
-	  current_input = read_file (in_file_names[0]);
+	  current_input = read_file (in_file_names[0], &file_stats);
 	  if (!out_name && !use_stdout)
 	    {
 	      out_name = in_file_names[0];
-	      make_backup (current_input);
+	      make_backup (current_input, &file_stats);
 	    }
 	}
 
@@ -2086,6 +2099,22 @@ main (argc, argv)
 
       reset_parser ();
       exit_status = indent (current_input);
+
+      if (output != stdout)
+        {
+	  if (fclose (output) != 0)
+	    fatal ("Can't close output file %s", out_name);
+#ifdef PRESERVE_MTIME
+	  if (input_files > 0 && !using_stdin && preserve_mtime)
+	    {
+              struct utimbuf buf;
+	      buf.actime = time(NULL);
+	      buf.modtime = file_stats.st_mtime;
+	      if (utime(out_name, &buf) != 0)
+	        WARNING ("Can't preserve modification time on output file %s", out_name, 0);
+	    }
+#endif
+	}
     }
 
   exit (exit_status);

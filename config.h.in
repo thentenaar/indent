@@ -32,8 +32,14 @@
 /* Define if you have the strchr function.  */
 #undef HAVE_STRCHR
 
+/* Define if you have the utime function.  */
+#undef HAVE_UTIME
+
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
+
+/* Define if you have the <malloc.h> header file.  */
+#undef HAVE_MALLOC_H
 
 /* Define if you have the <ndir.h> header file.  */
 #undef HAVE_NDIR_H
@@ -49,6 +55,9 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
+
+/* Define if you have the <utime.h> header file.  */
+#undef HAVE_UTIME_H
 
 /* Name of package */
 #undef PACKAGE

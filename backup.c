@@ -49,6 +49,13 @@
 #if defined (HAVE_UNISTD_H)
 #include <unistd.h>
 #endif
+#ifdef PRESERVE_MTIME
+#include <time.h>
+#ifdef HAVE_UTIME_H
+#include <utime.h>
+#endif
+#endif
+#include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
 #else
@@ -85,7 +92,7 @@
 #include "globs.h"
 #include "io.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.7 1999/07/17 19:16:23 carlo Exp $");
+RCSTAG_CC ("$Id: backup.c,v 1.8 1999/08/07 12:54:31 carlo Exp $");
 
 #ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
@@ -330,8 +337,9 @@ initialize_backups ()
    See the description at the beginning of the file for details. */
 
 void
-make_backup (file)
+make_backup (file, file_stats)
      struct file_buffer *file;
+     const struct stat *file_stats;
 {
   int fd;
   char *backup_filename;
@@ -356,5 +364,14 @@ make_backup (file)
     fatal ("Can't write to backup file %s", backup_filename);
 
   close (fd);
+#ifdef PRESERVE_MTIME
+  {
+    struct utimbuf buf;
+    buf.actime = time(NULL);
+    buf.modtime = file_stats->st_mtime;
+    if (utime(backup_filename, &buf) != 0)
+      WARNING ("Can't preserve modification time on backup file %s", backup_filename, 0);
+  }
+#endif
   free (backup_filename);
 }
