@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-RCSTAG_CC ("$Id: args.c,v 1.18 1999/08/27 13:51:44 carlo Exp $");
+RCSTAG_CC ("$Id: args.c,v 1.20 1999/11/12 13:43:47 carlo Exp $");
 
 int else_endif_col;
 
@@ -98,6 +98,7 @@ static int exp_lps;
 static int exp_pcs;
 static int exp_pi;
 static int exp_pmt;
+static int exp_prs;
 static int exp_psl;
 static int exp_pro;
 static int exp_kr;
@@ -151,6 +152,7 @@ int star_comment_cont;
 int comment_delimiter_on_blankline;
 int procnames_start_line;
 int proc_calls_space;
+int parentheses_space;
 int cast_space;
 int format_col1_comments;
 int format_comments;
@@ -207,6 +209,7 @@ struct pro pro[] = {
   {"sc", PRO_BOOL, true, ON, &star_comment_cont, &exp_sc},
   {"sbi", PRO_INT, 0, ONOFF_NA, &struct_brace_indent, &exp_sbi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
+  {"prs", PRO_BOOL, false, ON, &parentheses_space, &exp_prs},
 #ifdef PRESERVE_MTIME
   {"pmt", PRO_BOOL, false, ON, &preserve_mtime, &exp_pmt},
 #endif
@@ -220,6 +223,7 @@ struct pro pro[] = {
   {"nsob", PRO_BOOL, false, OFF, &swallow_optional_blanklines, &exp_sob},
   {"nsc", PRO_BOOL, true, OFF, &star_comment_cont, &exp_sc},
   {"npsl", PRO_BOOL, true, OFF, &procnames_start_line, &exp_psl},
+  {"nprs", PRO_BOOL, false, OFF, &parentheses_space, &exp_prs},
   {"npro", PRO_IGN, 0, ONOFF_NA, 0, &exp_pro},
 #ifdef PRESERVE_MTIME
   {"npmt", PRO_BOOL, false, OFF, &preserve_mtime, &exp_pmt},
@@ -253,7 +257,7 @@ struct pro pro[] = {
   {"l", PRO_INT, DEFAULT_RIGHT_MARGIN, ONOFF_NA, &max_col, &exp_l},
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0-ncdb\0\
--ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0-npcs\0-npsl\0\
+-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0-npcs\0-nprs\0-npsl\0\
 -cs\0-nsc\0-nsc\0-nsob\0-nfca\0-cp33\0-nss\0", &exp_kr},
   {"ip", PRO_INT, 4, ONOFF_NA, &indent_parameters, &exp_ip},
   {"i", PRO_INT, 4, ONOFF_NA, &ind_size, &exp_i},
@@ -261,7 +265,7 @@ struct pro pro[] = {
   {"h", PRO_FUNCTION, 0, ONOFF_NA, (int *) usage, &exp_version},
   {"gnu", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-bbo\0-hnl\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0-nce\0\
--di2\0-ndj\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-psl\0-nsc\0-nsob\0\
+-di2\0-ndj\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-nprs\0-psl\0-nsc\0-nsob\0\
 -bli2\0-cp1\0-nfca\0", &exp_gnu},
   {"fca", PRO_BOOL, true, ON, &format_comments, &exp_fca},
   {"fc1", PRO_BOOL, true, ON, &format_col1_comments, &exp_fc1},
@@ -312,6 +316,7 @@ struct pro pro[] = {
   {"sc", PRO_BOOL, false, ON, &star_comment_cont, &exp_sc},
   {"sbi", PRO_INT, 0, ONOFF_NA, &struct_brace_indent, &exp_sbi},
   {"psl", PRO_BOOL, true, ON, &procnames_start_line, &exp_psl},
+  {"prs", PRO_BOOL, false, ON, &parentheses_space, &exp_prs},
 #ifdef PRESERVE_MTIME
   {"pmt", PRO_BOOL, false, ON, &preserve_mtime, &exp_pmt},
 #endif
@@ -319,8 +324,8 @@ struct pro pro[] = {
   {"pcs", PRO_BOOL, true, ON, &proc_calls_space, &exp_pcs},
   {"orig", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbap\0-nbad\0-bbo\0-hnl\0-bc\0-br\0-brs\0-c33\0-cd33\0-cdb\0\
--ce\0-ci4\0-cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-l75\0-lp\0-npcs\0-psl\0\
--sc\0-nsob\0-nss\0-ts8\0", &exp_orig},
+-ce\0-ci4\0-cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-l75\0-lp\0-npcs\0-nprs\0\
+-psl\0-sc\0-nsob\0-nss\0-ts8\0", &exp_orig},
 
   {"o", PRO_BOOL, false, ON, &expect_output_file, &expect_output_file},
 
@@ -329,6 +334,7 @@ struct pro pro[] = {
   {"nsob", PRO_BOOL, false, OFF, &swallow_optional_blanklines, &exp_sob},
   {"nsc", PRO_BOOL, false, OFF, &star_comment_cont, &exp_sc},
   {"npsl", PRO_BOOL, true, OFF, &procnames_start_line, &exp_psl},
+  {"nprs", PRO_BOOL, false, OFF, &parentheses_space, &exp_prs},
   {"npro", PRO_IGN, 0, ONOFF_NA, 0, &exp_pro},
 #ifdef PRESERVE_MTIME
   {"npmt", PRO_BOOL, false, OFF, &preserve_mtime, &exp_pmt},
@@ -363,7 +369,7 @@ struct pro pro[] = {
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0\
 -ncdb\0-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0\
--npcs\0-npsl\0-cs\0-nsc\0-nsob\0-nfca\0-cp33\0-nss\0", &exp_kr},
+-npcs\0-nprs\0-npsl\0-cs\0-nsc\0-nsob\0-nfca\0-cp33\0-nss\0", &exp_kr},
   {"ip", PRO_INT, 5, ONOFF_NA, &indent_parameters, &exp_ip},
   {"i", PRO_INT, 2, ONOFF_NA, &ind_size, &exp_i},
   {"hnl", PRO_BOOL, true, ON, &honour_newlines, &exp_hnl},
@@ -371,7 +377,7 @@ struct pro pro[] = {
 /* This is now the default. */
   {"gnu", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-bbo\0-hnl\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0\
--nce\0-di2\0-ndj\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-psl\0\
+-nce\0-di2\0-ndj\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-nprs\0-psl\0\
 -nsc\0-nsob\0-bli2\0-cp1\0-nfca\0", &exp_gnu},
   {"fca", PRO_BOOL, false, ON, &format_comments, &exp_fca},
   {"fc1", PRO_BOOL, false, ON, &format_col1_comments, &exp_fc1},
@@ -428,6 +434,7 @@ struct long_option_conversion option_conversions[] = {
   {"standard-output", "st"},
   {"space-special-semicolon", "ss"},
   {"space-after-procedure-calls", "pcs"},
+  {"space-after-parentheses", "prs"},
   {"space-after-cast", "cs"},
   {"remove-preprocessor-space", "nlps"},
   {"procnames-start-lines", "psl"},
@@ -441,6 +448,7 @@ struct long_option_conversion option_conversions[] = {
   {"original-style", "orig"},
   {"original", "orig"},
   {"no-verbosity", "nv"},
+  {"no-space-after-parentheses", "nprs"},
   {"no-space-after-function-call-names", "npcs"},
   {"no-space-after-casts", "ncs"},
   {"no-parameter-indentation", "nip"},
@@ -707,7 +715,7 @@ found:
 		val = 1;
 	    }
 
-	  if (!isdigit (*param_start))
+	  if (!isdigit (*param_start) && *param_start != '-')
 	    {
 	      fprintf (stderr,
 		       "indent: option ``%s'' requires a numeric parameter\n",

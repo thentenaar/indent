@@ -1,3 +1,53 @@
+Release notes for GNU indent version 2.2.5, Januari 2000
+
+* When using --dont-break-procedure-type, indent wrongly joined
+  lines of a procedure declaration ending in a '(' and followed
+  by a comment.  In the case of a C++-style comment that even
+  broke compilation.
+
+  int func( /* hello */
+    char c)
+  {
+
+  became
+
+  int func( /* hello */ char c)
+  {
+
+* Added missing README.VMS to tar ball.  Added support for VMS'
+  DECC compiler. (Patch by forrest.cahoon@merrillcorp.com).
+
+* New option --space-after-parentheses (-prs) causes parentheses
+  to be printed with spaces: if ( foo( i + 1 ) == 1 ).
+
+* --braces-on-if-line (-br) caused indentation of statements
+  after case: label to be indented wrongly (not relative to the
+  start of the case: label).  This fix means that when you use -br
+  together with -cliN where N is not 0, then your code will change:
+  subtract the value for -cli from -cbi to get the same results
+  for { braced } case statements.
+
+  The correct meaning when using -br is now:
+
+  switch (i) {
+  <--cliN-->case x:
+            <--iN-->statement;
+  <--cliN-->case y:
+            <--cbiN-->{
+                      <--iN-->statement;
+
+  Without -br it still is:
+
+  switch (i)
+  <--bliN-->{
+            <--cliN-->case x:
+                      <--iN-->statement;
+            <--cliN-->case y:
+                      <--cbiN-->{
+                                <--iN-->statement;
+
+* Indentation options now accept negative values for greater flexibility.
+
 Release notes for GNU indent version 2.2.4, November 1999
 
 * When using numbered backup files, setting environment variable

@@ -44,7 +44,7 @@
 #include "io.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.25 1999/11/04 23:09:33 carlo Exp $");
+RCSTAG_CC ("$Id: io.c,v 1.29 2000/01/16 15:21:33 carlo Exp $");
 
 /* number of levels a label is placed to left of code */
 #define LABEL_OFFSET 2
@@ -151,15 +151,17 @@ set_priority (bb)
 {
   bb->priority = bb->priority_code_length;
   if (bb->priority_code == bb_semicolon)
-    bb->priority += 5000;
+    bb->priority += 6000;
   if (bb->priority_code == bb_before_boolean_binary_op
       || (bb->priority_code == bb_after_boolean_binary_op
 	  && bb->priority_code_length > 2))
-    bb->priority += 4000;
+    bb->priority += 5000;
   if (bb->priority_code == bb_after_boolean_binary_op
       && break_before_boolean_operator)
     bb->priority -= 3;
   if (bb->priority_code == bb_after_equal_sign)
+    bb->priority += 4000;
+  if (bb->priority_code == bb_attribute)
     bb->priority += 3000;
   if (bb->priority_code == bb_comma)
     bb->priority += 2000;
@@ -491,7 +493,7 @@ vms_read (int file_desc, char *buffer, int nbytes)
       bufp += nread;
       nleft -= nread;
       if (nleft < 0)
-	fatal ("Internal buffering error");
+	fatal ("Internal buffering error", 0);
       nread = read (file_desc, bufp, nleft);
     }
 
@@ -606,8 +608,11 @@ dump_line (force_nl)
   else if (force_nl)
     parser_state_tos->broken_at_non_nl = false;
 
-  if (parser_state_tos->procname[0]
+  if (parser_state_tos->procname[0] && !parser_state_tos->classname[0]
       && s_code_corresponds_to == parser_state_tos->procname)
+    parser_state_tos->procname = "\0";
+  else if (parser_state_tos->procname[0] && parser_state_tos->classname[0]
+	   && s_code_corresponds_to == parser_state_tos->classname)
     {
       parser_state_tos->procname = "\0";
       parser_state_tos->classname = "\0";
@@ -1044,7 +1049,7 @@ read_file (filename, file_stats)
   if (file_stats->st_size == 0)
     ERROR ("Warning: Zero-length file %s", filename, 0);
 
-#ifdef __MSDOS__
+#if defined(__MSDOS__) && !defined(__DJGPP__)
   if (file_stats->st_size < 0 || file_stats->st_size > (0xffff - 1))
     fatal ("File %s is too big to read", filename);
 #else
@@ -1059,7 +1064,7 @@ read_file (filename, file_stats)
     fileptr.data = (char *) xmalloc ((unsigned) file_stats->st_size + 1);
 
   size = INDENT_SYS_READ (fd, fileptr.data, fileptr.size);
-#ifdef __MSDOS__
+#if defined(__MSDOS__) && !defined(__DJGPP__)
   if (size == 0xffff)		/* -1 = 0xffff in 16-bit world */
 #else
   if (size == (unsigned int)-1)

@@ -338,7 +338,7 @@ error.  Option settings which correspond to the GNU style are:
 @example
 @group
 -nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
--ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -psl -nsc -nsob
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -nsc -nsob
 @end group
 @end example
 
@@ -363,7 +363,7 @@ of options:
 @group
 -nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
--npsl -nsc -nsob -nss
+-nprs -npsl -nsc -nsob -nss
 @end group
 @end example
 
@@ -384,7 +384,7 @@ long option name).  This style is equivalent to the following settings:
 @example
 @group
 -nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
--cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -psl -sc
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl -sc
 -nsob -nss -ts8
 @end group
 @end example
@@ -871,6 +871,22 @@ a cast operator.
 The @option{-bs} option ensures that there is a space between the
 keyword @code{sizeof} and its argument.  In some versions, this is
 known as the @samp{Bill_Shannon} option.
+
+@kindex -prs
+@kindex --space-after-parentheses
+The @option{-prs} option causes all parentheses to be seperated with
+a space from the what is between them.  For example, using @option{-prs}
+results in code like:
+
+@example
+@group
+  while ( ( e_code - s_code ) < ( dec_ind - 1 ) )
+    @{
+      set_buf_break ( bb_dec_ind );
+      *e_code++ = ' ';
+    @}
+@end group
+@end example
 
 @node Declarations, Indentation, Statements, Indent Program
 @comment  node-name,  next,  previous,  up
@@ -1366,7 +1382,7 @@ Put braces on the line after @code{struct} declaration lines.@*
 
 @item -br
 @itemx --braces-on-if-line
-Put braces on line with @code{if}, etc. and structure declarations.@*
+Put braces on line with @code{if}, etc.@*
 @xref{Statements}.
 
 @item -brs
@@ -1566,6 +1582,11 @@ Do not line up parentheses.@*
 Do not put space after the function in function calls.@*
 @xref{Statements}.
 
+@item -nprs
+@itemx --no-space-after-parentheses
+Do not put a space after every '(' and before every ')'.@*
+@xref{Statements}.
+
 @item -npsl
 @itemx --dont-break-procedure-type
 Put the type of a procedure on the same line as its name.@*
@@ -1618,6 +1639,11 @@ statement is broken.
 @itemx --preserve-mtime
 Preserve access and modification times on output files.
 @xref{Miscellaneous options}.
+
+@item -prs
+@itemx --space-after-parentheses
+Put a space after every '(' and before every ')'.@*
+@xref{Statements}.
 
 @item -psl
 @itemx --procnames-start-lines
@@ -1734,6 +1760,7 @@ the corresponding short option.
 \line{ --no-space-after-casts \leaderfill               -ncs\ }    
 \line{ --no-parameter-indentation \leaderfill               -nip\ }    
 \line{ --no-space-after-function-call-names \leaderfill -npcs}   
+\line{ --no-space-after-parentheses \leaderfill          -nprs}
 \line{ --no-verbosity \leaderfill                       -nv\ \ }
 \line{ --original \leaderfill                      -orig}
 \line{ --parameter-indentation \leaderfill         -ip@var{n}\ } 
@@ -1741,6 +1768,7 @@ the corresponding short option.
 \line{ --preserve-mtime \leaderfill                -pmt\ }
 \line{ --procnames-start-lines \leaderfill         -psl\ }  
 \line{ --space-after-cast \leaderfill              -cs\ \ } 
+\line{ --space-after-parentheses \leaderfill       -prs\ }
 \line{ --space-after-procedure-calls \leaderfill   -pcs\ }  
 \line{ --space-special-semicolon \leaderfill       -ss\ \ } 
 \line{ --standard-output \leaderfill      -st\ \ } 
@@ -1805,6 +1833,7 @@ the corresponding short option.
 --no-space-after-casts                          -ncs            
 --no-parameter-indentation                      -nip            
 --no-space-after-function-call-names            -npcs           
+--no-space-after-parentheses                    -nprs
 --no-verbosity                                  -nv             
 --original                                      -orig
 --parameter-indentation                         -ip@var{n}      
@@ -1812,6 +1841,7 @@ the corresponding short option.
 --preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
+--space-after-parentheses                       -prs
 --space-after-procedure-calls                   -pcs            
 --space-special-semicolon                       -ss             
 --standard-output                               -st             

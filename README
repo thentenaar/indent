@@ -1,4 +1,4 @@
-README for GNU `indent' 2.2.4.
+README for GNU `indent' 2.2.5.
 
   GNU indent changes the appearance of a C program by inserting or
   deleting whitespace according to a plethora of options.  Some
@@ -14,7 +14,7 @@ README for GNU `indent' 2.2.4.
 
   To install indent, please read the file INSTALL included with the
   distribution. If you are installing indent on VMS, see the file
-  VMS-README.
+  README.VMS.
 
   For license and copying information, see the file COPYING.
 
@@ -62,7 +62,7 @@ BUG REPORTS
 
   Please address bug-reports and suggestions or comments to:
 
-    indent@runaway.xs4all.nl
+    indent@alinoe.com
 
   How to report bugs:
 

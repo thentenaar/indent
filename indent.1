@@ -12,8 +12,8 @@ indent \- changes the appearance of a C program by inserting or deleting whitesp
 \-\-version
 .SH "DESCRIPTION"
 This man page is generated from the file \fIindent.texinfo\fR.
-This is Edition 2.2.4 of "The \fBindent\fR Manual",
-for Indent Version 2.2.4, last updated 4 November 1999.
+This is Edition  of "The \fBindent\fR Manual",
+for Indent Version , last updated .
 
 The \fBindent\fR program
 can be used to make code easier to read.  It can also convert from one
@@ -52,7 +52,7 @@ Indent braces \fIn\fR spaces.
 Put braces on the line after \fBstruct\fR declaration lines.
 .TP
 .B -br\fR, \fB--braces-on-if-line\fR
-Put braces on line with \fBif\fR, etc. and structure declarations.
+Put braces on line with \fBif\fR, etc.
 .TP
 .B -brs\fR, \fB--braces-on-struct-decl-line\fR
 Put braces on \fBstruct\fR declaration line.
@@ -168,6 +168,9 @@ Do not line up parentheses.
 .B -npcs\fR, \fB--no-space-after-function-call-names\fR
 Do not put space after the function in function calls.
 .TP
+.B -nprs\fR, \fB--no-space-after-parentheses\fR
+Do not put a space after every \'(\' and before every \')\'.
+.TP
 .B -npsl\fR, \fB--dont-break-procedure-type\fR
 Put the type of a procedure on the same line as its name.
 .TP
@@ -200,6 +203,9 @@ statement is broken.See \fB\ STATEMENTS\fR.
 .TP
 .B -pmt\fR, \fB--preserve-mtime\fR
 Preserve access and modification times on output files.See \fB\ MISCELLANEOUS\ OPTIONS\fR.
+.TP
+.B -prs\fR, \fB--space-after-parentheses\fR
+Put a space after every \'(\' and before every \')\'.
 .TP
 .B -psl\fR, \fB--procnames-start-lines\fR
 Put the type of a procedure on the line before its name.
@@ -405,7 +411,7 @@ error.  Option settings which correspond to the GNU style are:
 .nf
 .na
 -nbad -bap -nbc -bbo -bl -bli2 -bls -ncdb -nce -cp1 -cs -di2
--ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -psl -nsc -nsob
+-ndj -nfc1 -nfca -hnl -i2 -ip5 -lp -pcs -nprs -psl -nsc -nsob
 .in -5
 .ad
 .fi
@@ -427,7 +433,7 @@ of options:
 .na
 -nbad -bap -bbo -nbc -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0
 -cp33 -cs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs
--npsl -nsc -nsob -nss
+-nprs -npsl -nsc -nsob -nss
 .in -5
 .ad
 .fi
@@ -445,7 +451,7 @@ long option name).  This style is equivalent to the following settings:
 .nf
 .na
 -nbad -nbap -bbo -bc -br -brs -c33 -cd33 -cdb -ce -ci4 -cli0
--cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -psl -sc
+-cp33 -di16 -fc1 -fca -hnl -i4 -ip4 -l75 -lp -npcs -nprs -psl -sc
 -nsob -nss -ts8
 .in -5
 .ad
@@ -864,6 +870,22 @@ a cast operator.
 The \`-bs\' option ensures that there is a space between the
 keyword \fBsizeof\fR and its argument.  In some versions, this is
 known as the \`Bill_Shannon\' option.
+
+The \`-prs\' option causes all parentheses to be seperated with
+a space from the what is between them.  For example, using \`-prs\'
+results in code like:
+
+.in +5
+.nf
+.na
+  while ( ( e_code - s_code ) < ( dec_ind - 1 ) )
+    {
+      set_buf_break ( bb_dec_ind );
+      *e_code++ = \' \';
+    }
+.in -5
+.ad
+.fi
 
 .SH "DECLARATIONS"
 
@@ -1327,6 +1349,7 @@ the corresponding short option.
 --no-space-after-casts                          -ncs            
 --no-parameter-indentation                      -nip            
 --no-space-after-function-call-names            -npcs           
+--no-space-after-parentheses                    -nprs
 --no-verbosity                                  -nv             
 --original                                      -orig
 --parameter-indentation                         -ip\fIn\fR      
@@ -1334,6 +1357,7 @@ the corresponding short option.
 --preserve-mtime				-pmt
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
+--space-after-parentheses                       -prs
 --space-after-procedure-calls                   -pcs            
 --space-special-semicolon                       -ss             
 --standard-output                               -st             

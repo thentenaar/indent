@@ -41,7 +41,7 @@
 #include "comments.h"
 #include "args.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.39 1999/10/30 01:56:08 carlo Exp $");
+RCSTAG_CC ("$Id: indent.c,v 1.42 1999/12/31 15:52:42 carlo Exp $");
 
 void
 usage ()
@@ -633,6 +633,7 @@ indent (this_file)
 	         same line as the type. */
 	      if (!procnames_start_line
 		  && s_lab == e_lab
+		  && parser_state_tos->last_token != lparen
 		  && parser_state_tos->last_token != semicolon
 		  && parser_state_tos->last_token != comma
 		  && parser_state_tos->last_rw == rw_decl
@@ -724,6 +725,9 @@ indent (this_file)
 	  else
 	    *e_code++ = token[0];
 
+          if ( parentheses_space && *token != '[' )
+            *e_code++ = ' ';
+
 	  parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1]
 	    = e_code - s_code;
 	  if (sp_sw && parser_state_tos->p_l_follow == 1
@@ -800,6 +804,8 @@ indent (this_file)
 	      else
 		paren_target = 0;
 	    }
+          if ( parentheses_space && *token != ']' )
+            *e_code++ = ' ';
 	  *e_code++ = token[0];
 
 	  /* check for end of if (...), or some such */
@@ -1217,8 +1223,10 @@ indent (this_file)
 
 	case rbrace:		/* got a '}' */
 	  /* semicolons can be omitted in declarations */
-	  if (parser_state_tos->p_stack[parser_state_tos->tos] == decl
+	  if ((parser_state_tos->p_stack[parser_state_tos->tos] == decl
 	      && !parser_state_tos->block_init)
+	      /* ANSI C forbids label at end of compound statement, but we don't I guess :/ */
+	      || parser_state_tos->p_stack[parser_state_tos->tos] == casestmt)
 	    PARSE (semicolon);
 
 	  parser_state_tos->just_saw_decl = 0;

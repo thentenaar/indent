@@ -39,7 +39,7 @@
 /* #undef HAVE_DIRENT_H */
 
 /* Define if you have the <malloc.h> header file.  */
-#define HAVE_MALLOC_H
+/* #define HAVE_MALLOC_H */
 
 /* Define if you have the <ndir.h> header file.  */
 /* #undef HAVE_NDIR_H */
@@ -54,10 +54,10 @@
 /* #undef HAVE_SYS_NDIR_H */
 
 /* Define if you have the <unistd.h> header file.  */
-/* #undef HAVE_UNISTD_H */
+#define HAVE_UNISTD_H
 
 /* Define if you have the <utime.h> header file.  */
-#define HAVE_UTIME_H
+/* #undef HAVE_UTIME_H */
 
 /* Name of package */
 #define PACKAGE  "indent"

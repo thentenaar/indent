@@ -1,3 +1,131 @@
+2000-01-16  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Updated release date of 2.2.5
+
+	* rpm/macros, README.in: Update of E-mail address
+
+	* regression/standard/method.c, regression/method.c:
+	Test case for bug reported by Pavel Roskin.
+
+	* regression/TEST, io.c: Date: Thu, 16 Dec 1999 10:43:45 -0500 (EST)
+	From: Pavel Roskin <pavel_roskin@geocities.com>
+	Subject: Strange declaration alignment in C++
+
+	...
+	I have noticed that indent formats variable declarations quite differently
+	in C functions and C++ methods. If the function name doesn't contain two
+	colons, the variable names are placed on the same line and their types.
+	...
+
+	int
+	qs ()
+	{
+	  int i;
+	}
+
+	int
+	q::s ()
+	{
+	  int
+	    i;
+	}
+
+	Date: Fri, 17 Dec 1999 12:33:34 -0500 (EST)
+	From: Pavel Roskin <pavel_roskin@geocities.com>
+	Subject: Strange declaration alignment in C++ - solved!
+
+	The attached patch fixes the problem with variables in C++ methods.
+	dumpline() used to compare "s_code_corresponds_to" with
+	"parser_state_tos->procname"
+
+1999-12-31  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Updated NEWS for last two patches.
+
+	* regression/standard/comment-break.c, regression/TEST, regression/comment-break.c, indent.c:
+	Don't join procedure declaration lines that ends on a '('
+	when followed by a comment when --dont-break-procedure-type is used.
+	Ie: int func( //    became  int func( // char* c)
+	      char* c)              { }
+	    { }
+
+	* Makefile.am, README.VMS, config.h.vms.in, io.c, make-decc.com, sys.h:
+	Date: Mon, 29 Nov 1999 09:43:01 -0600
+	From: forrest.cahoon@merrillcorp.com
+	Support for VMS/DECC.
+
+	* Makefile.am, README.in:
+	Oops, had forgotten to add README.VMS to the tar ball.
+
+1999-12-18  Carlo Wood, Runaway  <carlo@jolan>
+
+	* indent.lsm.in: Fixed format of .lsm and E-mail address.
+
+1999-11-17  Carlo Wood, Runaway  <carlo@jolan>
+
+	* io.c: Date: Tue, 16 Nov 1999 22:59:44 -0000
+	From: "ALAN BORER" <alan_borer@lineone.net>
+
+	Because I am now using DJGPP to compile the code, I now get a 32 bit DPMI
+	protected executable which is capable of processing files exceeding 64kByte.
+	Would you please consider incorporating in file IO.C the following patch :-
+	    replace each of two instances of    "#ifdef __MSDOS__"    with
+	    "#if defined (__MSDOS__) && ! defined (__DJGPP__)".
+
+	Regards
+	    Alan Borer.
+
+1999-11-12  Carlo Wood, Runaway  <carlo@jolan>
+
+	* io.c:
+	Prefer to break before __attribute__ over after a comma (which might
+	be one paren level deeper even).
+
+	* NEWS, args.c, parse.c: Accept negative values for indent options.
+
+	* regression/standard/case-br.c, regression/standard/case.c, regression/standard/scope-br.c, regression/standard/scope.c, regression/TEST, regression/case.c, regression/scope.c:
+	Added regression tests for the last two -br related bugs.
+
+	* parse.c, NEWS: Date: Thu, 11 Nov 1999 00:23:59 -0000
+	From: "ALAN BORER" <alan_borer@lineone.net>
+	Subject: Indent Bug
+
+	The code subject to a "case :" is indented relative to the case label UNLESS
+	the option "-br" is asserted, in which case the code is indented relative to
+	the "switch " instruction.
+	I show below a screen dump illustrating this :-
+
+	C:\t>indent t.c -st -npro -cli8
+	switch (x)
+	  {
+	          case 1:
+	            ++x;
+	            break;
+	  }
+
+	C:\t>indent t.c -st -npro -cli8 -br
+	switch (x) {
+	        case 1:
+	  ++x;
+	  break;
+	}
+
+	* indent.texinfo: Documentation correction for -br option.
+
+	* indent.c:
+	Allow non-ANSI `switch(i) { /*...*/ default: }' (no statement after last
+	case label).
+
+1999-11-09  Carlo Wood, Runaway  <carlo@jolan>
+
+	* indent.h, indent.texinfo, NEWS, args.c, indent.c:
+	New option --space-after-parentheses (-prs) by Emil LAURENTIU
+	<emil@la.mine.nu>. Bug fixes in args.c and documentation update by me.
+
+	* Makefile.am, configure.in: Bumped version number to 2.2.5
+	Corrected or in which aclocal, autoheader, autoconf and automake need to
+	be called.
+
 1999-11-04  Carlo Wood, Runaway  <carlo@jolan>
 
 	* NEWS: O well, lets release it.

@@ -57,7 +57,7 @@ extern int debug;
 # define BACKUP_SUFFIX_CHAR   '_'
 # define BACKUP_SUFFIX_FORMAT "%s._%d_"
 # define INDENT_SYS_READ vms_read	/* Defined in io.c */
-# ifdef VAXC
+# if defined(VAXC) || defined(__DECC)
 #  include <unixio.h>
 # endif
 #endif /* VMS */
@@ -91,4 +91,4 @@ extern int debug;
 #define RCSTAG_H(name, string) /**/
 #endif
 
-RCSTAG_H (sys, "$Id: sys.h,v 1.12 1999/08/27 14:12:15 carlo Exp $");
+RCSTAG_H (sys, "$Id: sys.h,v 1.13 1999/12/31 12:15:37 carlo Exp $");

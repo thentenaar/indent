@@ -21,7 +21,7 @@
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.17 1999/10/26 00:20:56 carlo Exp $");
+RCSTAG_CC ("$Id: parse.c,v 1.19 1999/11/12 13:43:47 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -248,7 +248,7 @@ parse (tk)
       parser_state_tos->search_brace = braces_on_struct_decl_line;
       /* indicate that following brace should be on same line */
       if (parser_state_tos->p_stack[parser_state_tos->tos] != decl
-          && parser_state_tos->block_init == 0)
+	  && parser_state_tos->block_init == 0)
 	{			/* only put one declaration onto stack */
 	  break_comma = true;	/* while in declaration, newline should be
 				   forced after comma */
@@ -315,27 +315,23 @@ parse (tk)
 	}
       else
 	{
+	  /* It is a group as part of a while, for, etc. */
+
+	  /* Only do this if there is nothing on the line */
 	  if (s_code == e_code)
+	    parser_state_tos->ind_level -= ind_size;
+
+	  /* For -bl formatting, indent by brace_indent additional spaces
+	     e.g. if (foo == bar) { <--> brace_indent spaces (in this
+	     example, 4) */
+	  if (!btype_2)
 	    {
-	      /* only do this if there is nothing on the line */
-
-	      parser_state_tos->ind_level -= ind_size;
-	      /* it is a group as part of a while, for, etc. */
-
-	      /* For -bl formatting, indent by brace_indent additional spaces
-	         e.g. if (foo == bar) { <--> brace_indent spaces (in this
-	         example, 4) */
-	      if (!btype_2)
-		{
-		  parser_state_tos->ind_level += brace_indent;
-		  parser_state_tos->i_l_follow += brace_indent;
-		}
-
-	      if (parser_state_tos->p_stack[parser_state_tos->tos] == swstmt
-		  && case_indent > 0)
-		parser_state_tos->i_l_follow += case_indent;
-	      /* for a switch, brace should be two levels out from the code */
+	      parser_state_tos->ind_level += brace_indent;
+	      parser_state_tos->i_l_follow += brace_indent;
 	    }
+
+	  if (parser_state_tos->p_stack[parser_state_tos->tos] == swstmt)
+	    parser_state_tos->i_l_follow += case_indent;
 	}
 
       inc_pstack ();

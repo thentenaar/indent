@@ -22,7 +22,7 @@
 #ifndef INDENT_INDENT_H
 #define INDENT_INDENT_H
 
-RCSTAG_H (indent, "$Id: indent.h,v 1.18 1999/08/07 12:54:31 carlo Exp $");
+RCSTAG_H (indent, "$Id: indent.h,v 1.19 1999/11/09 01:22:06 carlo Exp $");
 
 #include "lexi.h"
 #include "io.h"
@@ -214,6 +214,8 @@ extern int procnames_start_line;	/* if true, the names of procedures being
 extern int expect_output_file;	/* Means "-o" was specified. */
 extern int proc_calls_space;	/* If true, procedure calls look like:
 				   foo (bar) rather than foo(bar) */
+extern int parentheses_space;	/* If true, parentheses will look like:
+				   ( foo ) rather than (foo) */
 extern int cast_space;		/* If true, casts look like: r                           *
 				   (char *) bar rather than (char *)bar */
 
