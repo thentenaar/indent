@@ -2,15 +2,16 @@
 AUTOMAKE_OPTIONS = no-texinfo.tex
 
 bin_PROGRAMS = indent
-indent_SOURCES = args.c comments.c indent.c lexi.c parse.c backup.c globs.c io.c memcpy.c
-noinst_HEADERS = backup.h indent.h sys.h
+indent_SOURCES = args.c comments.c indent.c lexi.c parse.c backup.c globs.c io.c
+noinst_HEADERS = backup.h indent.h sys.h lexi.h args.h comments.h globs.h io.h parse.h
+
 info_TEXINFOS = indent.texinfo
 man_MANS = indent.1
 
 BUILT_SOURCES = indent.1 README ChangeLog gperf.c indent.html indent_foot.html indent_toc.html
 EXTRA_DIST = $(BUILT_SOURCES) indent.gperf ChangeLog-1990 ChangeLog-1998
 
-lexi.o: $(srcdir)/lexi.c @MAINTAINER_MODE_TRUE@ gperf.c
+lexi.o: $(srcdir)/lexi.c $(srcdir)/sys.h config.h $(srcdir)/indent.h @MAINTAINER_MODE_TRUE@ gperf.c
 	$(COMPILE) -c $(srcdir)/lexi.c
 
 gperf.c: @MAINTAINER_MODE_TRUE@ indent.gperf

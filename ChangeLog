@@ -1,3 +1,83 @@
+Sat Jul 24 12:25:23 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* NEWS: Updated
+
+Thu Jul 22 14:33:31 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* indent.c:
+	Don't put a space after the "gettext" macro's '_' and 'N_', thanks to
+	Akim Demaille for reporting this.
+
+	* io.c, io.h, indent.c:
+	Don't indent a broken line to the ind_dec column.
+
+	* Makefile.am, io.c, io.h: More bug fixes by Kaveh R. Ghazi
+
+	* comments.c, indent.c, indent.h, indent.texinfo:
+	Comments counting bug fix by Santiago Vila.
+	Removed unused variable out_coms.
+
+Sat Jul 17 19:16:23 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* args.c, args.h, backup.c, backup.h, comments.c, comments.h, globs.c, globs.h, indent.c, indent.h, io.c, io.h, lexi.c, lexi.h, parse.c, parse.h, sys.h, texinfo2man.c:
+	Code formatting (run it through indent as well).
+
+	* args.c, args.h, backup.c, backup.h, comments.c, comments.h, globs.c, globs.h, indent.c, indent.h, io.c, io.h, lexi.c, lexi.h, parse.c, parse.h, sys.h:
+	Put a semicolon after the RCS macros: indent doesn't like when the semicolon
+	is missing in the source file :/.
+
+	* NEWS: Updated
+
+	* configure.in: Put the version back at 2.2.0
+
+	* Makefile.am: Add new headers here too :/
+
+	* Attic/memcpy.c, Makefile.am, NEWS, args.c, args.h, backup.c, backup.h, comments.c, comments.h, configure.in, globs.c, globs.h, indent.c, indent.h, io.c, io.h, lexi.c, lexi.h, parse.c, parse.h, sys.h:
+	Added prototypes.
+	De-ANSI-fied some inconsistent places.
+	Removed memcpy.c.
+	Should compile with a K&R compiler again now.
+
+	Thanks to Kaveh R. Ghazi for report:
+
+	        The following are some patches I needed to get indent-2.1.1
+	working on SunOS4 using cc.  A couple of notes:
+
+	1.  You may wish to use the AM_C_PROTOTYPES macro from automake-1.4.
+	It'll define PROTOTYPES in config.h if they are available.  I had the
+	test in sys.h check for it assuming you would use it when I defined
+	the PARAMS macro to handle prototypes.
+
+	2.  The way memcpy is handled seems like overkill.  You do
+	AC_CHECK_FUNCS and define it to bcopy if not there.  You also call
+	AC_REPLACE_FUNCS.  You also hard code including memcpy.c in the
+	sources.  It seems to me that doing just the first check and defining
+	it in sys.h is enough.  Get rid of the REPLACE check and the file
+	memcpy.c file.
+
+	3.  If you insist on prototyping free() for some reason, at least
+	check whether the system already defines it for you.  I ran into
+	conflicts with SunOS defining it to "extern int free()" and your
+	source did "extern void free()" which bombed.  You can find various
+	ways of doing this, egcs-1.1.2 has a NEED_DECLARATIONS check which
+	works well.
+
+	4.  If you insist on using ANSI style function definitions, you should
+	do it everywhere and use automake's ansi2knr option for older systems.
+	Until then, I un-ANSI-fied the inconsistent places where it appeared.
+
+	* regression/standard/const.c, regression/TEST, regression/const.c, indent.c, indent.h, parse.c:
+	Detect the `const' qualifier more reliable.
+	Thanks to bug report by Lars Hecking.
+
+Fri Jul 16 01:41:24 1999  Carlo Wood, Runaway  <carlo@jolan>
+
+	* configure.in, sys.h:
+	Don't combine memmove and memcpy detection: SunOS 4.1.4 doesn't have
+	memmove, according to Nico Kadel-Garcia.
+
+	* configure.in: Bumped version number to 2.1.2
+
 Thu Jul 15 12:34:53 1999  Carlo Wood, Runaway  <carlo@jolan>
 
 	* indent.texinfo:
@@ -232,7 +312,7 @@ Sat May 29 16:43:16 1999  Carlo Wood, Runaway  <carlo@jolan>
 
 	* indent-2.spec.in: Renamed indent-1.spec.in to indent-2.spec.in.
 
-	* io.c, lexi.c, memcpy.c, parse.c, args.c, backup.c, comments.c, globs.c, indent.c:
+	* Attic/memcpy.c, io.c, lexi.c, parse.c, args.c, backup.c, comments.c, globs.c, indent.c:
 	Merged in all source changes from version 2.0.
 
 	* sys.h: Added definitions of RCSTAG_CC and RCSTAG_H.
@@ -388,10 +468,10 @@ Thu May 20 23:50:35 1999  Carlo Wood, Runaway  <carlo@jolan>
 	Renamed the old ChangeLogs: ChangeLog  -> ChangeLog-1994 and
 	                            OChangeLog -> ChangeLog-1990
 
-	* Attic/CONF-README, Attic/ChangeLog, Attic/Makefile, Attic/OChangeLog, Attic/README, Attic/configure, Attic/indent.1, Attic/indent.info, Attic/makefile.in, Attic/texinfo.tex, Attic/version.h, COPYING, NEWS, Projects, VMS-README, args.c, backup.c, backup.h, comments.c, configure.in, globs.c, gnuc-make.com, indent.gperf, indent.h, indent.texinfo, lexi.c, memcpy.c, parse.c, sys.h, vaxc-make.com:
+	* Attic/CONF-README, Attic/ChangeLog, Attic/Makefile, Attic/OChangeLog, Attic/README, Attic/configure, Attic/indent.1, Attic/indent.info, Attic/makefile.in, Attic/memcpy.c, Attic/texinfo.tex, Attic/version.h, COPYING, NEWS, Projects, VMS-README, args.c, backup.c, backup.h, comments.c, configure.in, globs.c, gnuc-make.com, indent.gperf, indent.h, indent.texinfo, lexi.c, parse.c, sys.h, vaxc-make.com:
 	Initial import of version 1.9.1
 
-	* Attic/CONF-README, Attic/ChangeLog, Attic/Makefile, Attic/OChangeLog, Attic/README, Attic/configure, Attic/indent.1, Attic/indent.info, Attic/makefile.in, Attic/texinfo.tex, Attic/version.h, COPYING, NEWS, Projects, VMS-README, args.c, backup.c, backup.h, comments.c, configure.in, globs.c, gnuc-make.com, indent.gperf, indent.h, indent.texinfo, lexi.c, memcpy.c, parse.c, sys.h, vaxc-make.com:
+	* Attic/CONF-README, Attic/ChangeLog, Attic/Makefile, Attic/OChangeLog, Attic/README, Attic/configure, Attic/indent.1, Attic/indent.info, Attic/makefile.in, Attic/memcpy.c, Attic/texinfo.tex, Attic/version.h, COPYING, NEWS, Projects, VMS-README, args.c, backup.c, backup.h, comments.c, configure.in, globs.c, gnuc-make.com, indent.gperf, indent.h, indent.texinfo, lexi.c, parse.c, sys.h, vaxc-make.com:
 	Initial revision
 
 	* indent.c, io.c: Initial import of version 1.9.1

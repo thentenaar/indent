@@ -18,8 +18,10 @@
 
 #include "sys.h"
 #include "indent.h"
+#include "parse.h"
+#include "globs.h"
 
-RCSTAG_CC("$Id")
+RCSTAG_CC ("$Id: parse.c,v 1.14 1999/07/17 19:16:23 carlo Exp $");
 
 struct parser_state *parser_state_tos;
 
@@ -35,13 +37,13 @@ init_parser ()
   parser_state_tos->p_stack_size = INITIAL_STACK_SIZE;
   parser_state_tos->p_stack
     = (enum codes *) xmalloc (INITIAL_STACK_SIZE * sizeof (enum codes));
-  parser_state_tos->il
-    = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
-  parser_state_tos->cstk
-    = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
+  parser_state_tos->il = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
+  parser_state_tos->cstk =
+    (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
   parser_state_tos->paren_indents_size = 8;
   parser_state_tos->paren_indents
-    = (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
+    =
+    (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
 
   /* Although these are supposed to grow if we reach the end,
      I can find no place in the code which does this. */
@@ -105,6 +107,7 @@ reset_parser ()
   parser_state_tos->pcase = false;
   parser_state_tos->dec_nest = 0;
   parser_state_tos->can_break = bb_none;
+  parser_state_tos->saw_double_colon = false;
 
   parser_state_tos->il[0] = 0;
   parser_state_tos->cstk[0] = 0;
@@ -142,15 +145,16 @@ inc_pstack ()
   if (++parser_state_tos->tos >= parser_state_tos->p_stack_size)
     {
       parser_state_tos->p_stack_size *= 2;
-      parser_state_tos->p_stack = (enum codes *)
-	xrealloc ((char *) parser_state_tos->p_stack,
-		  parser_state_tos->p_stack_size * sizeof (enum codes));
-      parser_state_tos->il = (int *)
-	xrealloc ((char *) parser_state_tos->il,
-		  parser_state_tos->p_stack_size * sizeof (int));
-      parser_state_tos->cstk = (int *)
-	xrealloc ((char *) parser_state_tos->cstk,
-		  parser_state_tos->p_stack_size * sizeof (int));
+      parser_state_tos->p_stack =
+	(enum codes *) xrealloc ((char *) parser_state_tos->p_stack,
+				 parser_state_tos->p_stack_size *
+				 sizeof (enum codes));
+      parser_state_tos->il =
+	(int *) xrealloc ((char *) parser_state_tos->il,
+			  parser_state_tos->p_stack_size * sizeof (int));
+      parser_state_tos->cstk =
+	(int *) xrealloc ((char *) parser_state_tos->cstk,
+			  parser_state_tos->p_stack_size * sizeof (int));
     }
 
   parser_state_tos->cstk[parser_state_tos->tos]
@@ -249,7 +253,8 @@ parse (tk)
 				   forced after comma */
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = decl;
-	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
+	  parser_state_tos->il[parser_state_tos->tos] =
+	    parser_state_tos->i_l_follow;
 
 	  if (ljust_decl)
 	    {			/* only do if we want left justified
@@ -269,15 +274,15 @@ parse (tk)
       if (parser_state_tos->p_stack[parser_state_tos->tos] == elsehead)
 	parser_state_tos->i_l_follow
 	  = parser_state_tos->il[parser_state_tos->tos];
-    case dolit:			/* 'do' */
+    case dolit:		/* 'do' */
     case forstmt:		/* for (...) */
     case casestmt:		/* case n: */
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = tk;
       parser_state_tos->il[parser_state_tos->tos]
-        = parser_state_tos->ind_level = parser_state_tos->i_l_follow;
+	= parser_state_tos->ind_level = parser_state_tos->i_l_follow;
       if (tk != casestmt)
-        parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
+	parser_state_tos->i_l_follow += ind_size;	/* subsequent statements
 							   should be indented */
       parser_state_tos->search_brace = btype_2;
       break;
@@ -292,9 +297,9 @@ parse (tk)
 	{
 	  parser_state_tos->i_l_follow += ind_size;
 	  if ((parser_state_tos->last_rw == rw_struct_like
-	      || parser_state_tos->last_rw == rw_enum)
+	       || parser_state_tos->last_rw == rw_enum)
 	      && (parser_state_tos->block_init != 1
-	          || parser_state_tos->block_init_level == 0)
+		  || parser_state_tos->block_init_level == 0)
 	      && parser_state_tos->last_token != rparen
 	      && !braces_on_struct_decl_line)
 	    {
@@ -303,10 +308,10 @@ parse (tk)
 	    }
 	}
       else if (parser_state_tos->p_stack[parser_state_tos->tos] == casestmt)
-      {
-	parser_state_tos->ind_level += case_brace_indent - ind_size;
-        parser_state_tos->i_l_follow += case_brace_indent;
-      }
+	{
+	  parser_state_tos->ind_level += case_brace_indent - ind_size;
+	  parser_state_tos->i_l_follow += case_brace_indent;
+	}
       else
 	{
 	  if (s_code == e_code)
@@ -323,11 +328,6 @@ parse (tk)
 		{
 		  parser_state_tos->ind_level += brace_indent;
 		  parser_state_tos->i_l_follow += brace_indent;
-#if 0
-		  if (parser_state_tos->p_stack[parser_state_tos->tos]
-		      == swstmt)
-		    case_ind += brace_indent;
-#endif
 		}
 
 	      if (parser_state_tos->p_stack[parser_state_tos->tos] == swstmt
@@ -339,11 +339,13 @@ parse (tk)
 
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = lbrace;
-      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level;
+      parser_state_tos->il[parser_state_tos->tos] =
+	parser_state_tos->ind_level;
       inc_pstack ();
       parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
       /* allow null stmt between braces */
-      parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
+      parser_state_tos->il[parser_state_tos->tos] =
+	parser_state_tos->i_l_follow;
       break;
 
     case whilestmt:		/* scanned while (...) */
@@ -361,7 +363,8 @@ parse (tk)
 	{			/* it is a while loop */
 	  inc_pstack ();
 	  parser_state_tos->p_stack[parser_state_tos->tos] = whilestmt;
-	  parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
+	  parser_state_tos->il[parser_state_tos->tos] =
+	    parser_state_tos->i_l_follow;
 	  parser_state_tos->i_l_follow += ind_size;
 	  parser_state_tos->search_brace = btype_2;
 	}
@@ -381,8 +384,8 @@ parse (tk)
 	  parser_state_tos->ind_level
 	    = parser_state_tos->il[parser_state_tos->tos];
 	  /* everything following should be in 1 level */
-	  parser_state_tos->i_l_follow = (parser_state_tos->ind_level
-					  + ind_size);
+	  parser_state_tos->i_l_follow =
+	    (parser_state_tos->ind_level + ind_size);
 
 	  parser_state_tos->p_stack[parser_state_tos->tos] = elsehead;
 	  /* remember if with else */
@@ -413,15 +416,15 @@ parse (tk)
 #endif
       parser_state_tos->cstk[parser_state_tos->tos]
 	= case_indent + parser_state_tos->i_l_follow;
-      if (! btype_2)
+      if (!btype_2)
 	parser_state_tos->cstk[parser_state_tos->tos] += brace_indent;
 
       /* save current case indent level */
       parser_state_tos->il[parser_state_tos->tos]
 	= parser_state_tos->i_l_follow;
       /* case labels should be one level down from switch, plus
-	 `case_indent' if any.  Then, statements should be the `ind_size'
-	 further. */
+         `case_indent' if any.  Then, statements should be the `ind_size'
+         further. */
 #if 0
       case_ind = parser_state_tos->i_l_follow + case_indent;
       parser_state_tos->i_l_follow += case_indent + ind_size;
@@ -448,7 +451,7 @@ parse (tk)
 
       /* This is a fatal error which cases the program to exit. */
     default:
-      fatal ("Unknown code to parser", 0, 0);
+      fatal ("Unknown code to parser", 0);
     }
 
   reduce ();			/* see if any reduction can be done */
@@ -538,8 +541,7 @@ reduce ()
 	      for (i = parser_state_tos->tos - 1;
 		   (parser_state_tos->p_stack[i] != stmt
 		    && parser_state_tos->p_stack[i] != stmtl
-		    && parser_state_tos->p_stack[i] != lbrace);
-		   --i);
+		    && parser_state_tos->p_stack[i] != lbrace); --i);
 	      parser_state_tos->i_l_follow = parser_state_tos->il[i];
 	      /* for the time being, we will assume that there is no else on
 	         this if, and set the indentation level accordingly. If an
@@ -562,7 +564,8 @@ reduce ()
 	    case whilestmt:
 	      /* <while> <stmt> */
 	      parser_state_tos->p_stack[--parser_state_tos->tos] = stmt;
-	      parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
+	      parser_state_tos->i_l_follow =
+		parser_state_tos->il[parser_state_tos->tos];
 	      break;
 
 	    default:		/* <anything else> <stmt> */
@@ -596,7 +599,7 @@ reduce ()
    necessary to make sure that "int foo(), bar()" gets formatted correctly
    under -bc.  */
 
-INLINE void
+void
 parse_lparen_in_decl ()
 {
   inc_pstack ();

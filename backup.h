@@ -1,4 +1,5 @@
-/* Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/* Copyright (c) 1999, Carlo Wood.  All rights reserved.
+   Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
 
    This file is subject to the terms of the GNU General Public License as
    published by the Free Software Foundation.  A copy of this license is
@@ -11,10 +12,14 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details. */
 
-RCSTAG_H(backup, "$Id")
+#ifndef INDENT_BACKUP_H
+#define INDENT_BACKUP_H
 
-/* When to make backup files.  Analagous to 'version-control'
-   in Emacs. */
+RCSTAG_H (backup, "$Id: backup.h,v 1.5 1999/07/17 19:16:23 carlo Exp $");
+
+#include "io.h"
+
+/* When to make backup files.  Analagous to 'version-control' in Emacs. */
 enum backup_mode
 {
   /* Uninitialized or indeterminate value */
@@ -40,14 +45,15 @@ struct version_control_values
   char *name;
 };
 
-/* Determine the value of `version_control' by looking in the
-   environment variable "VERSION_CONTROL".  Defaults to
-   numbered_existing. */
-extern enum backup_mode version_control_value ();
+/* Determine the value of `version_control' by looking in the environment
+   variable "VERSION_CONTROL".  Defaults to numbered_existing. */
+extern enum backup_mode version_control_value PARAMS ((void));
 
 /* Initialize information used in determining backup filenames. */
-extern void initialize_backups ();
+extern void initialize_backups PARAMS ((void));
 
 /* Make a backup copy of FILE, taking into account version-control.
    See the description at the beginning of the file for details. */
-extern void make_backup ();
+extern void make_backup PARAMS ((struct file_buffer * file));
+
+#endif /* INDENT_BACKUP_H */

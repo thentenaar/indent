@@ -16,19 +16,20 @@
 
 #include "sys.h"
 #include "indent.h"
+#include "globs.h"
 
 #include <malloc.h>
 #include <stdlib.h>
 #include <errno.h>
 
-RCSTAG_CC("$Id: globs.c,v 1.3 1999/07/09 00:11:50 carlo Exp $")
+RCSTAG_CC ("$Id: globs.c,v 1.6 1999/07/17 19:16:23 carlo Exp $");
 
 /* Like malloc but get error if no storage available.  size really should be
    size_t, but not all systems have size_t, so I hope "unsigned" will work.
    It works for GNU style machines, where it is 32 bits, and works on
    MS-DOS.  */
 
-INLINE char *
+char *
 xmalloc (size)
      unsigned size;
 {
@@ -50,7 +51,7 @@ xmalloc (size)
 
 /* Like realloc but get error if no storage available.  */
 
-INLINE char *
+char *
 xrealloc (ptr, size)
      char *ptr;
      unsigned size;
@@ -66,14 +67,14 @@ xrealloc (ptr, size)
 }
 
 void
-message (kind, string, a0, a1, a2)
+message (kind, string, a0, a1)
      char *kind, *string;
-     unsigned int *a0, *a1, *a2;
+     unsigned int *a0, *a1;
 {
   if (kind)
     fprintf (stderr, "indent: %s:%d: %s:", in_name, line_no, kind);
 
-  fprintf (stderr, string, a0, a1, a2);
+  fprintf (stderr, string, a0, a1);
   fprintf (stderr, "\n");
 }
 
@@ -81,12 +82,12 @@ message (kind, string, a0, a1, a2)
    "DEBUG" defined, abort (). */
 
 void
-fatal (string, a0, a1, a2)
+fatal (string, a0)
      char *string;
-     unsigned int *a0, *a1, *a2;
+     char *a0;
 {
   fprintf (stderr, "indent: Fatal Error: ");
-  fprintf (stderr, string, a0, a1, a2);
+  fprintf (stderr, string, a0);
   fprintf (stderr, "\n");
 
 #ifdef DEBUG

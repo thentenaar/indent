@@ -23,9 +23,11 @@
 #define strchr index
 #define strrchr rindex
 #endif
-char *strchr(), *strrchr();
+char *strchr (), *strrchr ();
 #ifndef HAVE_MEMCPY
 #define memcpy(d, s, n) bcopy ((s), (d), (n))
+#endif
+#ifndef HAVE_MEMMOVE
 #define memmove(d, s, n) bcopy ((s), (d), (n))
 #endif
 #endif
@@ -64,20 +66,20 @@ extern int debug;
 # define ONE_DOT_PER_FILENAME 1
 #endif /* __MSDOS__ */
 
-/* Donated by Carlo Wood from `libr'.  All rights reserved. */
+#ifdef PROTOTYPES
+#define PARAMS(x) x
+#else
+#define PARAMS(x) ()
+#endif
+
+/* Donated by Carlo Wood from `libcw'.  All rights reserved. */
 #if !defined(__GNUC__) || (__GNUC__ < 2) || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
 #define __attribute__(x)
 #endif
-#define RCSTAG_CC(string) static char rcs_ident[] __attribute__ ((unused)) = string;
-#define RCSTAG_H(name, string) static const char rcs_ident_##name##_h[] __attribute__ ((unused)) = string;
-
-RCSTAG_H(sys, "$Id: sys.h,v 1.6 1999/07/09 00:03:28 carlo Exp $")
-
-struct file_buffer
-{
-  char *name;
-  unsigned long size;
-  char *data;
-};
-
-extern struct file_buffer *read_file (), *read_stdin ();
+#define RCSTAG_CC(string) static char rcs_ident[] __attribute__ ((unused)) = string
+#ifdef __STDC__
+#define RCSTAG_H(name, string) static const char rcs_ident_##name##_h[] __attribute__ ((unused)) = string
+#else
+#define RCSTAG_H(name, string) /**/
+#endif
+  RCSTAG_H (sys, "$Id: sys.h,v 1.10 1999/07/17 19:16:23 carlo Exp $");

@@ -44,33 +44,23 @@
 /* Written by jla, based on code from djm (see `patch') */
 
 #include "sys.h"
-#include "backup.h"
-#include "indent.h"
 #include <ctype.h>
-
 #include <stdlib.h>
 #if defined (HAVE_UNISTD_H)
 #include <unistd.h>
 #endif
-
 #ifdef _WIN32
 #include <io.h>
 #else
 #include <fcntl.h>
 #endif
 #include <string.h>
-
-
 #ifndef isascii
 #define ISDIGIT(c) (isdigit ((unsigned char) (c)))
 #else
 #define ISDIGIT(c) (isascii (c) && isdigit (c))
 #endif
-
-RCSTAG_CC("$Id: backup.c,v 1.4 1999/06/05 13:53:11 carlo Exp $")
-
 #include <sys/types.h>
-
 #if HAVE_DIRENT_H
 # include <dirent.h>
 # define NAMLEN(dirent) strlen((dirent)->d_name)
@@ -90,6 +80,12 @@ RCSTAG_CC("$Id: backup.c,v 1.4 1999/06/05 13:53:11 carlo Exp $")
 #  define NODIR 1
 # endif
 #endif
+#include "backup.h"
+#include "indent.h"
+#include "globs.h"
+#include "io.h"
+
+RCSTAG_CC ("$Id: backup.c,v 1.7 1999/07/17 19:16:23 carlo Exp $");
 
 #ifndef NODIR
 #if defined (_POSIX_VERSION)	/* Might be defined in unistd.h.  */
@@ -115,8 +111,6 @@ RCSTAG_CC("$Id: backup.c,v 1.4 1999/06/05 13:53:11 carlo Exp $")
 #define BACKUP_SUFFIX_FORMAT "%s.~%d~"
 #endif
 
-extern void free ();
-
 /* Default backup file suffix to use */
 static char *simple_backup_suffix = BACKUP_SUFFIX_STR;
 
@@ -134,8 +128,8 @@ simple_backup_name (pathname)
 {
   char *backup_name;
 
-  backup_name = xmalloc (strlen (pathname)
-			 + strlen (simple_backup_suffix) + 2);
+  backup_name =
+    xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
   sprintf (backup_name, "%s%s", pathname, simple_backup_suffix);
   return backup_name;
 }
@@ -256,8 +250,7 @@ generate_backup_filename (version_control, pathname)
     return simple_backup_name (pathname);
 
   last_numbered_version = max_version (pathname);
-  if (version_control == numbered_existing
-      && last_numbered_version == 0)
+  if (version_control == numbered_existing && last_numbered_version == 0)
     return simple_backup_name (pathname);
 
   last_numbered_version++;
@@ -272,8 +265,7 @@ generate_backup_filename (version_control, pathname)
 
 #endif /* !NODIR */
 
-static struct version_control_values values[] =
-{
+static struct version_control_values values[] = {
   {none, "never"},		/* Don't make backups. */
   {none, "none"},		/* Ditto */
   {simple, "simple"},		/* Only simple backups */
@@ -284,8 +276,6 @@ static struct version_control_values values[] =
   {unknown, 0}			/* Initial, undefined value. */
 };
 
-
-extern char *getenv ();
 
 /* Determine the value of `version_control' by looking in the
    environment variable "VERSION_CONTROL".  Defaults to
@@ -353,7 +343,8 @@ make_backup (file)
   backup_filename = generate_backup_filename (version_control, file->name);
   if (!backup_filename)
     {
-      fprintf (stderr, "indent: Can't make backup filename of %s\n", file->name);
+      fprintf (stderr, "indent: Can't make backup filename of %s\n",
+	       file->name);
       exit (system_error);
     }
 

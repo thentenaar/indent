@@ -24,19 +24,16 @@
 
 #include "sys.h"
 #include "indent.h"
+#include "args.h"
+#include "globs.h"
 
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
-RCSTAG_CC("$Id")
+RCSTAG_CC ("$Id: args.c,v 1.15 1999/07/17 19:16:23 carlo Exp $");
 
 int else_endif_col;
-
-extern char *in_name;
-
-char *getenv ();
-void usage ();
 
 /* profile types */
 enum profile
@@ -86,14 +83,8 @@ static int exp_di = 0;
 static int exp_dj = 0;
 static int exp_d = 0;
 static int exp_eei = 0;
-static int exp_fbc = 0;
-static int exp_fbx = 0;
-static int exp_fb = 0;
 static int exp_fc1 = 0;
 static int exp_fca = 0;
-static int exp_fc = 0;
-static int exp_fk = 0;
-static int exp_fs = 0;
 static int exp_gnu = 0;
 static int exp_hnl = 0;
 static int exp_orig = 0;
@@ -202,8 +193,7 @@ struct pro
 
 #ifdef BERKELEY_DEFAULTS
 /* Settings for original defaults */
-struct pro pro[] =
-{
+struct pro pro[] = {
   {"version", PRO_PRSTRING, 0, ONOFF_NA, (int *) VERSION, &exp_version},
   {"v", PRO_BOOL, false, ON, &verbose, &exp_v},
   {"ts", PRO_INT, 8, ONOFF_NA, &tabsize, &exp_ts},
@@ -249,7 +239,7 @@ struct pro pro[] =
   {"lps", PRO_BOOL, false, ON, &leave_preproc_space, &exp_lps},
   {"lp", PRO_BOOL, true, ON, &lineup_to_parens, &exp_lp},
   {"lc", PRO_INT, DEFAULT_RIGHT_COMMENT_MARGIN,
-     ONOFF_NA, &comment_max_col, &exp_lc},
+   ONOFF_NA, &comment_max_col, &exp_lc},
   {"l", PRO_INT, DEFAULT_RIGHT_MARGIN, ONOFF_NA, &max_col, &exp_l},
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0-ncdb\0\
@@ -301,8 +291,7 @@ struct pro pro[] =
 #else /* Default to GNU style */
 
 /* Changed to make GNU style the default. */
-struct pro pro[] =
-{
+struct pro pro[] = {
   {"version", PRO_PRSTRING, 0, ONOFF_NA, (int *) VERSION, &exp_version},
   {"v", PRO_BOOL, false, ON, &verbose, &exp_v},
   {"ts", PRO_INT, 8, ONOFF_NA, &tabsize, &exp_ts},
@@ -352,7 +341,7 @@ struct pro pro[] =
   {"lps", PRO_BOOL, false, ON, &leave_preproc_space, &exp_lps},
   {"lp", PRO_BOOL, true, ON, &lineup_to_parens, &exp_lp},
   {"lc", PRO_INT, DEFAULT_RIGHT_COMMENT_MARGIN,
-     ONOFF_NA, &comment_max_col, &exp_lc},
+   ONOFF_NA, &comment_max_col, &exp_lc},
   {"l", PRO_INT, DEFAULT_RIGHT_MARGIN, ONOFF_NA, &max_col, &exp_l},
   {"kr", PRO_SETTINGS, 0, ONOFF_NA,
    (int *) "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0\
@@ -410,8 +399,7 @@ struct long_option_conversion
   char *short_name;
 };
 
-struct long_option_conversion option_conversions[] =
-{
+struct long_option_conversion option_conversions[] = {
   {"version", "version"},
   {"verbose", "v"},
   {"usage", "h"},
@@ -507,7 +495,7 @@ struct long_option_conversion option_conversions[] =
    argument.  Compare the two, returning true if they are equal, and if they
    are equal set *START_PARAM to point to the argument in S2.  */
 
-INLINE static int
+static int
 eqin (s1, s2, start_param)
      char *s1;
      char *s2;
@@ -523,7 +511,7 @@ eqin (s1, s2, start_param)
 }
 
 /* Set the defaults. */
-INLINE void
+void
 set_defaults ()
 {
   struct pro *p;
@@ -534,15 +522,14 @@ set_defaults ()
 }
 
 /* Stings which can prefix an option, longest first. */
-static char *option_prefixes[] =
-{
+static char *option_prefixes[] = {
   "--",
   "-",
   "+",
   0
 };
 
-INLINE static int
+static int
 option_prefix (arg)
      char *arg;
 {
@@ -565,8 +552,6 @@ option_prefix (arg)
 
   return 0;
 }
-
-extern void addkey (char *key, enum rwcodes val);
 
 /* Process an option ARG (e.g. "-l60").  PARAM is a possible value
    for ARG, if PARAM is nonzero.  EXPLICT should be nonzero iff the
@@ -647,7 +632,7 @@ found:
 	  exit (invocation_error);
 
 	case PRO_FUNCTION:
-	  ((void(*)()) p->p_obj) ();
+	  ((void (*)()) p->p_obj) ();
 	  break;
 
 	case PRO_SETTINGS:
@@ -703,7 +688,7 @@ found:
 	  if (!isdigit (*param_start))
 	    {
 	      fprintf (stderr,
-		     "indent: option ``%s'' requires a numeric parameter\n",
+		       "indent: option ``%s'' requires a numeric parameter\n",
 		       option - 1);
 	      exit (invocation_error);
 	    }
@@ -737,9 +722,7 @@ scan_profile (f)
   while (1)
     {
       for (p = next; ((i = getc (f)) != EOF
-		      && (*p = i) > ' '
-		      && i != '/'
-		      && p < next + BUFSIZ);
+		      && (*p = i) > ' ' && i != '/' && p < next + BUFSIZ);
 	   ++p);
 
       if (i == '/')
@@ -748,7 +731,9 @@ scan_profile (f)
 	  switch (i)
 	    {
 	    case '/':
-	      do i = getc (f); while (i != EOF && i != EOL);
+	      do
+		i = getc (f);
+	      while (i != EOF && i != EOL);
 	      if (i == EOF)
 		return;
 	      continue;
@@ -756,13 +741,15 @@ scan_profile (f)
 	    case '*':
 	      do
 		{
-		  do i = getc (f); while (i != EOF && i != '*');
+		  do
+		    i = getc (f);
+		  while (i != EOF && i != '*');
 		  if (i == '*')
 		    i = getc (f);
 		  if (i == EOF)
 		    {
-		      WARNING ("Profile contains unpalatable characters",
-			       0, 0);
+		      WARNING ("Profile contains unpalatable characters", 0,
+			       0);
 		      return;
 		    }
 		}
@@ -819,8 +806,6 @@ scan_profile (f)
 #ifndef PROFILE_FORMAT
 #define PROFILE_FORMAT "%s/%s"
 #endif
-
-extern void free ();
 
 /* set_profile looks for ./.indent.pro or $HOME/.indent.pro, in
    that order, and reads the options given in that file.  Return the

@@ -1,3 +1,17 @@
+Release notes for GNU indent version 2.2, July 1999
+
+* Indent was detecting `const' errornous as function qualifier
+  in some cases. resulting in
+
+  void foo(fmt)
+   constchar *fmt;
+  {
+  }
+
+* Compiles again with old K&R compilers.
+
+* The `GetText' macros `N_' and `_' do not get a space appended anymore.
+
 Release notes for GNU indent version 2.1, June 1999
 
 * Merged in the changes made by Joseph Arceneaux from 1.9.1 -> 2.0.
