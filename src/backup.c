@@ -1,4 +1,38 @@
-/* Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/** \file
+ * Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+ * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
+ * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc. 
+ *   All rights reserved.<br>
+ *
+ * Copyright (c) 1980, 1993
+ *	 The Regents of the University of California.<br>
+ * Copyright (c) 1976 Board of Trustees of the University of Illinois.<br>
+ * Copyright (c) 1985 Sun Microsystems, Inc.
+ *   All rights reserved.<br>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * - 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * - 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * - 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.<br>
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  *
  * This file is subject to the terms of the GNU General Public License as
  * published by the Free Software Foundation.  A copy of this license is
@@ -44,11 +78,13 @@
  * Added, october 1999 (by Chris F.A. Johnson):
  *
  * If VERSION_WIDTH is set, then it controls zero padding of a numbered
- * suffix. */
-
-/* Written by jla, based on code from djm (see `patch') */
+ * suffix.
+ *
+ * Written by jla, based on code from djm (see `patch')
+ */
 
 #include "sys.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 
@@ -111,10 +147,10 @@
 
 #include "indent.h"
 #include "globs.h"
-#include "io.h"
+#include "code_io.h"
 #include "backup.h"
 
-RCSTAG_CC ("$Id: backup.c,v 1.21 2002/08/04 17:08:41 david Exp $");
+RCSTAG_CC ("$Id$");
 
 #ifndef NODIR
    #if defined (_POSIX_VERSION) /* Might be defined in unistd.h.  */
@@ -140,7 +176,9 @@ RCSTAG_CC ("$Id: backup.c,v 1.21 2002/08/04 17:08:41 david Exp $");
    #define BACKUP_SUFFIX_FORMAT "%s.~%0*d~"
 #endif
 
-/* Default backup file suffix to use */
+/**
+ * Default backup file suffix to use
+ */
 static char   * simple_backup_suffix = BACKUP_SUFFIX_STR;
 
 /* What kinds of backup files to make -- see
@@ -149,11 +187,13 @@ static char   * simple_backup_suffix = BACKUP_SUFFIX_STR;
 backup_mode_ty  version_control = unknown;
 int             version_width = 1;
 
-/* Construct a simple backup name for PATHNAME by appending
-   the value of `simple_backup_suffix'. */
+/**
+ * Construct a simple backup name for PATHNAME by appending
+ * the value of `simple_backup_suffix'.
+ */
 
 static char * simple_backup_name (
-                    char *pathname)
+   char *pathname)
 {
     char *backup_name;
 
@@ -163,8 +203,10 @@ static char * simple_backup_name (
 }
 
 #ifndef NODIR
-/* If DIRENTRY is a numbered backup version of file BASE, return
- * that number.  BASE_LENGTH is the string length of BASE. */
+/**
+ * If DIRENTRY is a numbered backup version of file BASE, return
+ * that number.  BASE_LENGTH is the string length of BASE.
+ */
 
 static int version_number(
     char * base,
@@ -175,14 +217,14 @@ static int version_number(
     char * p = NULL;
 
     version = 0;
-  
+
     if (!strncmp (base, direntry, base_length) && ISDIGIT (direntry[base_length + 2]))
     {
         for (p = &direntry[base_length + 2]; ISDIGIT (*p); ++p)
         {
             version = version * 10 + *p - '0';
         }
-        
+
         if (p[0] != BACKUP_SUFFIX_CHAR || p[1])
         {
             version = 0;
@@ -193,53 +235,57 @@ static int version_number(
 }
 
 
-/* Return the highest version of file FILENAME in directory
- * DIRNAME.  Return 0 if there are no numbered versions. */
+/**
+ * Return the highest version of file FILENAME in directory
+ * DIRNAME.  Return 0 if there are no numbered versions.
+ */
 
 static int highest_version (
      char * filename,
      char * dirname)
 {
-    DIR           * dirp = NULL;
+    DIR           * dirp = opendir (dirname);
     struct dirent * dp = NULL;
     int             highest_version;
-    int             this_version;
-    int             file_name_length;
-    
-    dirp = opendir (dirname);
-    
+
     if (!dirp)
     {
-        return 0;
+        highest_version = 0;
     }
-
-    highest_version = 0;
-    file_name_length = strlen (filename);
-
-    while ((dp = readdir (dirp)) != 0)
+    else
     {
-        if (!REAL_DIR_ENTRY (dp) || NAMLEN (dp) <= file_name_length + 2)
-        {
-            continue;
-        }
-        
+       int             this_version;
+       int             file_name_length = strlen(filename);
 
-        this_version = version_number (filename, dp->d_name, file_name_length);
-      
-        if (this_version > highest_version)
-        {
-            highest_version = this_version;
-        }
+       highest_version = 0;
+
+       while ((dp = readdir (dirp)) != 0)
+       {
+          if (!REAL_DIR_ENTRY (dp) || NAMLEN (dp) <= file_name_length + 2)
+          {
+             continue;
+          }
+
+
+          this_version = version_number (filename, dp->d_name, file_name_length);
+
+          if (this_version > highest_version)
+          {
+             highest_version = this_version;
+          }
+       }
+
+       closedir (dirp);
     }
 
-    closedir (dirp);
-    
     return highest_version;
 }
 
 
-/* Return the highest version number for file PATHNAME.  If there
-   are no backups, or only a simple backup, return 0. */
+/**
+ * Return the highest version number for file PATHNAME.  If there
+ * are no backups, or only a simple backup, return 0.
+ */
 
 static int max_version (
     char * pathname)
@@ -250,7 +296,7 @@ static int max_version (
     int    version;
 
     p = pathname + pathlen - 1;
-    
+
     while ((p > pathname) && (*p != '/'))
     {
         p--;
@@ -267,17 +313,21 @@ static int max_version (
         dirname[dirlen] = '\0';
         version = highest_version (filename, dirname);
         free (dirname);
-        return version;
+    }
+    else
+    {
+       filename = pathname;
+       version = highest_version (filename, ".");
     }
 
-    filename = pathname;
-    version = highest_version (filename, ".");
     return version;
 }
 
 
-/* Generate a backup filename for PATHNAME, dependent on the
- * value of VERSION_CONTROL. */
+/**
+ * Generate a backup filename for PATHNAME, dependent on the
+ * value of VERSION_CONTROL.
+ */
 
 static char * generate_backup_filename (
     backup_mode_ty   version_control,
@@ -288,31 +338,35 @@ static char * generate_backup_filename (
 
     if (version_control == none)
     {
-        return 0;
+        backup_name = NULL;
     }
-
-    if (version_control == simple)
+    else
     {
-        return simple_backup_name (pathname);
-    }
+       if (version_control == simple)
+       {
+           backup_name = simple_backup_name (pathname);
+       }
+       else
+       {
+          last_numbered_version = max_version (pathname);
 
-    last_numbered_version = max_version (pathname);
-    
-    if ((version_control == numbered_existing) && (last_numbered_version == 0))
-    {
-        return simple_backup_name (pathname);
-    }
+          if ((version_control == numbered_existing) && (last_numbered_version == 0))
+          {
+             backup_name = simple_backup_name (pathname);
+          }
+          else
+          {
+             last_numbered_version++;
+             backup_name = xmalloc (strlen (pathname) + 16);
 
-    last_numbered_version++;
-    backup_name = xmalloc (strlen (pathname) + 16);
-  
-    if (!backup_name)
-    {
-        return 0;
+             if (backup_name)
+             {
+                sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname,
+                         version_width, (int) last_numbered_version);
+             }
+          }
+       }
     }
-
-    sprintf (backup_name, BACKUP_SUFFIX_FORMAT, pathname,
-             version_width, (int) last_numbered_version);
 
     return backup_name;
 }
@@ -321,27 +375,29 @@ static char * generate_backup_filename (
 
 static version_control_values_ty values[] =
 {
-    {none,              "never"},    /* Don't make backups. */
-    {none,              "none"},     /* Ditto */
-    {simple,            "simple"},   /* Only simple backups */
-    {numbered_existing, "existing"}, /* Numbered if they already exist */
-    {numbered_existing, "nil"},      /* Ditto */
-    {numbered,          "numbered"}, /* Numbered backups */
-    {numbered,          "t"},        /* Ditto */
-    {unknown,           0}           /* Initial, undefined value. */
+    {none,              "never"},    /*!< Don't make backups. */
+    {none,              "none"},     /*!< Ditto */
+    {simple,            "simple"},   /*!< Only simple backups */
+    {numbered_existing, "existing"}, /*!< Numbered if they already exist */
+    {numbered_existing, "nil"},      /*!< Ditto */
+    {numbered,          "numbered"}, /*!< Numbered backups */
+    {numbered,          "t"},        /*!< Ditto */
+    {unknown,           0}           /*!< Initial, undefined value. */
 };
 
 
-/* Determine the value of `version_control' by looking in the
-   environment variable "VERSION_CONTROL".  Defaults to
-   numbered_existing. */
+/**
+ * Determine the value of `version_control' by looking in the
+ * environment variable "VERSION_CONTROL".  Defaults to
+ * numbered_existing.
+ */
 
 backup_mode_ty version_control_value(void)
 {
     char                      * version = getenv("VERSION_CONTROL");
     version_control_values_ty * v;
     backup_mode_ty              ret = unknown;
-    
+
     if ((version == NULL) || (*version == 0))
     {
         ret = numbered_existing;
@@ -349,7 +405,7 @@ backup_mode_ty version_control_value(void)
     else
     {
         v = &values[0];
-    
+
         while (v->name)
         {
             if (strcmp(version, v->name) == 0)
@@ -363,14 +419,16 @@ backup_mode_ty version_control_value(void)
             }
         }
     }
-    
+
     return ret;
 }
 
 
-/* Initialize information used in determining backup filenames. */
+/**
+ * Initialize information used in determining backup filenames.
+ */
 
-void set_version_width (void)
+static void set_version_width(void)
 {
     char *v = getenv ("VERSION_WIDTH");
 
@@ -378,14 +436,18 @@ void set_version_width (void)
     {
         version_width = atoi (v);
     }
-  
+
     if (version_width > 16)
     {
         version_width = 16;
     }
 }
 
-void initialize_backups (void)
+/**
+ *
+ */
+
+void initialize_backups(void)
 {
     char *v = getenv ("SIMPLE_BACKUP_SUFFIX");
 
@@ -393,12 +455,12 @@ void initialize_backups (void)
     {
         simple_backup_suffix = v;
     }
-  
+
 #ifdef NODIR
     version_control = simple;
 #else /* !NODIR */
     version_control = version_control_value ();
-    
+
     if (version_control == unknown)
     {
         fprintf (stderr, _("indent:  Strange version-control value\n"));
@@ -406,15 +468,17 @@ void initialize_backups (void)
         version_control = numbered_existing;
     }
 #endif /* !NODIR */
-    
+
     set_version_width ();
 }
 
 
-/* Make a backup copy of FILE, taking into account version-control.
-   See the description at the beginning of the file for details. */
+/**
+ * Make a backup copy of FILE, taking into account version-control.
+ * See the description at the beginning of the file for details.
+ */
 
-void make_backup (
+void make_backup(
     file_buffer_ty     * file,
     const struct stat  * file_stats)
 {
@@ -424,46 +488,46 @@ void make_backup (
 
     if (version_control == none)
     {
-        return;
     }
-
-    backup_filename = generate_backup_filename (version_control, file->name);
-    
-    if (!backup_filename)
+    else
     {
-        fprintf (stderr, _("indent: Can't make backup filename of %s\n"), file->name);
-        exit (system_error);
-    }
+       backup_filename = generate_backup_filename (version_control, file->name);
 
-    bf = fopen (backup_filename, "w");
-    
-    if (!bf)
-    {
-        fatal (_("Can't open backup file %s"), backup_filename);
-    }
-  
-    size = fwrite (file->data, file->size, 1, bf);
-    
-    if (size != 1)
-    {
-        fatal (_("Can't write to backup file %s"), backup_filename);
-    }
-  
+       if (!backup_filename)
+       {
+          fprintf (stderr, _("indent: Can't make backup filename of %s\n"), file->name);
+          exit (system_error);
+       }
 
-    fclose (bf);
+       bf = fopen (backup_filename, "w");
+
+       if (!bf)
+       {
+          fatal (_("Can't open backup file %s"), backup_filename);
+       }
+
+       size = fwrite (file->data, file->size, 1, bf);
+
+       if (size != 1)
+       {
+          fatal (_("Can't write to backup file %s"), backup_filename);
+       }
+
+       fclose (bf);
 #ifdef PRESERVE_MTIME
-    {
-        struct utimbuf buf;
+       {
+          struct utimbuf buf;
 
-        buf.actime = time (NULL);
-        buf.modtime = file_stats->st_mtime;
-        
-        if (utime (backup_filename, &buf) != 0)
-        {
-            WARNING (_("Can't preserve modification time on backup file %s"), backup_filename, 0);
-        }
-    }
+          buf.actime = time (NULL);
+          buf.modtime = file_stats->st_mtime;
+
+          if (utime (backup_filename, &buf) != 0)
+          {
+             WARNING (_("Can't preserve modification time on backup file %s"), backup_filename, 0);
+          }
+       }
 #endif
-    
-    free (backup_filename);
+
+       free (backup_filename);
+    }
 }

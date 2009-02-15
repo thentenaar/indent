@@ -1,8 +1,9 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/** \file
+ * Copyright (c) 1999 Carlo Wood.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,32 +19,34 @@
 #ifndef INDENT_LEXI_H
 #define INDENT_LEXI_H
 
-RCSTAG_H (lexi, "$Id: lexi.h,v 1.7 2002/02/26 20:38:27 david Exp $");
+#include "sys.h" /* for RCSTAG_H */
+
+RCSTAG_H (lexi, "$Id$");
 
 typedef enum rwcodes
 {
   rw_none,
-  rw_operator,			/* For C++ operator overloading. */
+  rw_operator,			/*!< For C++ operator overloading. */
   rw_break,
   rw_switch,
   rw_case,
-  rw_struct_like,		/* struct, union */
+  rw_struct_like,		/*!< struct, union */
   rw_enum,
   rw_decl,
-  rw_sp_paren,			/* if, while, for */
-  rw_sp_nparen,			/* do */
-  rw_sp_else,			/* else */
+  rw_sp_paren,			/*!< if, while, for */
+  rw_sp_nparen,			/*!< do */
+  rw_sp_else,			/*!< else */
   rw_sizeof,
   rw_return
 } rwcodes_ty;
 
 typedef enum codes
 {
-  code_eof = 0,			/* end of file */
+  code_eof = 0,			/*!< end of file */
   newline,
-  lparen,			/* '(' or '['.  Also '{' in an
+  lparen,			/*!< '(' or '['.  Also '{' in an
 				   initialization.  */
-  rparen,			/* ')' or ']'.  Also '}' in an
+  rparen,			/*!< ')' or ']'.  Also '}' in an
 				   initialization.  */
   start_token,
   unary_op,
@@ -53,29 +56,29 @@ typedef enum codes
   question,
   casestmt,
   colon,
-  doublecolon,			/* For C++ class methods. */
+  doublecolon,			/*!< For C++ class methods. */
   semicolon,
   lbrace,
   rbrace,
 
-  ident,			/* string or char literal,
+  ident,			/*!< string or char literal,
 				   identifier, number */
 
-  overloaded,			/* For C++ overloaded operators (like +) */
+  overloaded,			/*!< For C++ overloaded operators (like +) */
   cpp_operator,
 
   comma,
-  comment,			/* A "slash-star" comment */
-  cplus_comment,		/* A C++ "slash-slash" */
+  comment,			/*!< A "slash-star" comment */
+  cplus_comment,		/*!< A C++ "slash-slash" */
   swstmt,
-  preesc,			/* '#'.  */
+  preesc,			/*!< '#'.  */
 
   form_feed,
   decl,
 
-  sp_paren,			/* if, for, or while token */
-  sp_nparen,			/* do */
-  sp_else,			/* else */
+  sp_paren,			/*!< if, for, or while token */
+  sp_nparen,			/*!< do */
+  sp_else,			/*!< else */
   ifstmt,
   elseifstmt,
   whilestmt,
@@ -90,13 +93,16 @@ typedef enum codes
   ifhead,
 
   elsehead,
-  struct_delim,			/* '.' or "->" */
+  struct_delim,			/*!< '.' or "->" */
 
-  attribute,			/* The '__attribute__' qualifier */
+  attribute,			/*!< The '__attribute__' qualifier */
   number_of_codes
 } codes_ty;
 
-extern void addkey (char *key, rwcodes_ty val);
-extern codes_ty lexi (void);
+extern void addkey(
+   char *key, 
+   rwcodes_ty val);
+
+extern codes_ty lexi(void);
 
 #endif /* INDENT_LEXI_H */

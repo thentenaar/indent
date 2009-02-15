@@ -4,7 +4,7 @@ src/globs.c
 src/globs.h
 src/indent.c
 src/indent.h
-src/io.c
+src/code_io.c
 src/lexi.c
 src/output.c
 src/parse.c

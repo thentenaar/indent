@@ -1,8 +1,9 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/** \file
+ * Copyright (c) 1999 Carlo Wood.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,19 +19,32 @@
 #ifndef INDENT_GLOBS_H
 #define INDENT_GLOBS_H
 
-RCSTAG_H (globs, "$Id: globs.h,v 1.8 2002/03/15 07:48:45 david Exp $");
+#include "sys.h" /* for RCSTAG_H */
+RCSTAG_H (globs, "$Id$");
 
-/* Warning messages:  indent continues */
-#define WARNING(s,a,b) \
+/* *Warning messages:  indent continues */
+#define WARNING(s, a, b) \
     message (_("Warning"), s, (unsigned int *)(a), (unsigned int *)(b))
 
-/* Error messages: indent stops processing the current file. */
-#define ERROR(s,a,b) \
+/** Error messages: indent stops processing the current file. */
+#define ERROR(s, a, b) \
     message (_("Error"), s, (unsigned int *)(a), (unsigned int *)(b))
 
-extern char *xmalloc (unsigned int size);
-extern char *xrealloc (char *ptr, unsigned int size);
-extern void fatal (const char *string, const char *a0);
-extern void message (char *kind, char *string, unsigned int *a0, unsigned int *a1);
+extern char *xmalloc(
+   unsigned int size);
+
+extern char *xrealloc(
+   char *ptr, 
+   unsigned int size);
+
+extern void fatal(
+   const char *string, 
+   const char *a0);
+
+extern void message(
+   char *kind, 
+   char *string, 
+   unsigned int *a0, 
+   unsigned int *a1);
 
 #endif /* INDENT_GLOBS_H */

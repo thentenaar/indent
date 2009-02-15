@@ -1,36 +1,67 @@
-/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
- * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
- * Copyright (c) 1985 Sun Microsystems, Inc. Copyright (c) 1980 The Regents
- * of the University of California. Copyright (c) 1976 Board of Trustees of
- * the University of Illinois. All rights reserved.
+/** \file
+ * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.<br>
+ * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
+ * Copyright (c) 1985 Sun Microsystems, Inc. <br>
+ * Copyright (c) 1980 The Regents of the University of California.<br>
+ * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.<br>
  *
- * Redistribution and use in source and binary forms are permitted provided
- * that the above copyright notice and this paragraph are duplicated in all
- * such forms and that any documentation, advertising materials, and other
- * materials related to such distribution and use acknowledge that the
- * software was developed by the University of California, Berkeley, the
- * University of Illinois, Urbana, and Sun Microsystems, Inc.  The name of
- * either University or Sun Microsystems may not be used to endorse or
- * promote products derived from this software without specific prior written
- * permission. THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
- * OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. */
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * - 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * - 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * - 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.<br>
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This file is subject to the terms of the GNU General Public License as
+ * published by the Free Software Foundation.  A copy of this license is
+ * included with this software distribution in the file COPYING.  If you
+ * do not have a copy, you may obtain a copy by writing to the Free
+ * Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
 
 #include "sys.h"
 #include "indent.h"
 #include "parse.h"
 #include "globs.h"
 
-RCSTAG_CC ("$Id: parse.c,v 1.31 2002/08/04 17:08:41 david Exp $");
+RCSTAG_CC ("$Id$");
 
 parser_state_ty *parser_state_tos = NULL;
 
 #define INITIAL_BUFFER_SIZE 1000
 #define INITIAL_STACK_SIZE 2
 
-void init_parser (void)
+/**
+ *
+ */
+
+extern void init_parser(void)
 {
     parser_state_tos = (parser_state_ty *) xmalloc (sizeof (parser_state_ty));
+
     /* GDB_HOOK_parser_state_tos */
     parser_state_tos->p_stack_size  = INITIAL_STACK_SIZE;
     parser_state_tos->p_stack       = (codes_ty *) xmalloc (INITIAL_STACK_SIZE * sizeof (codes_ty));
@@ -41,7 +72,7 @@ void init_parser (void)
 
     /* Although these are supposed to grow if we reach the end,
      * I can find no place in the code which does this. */
-  
+
     combuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
     labbuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
     codebuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
@@ -52,15 +83,18 @@ void init_parser (void)
 
     di_stack_alloc = 2;
     di_stack = (int *) xmalloc (di_stack_alloc * sizeof (*di_stack));
-
 }
 
-void reset_parser (void)
+/**
+ *
+ */
+
+extern void reset_parser(void)
 {
     parser_state_tos->next             = 0;
     parser_state_tos->tos              = 0;
-    parser_state_tos->p_stack[0]       = stmt;        /* this is the parser's stack */
-    parser_state_tos->last_nl          = true;        /* this is true if the last thing
+    parser_state_tos->p_stack[0]       = stmt;    /*!< this is the parser's stack */
+    parser_state_tos->last_nl          = true;    /*!< this is true if the last thing
                                                    * scanned was a newline */
     parser_state_tos->last_token       = start_token;
     parser_state_tos->last_saw_nl      = false;
@@ -124,19 +158,21 @@ void reset_parser (void)
     break_comma = false;
     bp_save = 0;
     be_save = 0;
-  
+
     if (settings.tabsize <= 0)
     {
         settings.tabsize = 1;
     }
-  
+
     prefix_blankline_requested = 0;
 }
 
-/* like ++parser_state_tos->tos but checks for stack overflow and extends
- * stack if necessary.  */
+/**
+ * like ++parser_state_tos->tos but checks for stack overflow and extends
+ * stack if necessary.
+  */
 
-int inc_pstack (void)
+extern int inc_pstack(void)
 {
     if (++parser_state_tos->tos >= parser_state_tos->p_stack_size)
     {
@@ -155,9 +191,17 @@ int inc_pstack (void)
 }
 
 #ifdef DEBUG
+/**
+ *
+ */
+
 static char **debug_symbol_strings;
 
-void debug_init (void)
+/**
+ *
+ */
+
+extern void debug_init(void)
 {
     int size = ((int) number_of_codes) * sizeof (char *);
 
@@ -209,8 +253,12 @@ void debug_init (void)
 
 #endif
 
-exit_values_ty parse (
-     codes_ty tk)               /* the code for the construct scanned */
+/**
+ *
+ */
+
+extern exit_values_ty parse (
+   codes_ty tk)               /*!< the code for the construct scanned */
 {
     int i;
 
@@ -234,7 +282,7 @@ exit_values_ty parse (
         /* true if we have an if without an else */
 
         /* apply the if(..) stmt ::= stmt reduction */
-        
+
         parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
         reduce ();              /* see if this allows any reduction */
     }
@@ -249,7 +297,7 @@ exit_values_ty parse (
             parser_state_tos->search_brace = settings.braces_on_struct_decl_line;
 
             /* indicate that following brace should be on same line */
-            
+
             if ((parser_state_tos->p_stack[parser_state_tos->tos] != decl) &&
                 (parser_state_tos->block_init == 0))
             {
@@ -274,7 +322,7 @@ exit_values_ty parse (
                             parser_state_tos->ind_level += settings.ind_size;
                         }
                     }
-                    
+
                     parser_state_tos->i_l_follow = parser_state_tos->ind_level;
                 }
             }
@@ -285,7 +333,7 @@ exit_values_ty parse (
             {
                 parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
             }
-            
+
         case dolit:             /* 'do' */
         case forstmt:           /* for (...) */
         case casestmt:          /* case n: */
@@ -293,13 +341,13 @@ exit_values_ty parse (
             parser_state_tos->p_stack[parser_state_tos->tos] = tk;
             parser_state_tos->ind_level                 = parser_state_tos->i_l_follow;
             parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level;
-            
+
             if (tk != casestmt)
             {
                 parser_state_tos->i_l_follow += settings.ind_size;       /* subsequent statements
                                                                  * should be indented */
             }
-            
+
             parser_state_tos->search_brace = settings.btype_2;
             break;
 
@@ -314,7 +362,7 @@ exit_values_ty parse (
             else if (parser_state_tos->p_stack[parser_state_tos->tos] == decl)
             {
                 parser_state_tos->i_l_follow += settings.ind_size;
-                
+
                 if ( ( (parser_state_tos->last_rw == rw_struct_like) ||
                        (parser_state_tos->last_rw == rw_enum)) &&
                      ( (parser_state_tos->block_init != 1) ||
@@ -344,7 +392,7 @@ exit_values_ty parse (
                 /* For -bl formatting, indent by settings.brace_indent additional spaces
                  * e.g. if (foo == bar) { <--> settings.brace_indent spaces (in this
                  * example, 4) */
-                
+
                 if (!settings.btype_2)
                 {
                     parser_state_tos->ind_level += settings.brace_indent;
@@ -360,12 +408,12 @@ exit_values_ty parse (
             inc_pstack ();
             parser_state_tos->p_stack[parser_state_tos->tos] = lbrace;
             parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->ind_level;
-            
+
             inc_pstack ();
             parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
-            
+
             /* allow null stmt between braces */
-            
+
             parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
             break;
 
@@ -402,7 +450,7 @@ exit_values_ty parse (
             {
                 /* indentation for else should be same as for if */
                 parser_state_tos->ind_level = parser_state_tos->il[parser_state_tos->tos];
-                
+
                 /* everything following should be in 1 level */
                 parser_state_tos->i_l_follow = (parser_state_tos->ind_level + settings.ind_size);
 
@@ -437,11 +485,11 @@ exit_values_ty parse (
 
             /* save current case indent level */
             parser_state_tos->il[parser_state_tos->tos] = parser_state_tos->i_l_follow;
-            
+
             /* case labels should be one level down from switch, plus
              * `settings.case_indent' if any.  Then, statements should be the `settings.ind_size'
              * further. */
-            
+
             parser_state_tos->i_l_follow += settings.ind_size;
             parser_state_tos->search_brace = settings.btype_2;
             break;
@@ -449,7 +497,7 @@ exit_values_ty parse (
         case semicolon:         /* this indicates a simple stmt */
             break_comma = false;        /* turn off flag to break after commas in a
                                          * declaration */
-            
+
             if (parser_state_tos->p_stack[parser_state_tos->tos] == dostmt)
             {
                 parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
@@ -473,16 +521,16 @@ exit_values_ty parse (
     if (debug)
     {
         printf ("\n");
-        
+
         printf (_("ParseStack [%d]:\n"), (int) parser_state_tos->p_stack_size);
-        
+
         for (i = 1; i <= parser_state_tos->tos; ++i)
         {
             printf (_("  stack[%d] =>   stack: %d   ind_level: %d\n"),
                     (int) i, (int) parser_state_tos->p_stack[i],
                     (int) parser_state_tos->il[i]);
         }
-        
+
         printf ("\n");
     }
 #endif
@@ -490,43 +538,41 @@ exit_values_ty parse (
     return total_success;
 }
 
-/* NAME: reduce
+/**
+ * NAME: reduce
  *
  * FUNCTION: Implements the reduce part of the parsing algorithm
  *
  * ALGORITHM: The following reductions are done.  Reductions are repeated until
  *  no more are possible.
- *  
- *  Old TOS              New TOS <stmt> <stmt>           <stmtl> <stmtl> <stmt>
- *     <stmtl> do <stmt>                 dohead <dohead> <whilestmt>
- *     <dostmt> if <stmt>                "ifstmt" switch <stmt>          <stmt>
- *     decl <stmt>               <stmt> "ifelse" <stmt>          <stmt> for
- *     <stmt>                    <stmt> while <stmt>                     <stmt>
- *     "dostmt" while            <stmt>
- *  
+ *
+ *  Old TOS              New TOS [stmt] [stmt]           [stmtl] [stmtl] [stmt]
+ *     [stmtl] do [stmt]                 dohead [dohead] [whilestmt]
+ *     [dostmt] if [stmt]                "ifstmt" switch [stmt]          [stmt]
+ *     decl [stmt]               [stmt] "ifelse" [stmt]          [stmt] for
+ *     [stmt]                    [stmt] while [stmt]                     [stmt]
+ *     "dostmt" while            [stmt]
+ *
  *  On each reduction, parser_state_tos->i_l_follow (the indentation for the
  *     following line) is set to the indentation level associated with the old
  *     TOS.
- *  
+ *
  *  PARAMETERS: None
- *  
+ *
  *  RETURNS: Nothing
- *  
+ *
  *  GLOBALS: parser_state_tos->cstk parser_state_tos->i_l_follow =
  *     parser_state_tos->il parser_state_tos->p_stack = parser_state_tos->tos =
- *  
+ *
  *  CALLS: None
- *  
+ *
  *  CALLED BY: parse
- *  
+ *
  *  HISTORY: initial coding         November 1976   D A Willcox of CAC
- *  
-*/
-/*----------------------------------------------*\
-|   REDUCTION PHASE                                 |
-\*----------------------------------------------*/
+ *
+ */
 
-void reduce (void)
+extern void reduce(void)
 {
     int i;
 
@@ -545,13 +591,13 @@ void reduce (void)
                         parser_state_tos->p_stack[--parser_state_tos->tos] = stmtl;
                         break;
 
-                    case dolit: /* <do> <stmt> */
+                    case dolit: /* [do] [stmt] */
                         parser_state_tos->p_stack[--parser_state_tos->tos] = dohead;
                         parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
                         break;
 
                     case ifstmt:
-                        /* <if> <stmt> */
+                        /* [if] [stmt] */
                         parser_state_tos->p_stack[--parser_state_tos->tos] = ifhead;
                         for (i = parser_state_tos->tos - 1;
                              ( (parser_state_tos->p_stack[i] != stmt) &&
@@ -560,34 +606,34 @@ void reduce (void)
                              --i)
                         {
                         }
-                        
+
                         parser_state_tos->i_l_follow = parser_state_tos->il[i];
-                        
+
                         /* for the time being, we will assume that there is no else on
                          * this if, and set the indentation level accordingly. If an
                          * else is scanned, it will be fixed up later */
-                        
+
                         break;
 
                     case swstmt:
-                        /* <switch> <stmt> */
+                        /* [switch] [stmt] */
                     case decl:          /* finish of a declaration */
                     case elsehead:
-                        /* <<if> <stmt> else> <stmt> */
+                        /* [[if] [stmt] else] [stmt] */
                     case forstmt:
-                        /* <for> <stmt> */
+                        /* [for] [stmt] */
                     case casestmt:
-                        /* <case n:> <stmt> */
+                        /* [case n:] [stmt] */
                     case whilestmt:
-                        /* <while> <stmt> */
+                        /* [while] [stmt] */
                         parser_state_tos->p_stack[--parser_state_tos->tos] = stmt;
                         parser_state_tos->i_l_follow = parser_state_tos->il[parser_state_tos->tos];
                         break;
 
-                    default:            /* <anything else> <stmt> */
+                    default:            /* [anything else] [stmt] */
                         return;
 
-                }                       /* end of section for <stmt> on top of stack */
+                }                       /* end of section for [stmt] on top of stack */
                 break;
 
             case whilestmt:     /* while (...) on top */
@@ -607,16 +653,17 @@ void reduce (void)
     }
 }
 
-/* This kludge is called from main.  It is just like parse(semicolon) except
+/**
+ * This kludge is called from main.  It is just like parse(semicolon) except
  * that it does not clear break_comma.  Leaving break_comma alone is
  * necessary to make sure that "int foo(), bar()" gets formatted correctly
  * under -bc.  */
 
-void parse_lparen_in_decl (void)
+extern void parse_lparen_in_decl(void)
 {
-  inc_pstack ();
-  parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
-  parser_state_tos->il[parser_state_tos->tos]      = parser_state_tos->ind_level;
+   inc_pstack ();
+   parser_state_tos->p_stack[parser_state_tos->tos] = stmt;
+   parser_state_tos->il[parser_state_tos->tos]      = parser_state_tos->ind_level;
 
-  reduce ();
+   reduce ();
 }

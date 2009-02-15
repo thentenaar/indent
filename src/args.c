@@ -1,35 +1,62 @@
-/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
- * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
- * Copyright (c) 1992 Free Software Foundation, Inc.  All rights reserved.
+/** \file
+ * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.<br>
+ * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
+ * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc. 
+ *   All rights reserved.<br>
  *
+ * Copyright (c) 1980, 1993
+ *	 The Regents of the University of California.<br>
+ * Copyright (c) 1976 Board of Trustees of the University of Illinois.<br>
  * Copyright (c) 1985 Sun Microsystems, Inc.
- * Copyright (c) 1980 The Regents of the University of California.
- * Copyright (c) 1976 Board of Trustees ofthe University of Illinois.
- * All rights reserved.
+ *   All rights reserved.<br>
  *
- * Redistribution and use in source and binary forms are permitted
- * provided that
- * the above copyright notice and this paragraph are duplicated in all such
- * forms and that any documentation, advertising materials, and other
- * materials related to such distribution and use acknowledge that the
- * software was developed by the University of California, Berkeley, the
- * University of Illinois, Urbana, and Sun Microsystems, Inc.  The name of
- * either University or Sun Microsystems may not be used to endorse or
- * promote products derived from this software without specific prior written
- * permission. THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
- * OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-*
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * - 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * - 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * - 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.<br>
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This file is subject to the terms of the GNU General Public License as
+ * published by the Free Software Foundation.  A copy of this license is
+ * included with this software distribution in the file COPYING.  If you
+ * do not have a copy, you may obtain a copy by writing to the Free
+ * Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * HISTORY
- * 2002-03-14 DI restructured scan_profile and fixed bug handling comments
- * 2002-06-13 DI fixed handling of missing int parameter.
- * 2002-08-05 Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
+ * - 2002-03-14 DI restructured scan_profile and fixed bug handling comments
+ * - 2002-06-13 DI fixed handling of missing int parameter.
+ * - 2002-08-05 Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
  *            Added support for -brf to place function opening brace after function
  *            declaration.
- * 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
+ * - 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
  *            Added --preprocessor-indentation (ppi)   if set, will indent nested
  *            preprocessor-statements with n spaces per level.  overrides -lps.
+ * -2007-11-11 Jean-Christophe Dubois <jcd@tribudubois.net>
+ *            Added --indent-label and --linux-style options.
+ * - 2008-03-08 DI Re-baselined on the more acceptable (license-wise) OpenBSD release 3.4.
  */
 
 /* Argument scanning and profile reading code.  Default parameters are set
@@ -44,8 +71,9 @@
 #include "indent.h"
 #include "args.h"
 #include "globs.h"
+#include "utils.h"
 
-RCSTAG_CC ("$Id: args.c,v 1.42 2002/11/10 21:02:48 david Exp $");
+RCSTAG_CC ("$Id$");
 
 #define KR_SETTINGS_STRING (int *) \
      "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
@@ -62,27 +90,39 @@ RCSTAG_CC ("$Id: args.c,v 1.42 2002/11/10 21:02:48 david Exp $");
      "-ce\0-ci4\0-cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-l75\0-lp\0-npcs\0-nprs\0" \
      "-psl\0-sc\0-sai\0-saf\0-saw\0-nsob\0-nss\0-ts8\0"
 
+#define LINUX_SETTINGS_STRING (int *) \
+     "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
+     "-ncdb\0-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i8\0-ip0\0-l80\0-lp\0" \
+     "-npcs\0-nprs\0-npsl\0-sai\0-saf\0-saw\0-ncs\0-nsc\0-sob\0-nfca\0-cp33\0-ss\0" \
+     "-ts8\0-il1\0"
 
-/* profile types */
-typedef enum profile
+/**
+ * Profile types. These identify what kind of switches and arguments 
+ * can be passed to indent, and how to process them.
+ */
+
+typedef enum
 {
-    PRO_BOOL,                     /* boolean */
-    PRO_INT,                      /* integer */
-    PRO_IGN,                      /* ignore it */
-    PRO_KEY,                      /* -T switch */
-    PRO_SETTINGS,                 /* bundled set of settings */
-    PRO_PRSTRING,                 /* Print string and exit */
-    PRO_FUNCTION                  /* Call the associated function. */
+    PRO_BOOL,                     /*!< boolean */
+    PRO_INT,                      /*!< integer */
+    PRO_IGN,                      /*!< ignore it */
+    PRO_KEY,                      /*!< -T switch */
+    PRO_SETTINGS,                 /*!< bundled set of settings */
+    PRO_PRSTRING,                 /*!< Print string and exit */
+    PRO_FUNCTION                  /*!< Call the associated function. */
 } profile_ty;
 
-/* profile specials for booleans */
-typedef enum on_or_off
+/**
+ * profile value settings for booleans 
+ */
+
+typedef enum
 {
-    ONOFF_NA,                     /* Not applicable.  Used in table for
-                                   * non-booleans.  */
-    OFF,                          /* This option turns on the boolean variable
-                                   * in question.  */
-    ON                            /* it turns it off */
+    ONOFF_NA,                     /*!< Means Not Applicable.  Used in table for
+                                   *   entries that are not of type PRO_BOOL.  */
+    OFF,                          /*!< This option turns on the boolean variable
+                                   *   in question.  */
+    ON                            /*!< it turns it off */
 } on_or_off_ty;
 
 /* Explicit flags for each option.  */
@@ -99,10 +139,10 @@ static int exp_blf  = 0;
 static int exp_bli  = 0;
 static int exp_bls  = 0;
 static int exp_bs   = 0;
-static int exp_c    = 0;
+static int exp_c    = 0;/*!< Starting column for comments trailing statements */
 static int exp_cbi  = 0;
 static int exp_cdb  = 0;
-static int exp_cd   = 0;
+static int exp_cd   = 0; /*!< Starting column for comments trailing declarations */
 static int exp_cdw  = 0;
 static int exp_ce   = 0;
 static int exp_ci   = 0;
@@ -114,17 +154,19 @@ static int exp_d    = 0;
 static int exp_bfda = 0;
 static int exp_bfde = 0;
 static int exp_di   = 0;
-static int exp_dj   = 0;
+static int exp_dj   = 0; /*!< Left justify declarations */
 static int exp_eei  = 0;
 static int exp_fc1  = 0;
 static int exp_fca  = 0;
 static int exp_gnu  = 0;
 static int exp_hnl  = 0;
 static int exp_i    = 0;
+static int exp_il   = 0;
 static int exp_ip   = 0;
 static int exp_kr   = 0;
 static int exp_l    = 0;
 static int exp_lc   = 0;
+static int exp_linux = 0;
 static int exp_lp   = 0;
 static int exp_lps  = 0;
 static int exp_nip  = 0; 
@@ -136,7 +178,7 @@ static int exp_pmt  = 0;
 static int exp_pro  = 0;
 static int exp_prs  = 0;
 static int exp_psl  = 0;
-static int exp_ppi  = 0;  /* force preprocessor indent at width... */
+static int exp_ppi  = 0;  /*!< force preprocessor indent at width... */
 static int exp_sai  = 0;
 static int exp_saf  = 0;
 static int exp_saw  = 0;
@@ -150,29 +192,29 @@ static int exp_ut   = 0;
 static int exp_v    = 0;
 static int exp_version = 0;
 
-/* The following structure is controlled by command line parameters and
- * their meaning is explained in indent.h.  */
+/**
+ * The following structure is controlled by command line parameters and
+ * their meaning is explained in indent.h.  
+ */
 
 user_options_ty settings = {0};
-
-static void usage (void);
 
 /* N.B.: because of the way the table here is scanned, options whose names
  * are substrings of other options must occur later; that is, with -lp vs -l,
  * -lp must be first.  Also, while (most) booleans occur more than once, the
  * last default value is the one actually assigned. */
 
-typedef struct pro
+typedef struct
 {
-    char       * p_name;        /* option name, e.g. "bl", "cli" */
-    profile_ty   p_type;        /* profile type */
-    int          p_default;     /* the default value (if PRO_BOOL or PRO_INT) */
+    char       * p_name;        /*!< option name, e.g. "bl", "cli" */
+    profile_ty   p_type;        /*!< profile type */
+    int          p_default;     /*!< the default value (if PRO_BOOL or PRO_INT) */
 
-    on_or_off_ty p_special;     /* If p_type == PRO_BOOL, ON or OFF to tell how
+    on_or_off_ty p_special;     /*!< If p_type == PRO_BOOL, ON or OFF to tell how
                                  * this switch affects the variable. Not used
                                  * for other p_type's.  */
 
-    int        * p_obj;         /* if p_type == PRO_SETTINGS, a (char *) pointing
+    int        * p_obj;         /*!< if p_type == PRO_SETTINGS, a (char *) pointing
                                  *    to a list of the switches to set, separated by
                                  *    NULLs, terminated by 2 NULLs.
                                  * if p_type ==PRO_BOOL or PRO_INT, the address of
@@ -182,15 +224,25 @@ typedef struct pro
                                  * if p_type == PRO_FUNCTION, a pointer to a
                                  *     function to be called. */
 
-  int          * p_explicit;    /* Points to a nonzero value (allocated statically
+  int          * p_explicit;    /*!< Points to a nonzero value (allocated statically
                                  * for all options) if the option has been specified
                                  * explicitly.  This is necessary because for
                                  * boolean options, the options to set and reset the
                                  * variable must share the explicit flag.  */
 } pro_ty;
 
+/*
+ * Usage is defined here because the structure pro refers to it. 
+ */
+
+static void usage (void); 
+
 #ifdef BERKELEY_DEFAULTS
-/* Settings for original defaults */
+
+/**
+ * Settings for original defaults
+ */
+
 const pro_ty pro[] =
 {
     {"version", PRO_PRSTRING,                           0, ONOFF_NA, (int *) VERSION,                            &exp_version},
@@ -250,6 +302,7 @@ const pro_ty pro[] =
     {"nbadp",   PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations_at_proctop,  &exp_badp},
     {"nbad",    PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations,    &exp_bad},
     {"nbacc",   PRO_BOOL,                           false,      OFF, &settings.blanklines_around_conditional_compilation, &exp_bacc},
+    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_STRING,                      &exp_linux},
     {"lps",     PRO_BOOL,                           false,       ON, &settings.leave_preproc_space,              &exp_lps},
     {"lp",      PRO_BOOL,                            true,       ON, &settings.lineup_to_parens,                 &exp_lp},
     {"lc",      PRO_INT,     DEFAULT_RIGHT_COMMENT_MARGIN, ONOFF_NA, &settings.comment_max_col,                  &exp_lc},
@@ -257,6 +310,7 @@ const pro_ty pro[] =
     {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_STRING,                         &exp_kr},
     {"ip",      PRO_INT,                                4, ONOFF_NA, &settings.indent_parameters,                &exp_ip},
     {"i",       PRO_INT,                                4, ONOFF_NA, &settings.ind_size,                         &exp_i},
+    {"il",      PRO_INT,             DEFAULT_LABEL_INDENT, ONOFF_NA, &settings.label_offset,                     &exp_il},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
     {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
     {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
@@ -302,7 +356,10 @@ const pro_ty pro[] =
 
 #else /* Default to GNU style */
 
-/* Changed to make GNU style the default. */
+/**
+ * Changed to make GNU style the default. 
+ */
+
 const pro_ty pro[] =
 {
     {"version", PRO_PRSTRING,                           0, ONOFF_NA, (int *) VERSION,                            &exp_version},
@@ -363,11 +420,13 @@ const pro_ty pro[] =
     {"nbadp",   PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations_at_proctop,  &exp_badp},
     {"nbad",    PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations,    &exp_bad},
     {"nbacc",   PRO_BOOL,                           false,      OFF, &settings.blanklines_around_conditional_compilation, &exp_bacc},
+    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_STRING,                      &exp_linux},
     {"lps",     PRO_BOOL,                           false,       ON, &settings.leave_preproc_space,              &exp_lps},
     {"lp",      PRO_BOOL,                            true,       ON, &settings.lineup_to_parens,                 &exp_lp},
     {"lc",      PRO_INT,     DEFAULT_RIGHT_COMMENT_MARGIN, ONOFF_NA, &settings.comment_max_col,                  &exp_lc},
     {"l",       PRO_INT,             DEFAULT_RIGHT_MARGIN, ONOFF_NA, &settings.max_col,                          &exp_l},
     {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_STRING,                         &exp_kr},
+    {"il",      PRO_INT,             DEFAULT_LABEL_INDENT, ONOFF_NA, &settings.label_offset,                     &exp_il},
     {"ip",      PRO_INT,                                5, ONOFF_NA, &settings.indent_parameters,                &exp_ip},
     {"i",       PRO_INT,                                2, ONOFF_NA, &settings.ind_size,                         &exp_i},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
@@ -470,14 +529,17 @@ const long_option_conversion_ty option_conversions[] =
     {"no-blank-lines-after-commas",                 "nbc"},
     {"no-blank-before-sizeof",                      "nbs"},
     {"no-Bill-Shannon",                             "nbs"},
+    {"label-offset",                                "il"},
     {"line-length",                                 "l"},
     {"line-comments-indentation",                   "d"},
+    {"linux-style",                                 "linux"},
     {"left-justify-declarations",                   "dj"},
     {"leave-preprocessor-space",                    "lps"},
     {"leave-optional-blank-lines",                  "nsob"},
     {"kernighan-and-ritchie-style",                 "kr"},
     {"kernighan-and-ritchie",                       "kr"},
     {"k-and-r-style",                               "kr"},
+    {"indent-label",                                "il"},
     {"indentation-level",                           "i"},
     {"indent-level",                                "i"},
     {"ignore-profile",                              "npro"},
@@ -535,19 +597,24 @@ const long_option_conversion_ty option_conversions[] =
     {"berkeley",                                    "orig"},
     {"Bill-Shannon",                                "bs"},
     {"preprocessor-indentation",                    "ppi"},
+    /* Signify end of structure.  */
     {0,                                             0},
 };
 
+/**
+ * Print a brief usage message to stderr and exit.
+ */
+
 static void usage (void)
 {
-  fprintf (stderr, _("usage: indent file [-o outfile ] [ options ]\n"));
-  fprintf (stderr, _("       indent file1 file2 ... fileN [ options ]\n"));
-  exit (invocation_error);
+   DieError(invocation_error, _("usage: indent file [-o outfile ] [ options ]\n       indent file1 file2 ... fileN [ options ]\n"));
 }
 
-/* S1 should be a string.  S2 should be a string, perhaps followed by an
-   argument.  Compare the two, returning true if they are equal, and if they
-   are equal set *START_PARAM to point to the argument in S2.  */
+/**
+ * S1 should be a string.  S2 should be a string, perhaps followed by an
+ *  argument.  Compare the two, returning true if they are equal, and if they
+ *  are equal set *START_PARAM to point to the argument in S2.  
+ */
 
 static BOOLEAN eqin (
     const char   * s1,
@@ -568,24 +635,29 @@ static BOOLEAN eqin (
     return ret;
 }
 
-/* Set the defaults. */
+/**
+ * Set the defaults. 
+ */
 
-void set_defaults (void)
+void set_defaults(void)
 {
     const pro_ty *p;
 
     for (p = pro; p->p_name; p++)
     {
-        if ((p->p_type == PRO_BOOL && p->p_special == ON) || p->p_type == PRO_INT)
+       if (((p->p_type == PRO_BOOL) && (p->p_special == ON)) || 
+           (p->p_type == PRO_INT))
         {
             *p->p_obj = p->p_default;
         }
     }
 }
 
-/* Set the defaults after options set */
+/**
+ * Set the defaults after options set 
+ */
 
-void set_defaults_after (void)
+void set_defaults_after(void)
 {
     if (!exp_lc)                        /* if no -lc option was given */
     {
@@ -593,26 +665,36 @@ void set_defaults_after (void)
     }
 }
 
-/* Strings which can prefix an option, longest first. */
-
-static char *option_prefixes[] =
-{
-    "--",
-    "-",
-    "+",
-    0
-};
+/**
+ *
+ */
 
 static void arg_missing(
-    const char *option)
+   const char * option,
+   const char * option_source)
 {
-    fprintf (stderr, _("indent: missing argument to parameter %s\n"), option);
-    exit (invocation_error);
+    DieError(invocation_error, _("%s: missing argument to parameter %s\n"), 
+             option_source,
+                                                                    option);
 }
 
-static int option_prefix (
+/**
+ * Examine the given argument and return the length of the prefix if the prefix
+ * is one of "--", "-", or "+". If no such prefix is present return 0.
+ */
+
+static int option_prefix(
     const char * arg)
 {
+   static char *option_prefixes[] =
+         {
+            "--",
+            "-",
+            "+",
+            0
+         }; /*!< Strings which can prefix an option, longest first. */
+
+
     char       ** prefixes    = option_prefixes;
     char        * this_prefix = *prefixes;
     const char  * argp        = arg;
@@ -640,20 +722,22 @@ static int option_prefix (
     return ret;
 }
 
-/* Process an option ARG (e.g. "-l60").  PARAM is a possible value
- * for ARG, if PARAM is nonzero.  EXPLICT should be nonzero iff the
+/**
+ * Process an option ARG (e.g. "-l60").  PARAM is a possible value
+ * for ARG, if PARAM is non-null.  EXPLICT should be nonzero iff the
  * argument is being explicitly specified (as opposed to being taken from a
  * PRO_SETTINGS group of settings).
  *
  * Returns 1 if the option had a value, returns 0 otherwise.
  *
- * 2002-06-13 D.Ingamells. Fixed check for int param without an int argument.
+ * - 2002-06-13 D.Ingamells. Fixed check for int param without an int argument.
  */
 
-int set_option (
+extern int set_option(
     const char * option,
     const char * param,
-    int          explicit)
+    int          explicit,
+    const char * option_source)
 {
     const pro_ty * p             = pro;
     const char   * param_start   = NULL;
@@ -714,8 +798,7 @@ int set_option (
 
     if (!found)
     {
-        fprintf (stderr, _("indent: unknown option \"%s\"\n"), option - 1);
-        exit (invocation_error);
+        DieError(invocation_error, _("%s: unknown option \"%s\"\n"), option_source, option - 1);
     }
     else
     {
@@ -743,9 +826,10 @@ int set_option (
                    returned only when code has been successfully formatted. */
                 printf (_("GNU indent %s\n"), (char *) p->p_obj);
                 exit (invocation_error);
+                break;
                 
             case PRO_FUNCTION:
-                ((void (*)()) p->p_obj) ();
+                ((void (*)(void)) p->p_obj)();
                 break;
                 
             case PRO_SETTINGS:
@@ -756,7 +840,7 @@ int set_option (
                     
                     do
                     {
-                        set_option (t, 0, 0);
+                       set_option (t, 0, 0, option_source);
                         /* advance to character following next NUL */
                         
                         while (*t++)
@@ -764,7 +848,8 @@ int set_option (
                         }
                     } while (*t);
                 }
-
+                break;
+                
             case PRO_IGN:
                 break;
 
@@ -776,7 +861,7 @@ int set_option (
                     {
                         if (!(param_start = param))
                         {
-                            arg_missing(option);
+                           arg_missing(option, option_source);
                         }
                         else
                         {
@@ -809,7 +894,7 @@ int set_option (
                     
                     if (param_start == NULL)
                     {
-                        arg_missing(option);
+                       arg_missing(option, option_source);
                     }
                     else
                     {
@@ -823,19 +908,17 @@ int set_option (
                 }
                 else
                 {
-                    fprintf (stderr,
-                             _("indent: option ``%s'' requires a numeric parameter\n"),
-                             option - 1);
-                    exit (invocation_error);
+                    DieError(invocation_error,
+                             _("%s: option ``%s'' requires a numeric parameter\n"),
+                             option_source, option - 1);
                 }
                 
                 break;
 
             default:
-                fprintf (stderr,
-                         _("indent: set_option: internal error: p_type %d\n"),
+                DieError(invocation_error,
+                         _("set_option: internal error: p_type %d\n"),
                          (int) p->p_type);
-                exit (invocation_error);
             }
         }
     }
@@ -843,7 +926,8 @@ int set_option (
     return val;
 }
 
-/* The first 2 characters of a c++ comment have been read skip the remainder of the line
+/**
+ * The first 2 characters of a c++ comment have been read skip the remainder of the line
  * and return the first character from the next line.
  */
 
@@ -866,7 +950,7 @@ static int skip_cpp_comment(
     return i;
 }
 
-/*
+/**
  * the first 2 characters of a c comment have been read. Read past the
  * remainder of the comment and return the first character after the
  * comment.
@@ -907,7 +991,8 @@ static int skip_c_comment(
     return i;
 }
 
-/* The starting / of a comment has been read.
+/**
+ * The starting / of a comment has been read.
  * skip over the rest of the comment and return the
  * first character after the comment.
  */
@@ -932,7 +1017,7 @@ static int skip_comment(
     return i;
 }
 
-/*
+/**
  * Skip a sequence of space and control characters and return the
  * first character after the sequence.
  */
@@ -952,7 +1037,8 @@ static int skip_spaces(
     return i;
 }
 
-/* Read a string from the input until the next control character, space or /.
+/**
+ * Read a string from the input until the next control character, space or /.
  * Return the first character after the read string.
  */
 
@@ -978,10 +1064,13 @@ static int read_string(
     return i;
 }
 
-/* Scan the options in the file f. */
+/**
+ * Scan the options in the file f.
+ */
 
-static void scan_profile (
-    FILE  * f)
+static void scan_profile(
+   FILE       * f,
+   const char * option_source)
 {
     char   b0[BUFSIZ];
     char   b1[BUFSIZ];
@@ -1007,7 +1096,7 @@ static void scan_profile (
                 /* Second buffer still has to be filled. */
                 current = b1;
             }
-            else if (set_option (b0, b1, 1) == 1)
+            else if (set_option(b0, b1, 1, option_source) == 1)
             {
                 /* The option had a parameter, thus both values
                  * have been consumed.
@@ -1033,87 +1122,112 @@ static void scan_profile (
 
     if (current != b0)
     {
-        set_option (b0, NULL, 1);
+       set_option (b0, NULL, 1, option_source);
     }
 }
 
 
-/* Some operating systems don't allow more than one dot in a filename.  */
+/**
+ * The name of the profile file if the user doesn't supply an explicit one.
+ * NB Some operating systems don't allow more than one dot in a filename. 
+ */
+
 #if defined (ONE_DOT_PER_FILENAME)
 #define INDENT_PROFILE "indent.pro"
 #else
 #define INDENT_PROFILE ".indent.pro"
 #endif
 
+/**
+ * an sprintf format to use to generate the full profile path from a directory and
+ * a file name.
+ */
+
 #ifndef PROFILE_FORMAT
 #define PROFILE_FORMAT "%s/%s"
 #endif
 
+/**
+ * The name of the environment variable the user can set to supply the name
+ * of the profile file.
+ */
+
 #define PROFILE_ENV_NAME "INDENT_PROFILE"
 
-/* set_profile looks for ./.indent.pro or $HOME/.indent.pro, in
- * that order, and reads the options given in that file.  Return the
+/**
+ * set_profile looks for the profile file via
+ * 1) the profile environment variable
+ * 2) looks for ./.indent.pro
+ * 3)  $HOME/.indent.pro
+ * and reads the options given in that file.  Return the
  * path of the file read.
  *
- * Note that as of version 1.3, indent only reads one file. */
+ * Note that as of version 1.3, indent only reads one file. 
+ */
 
-char * set_profile (void)
+char * set_profile(void)
 {
-    FILE        * f       = NULL;
-    char        * fname   = NULL;
-    static char   prof[]  = INDENT_PROFILE;
-    char        * homedir = NULL;
-    char        * envname = getenv(PROFILE_ENV_NAME);
+   FILE        * f       = NULL;
+   char        * fname   = NULL;
+   static char   prof[]  = INDENT_PROFILE;
+   char        * homedir = NULL;
+   const char  * envname = getenv(PROFILE_ENV_NAME);
 
-    if (envname != NULL)
-    {
-        f = fopen (envname, "r");
-    }
+   if (envname != NULL)
+   {
+      f = fopen(envname, "r");
 
-    if (f != NULL)
-    {
-        scan_profile (f);
+      if (f == NULL)
+      {
+         fatal(_("File named by environment variable %s does not exist or is not readable"),
+               PROFILE_ENV_NAME);
+      }
+      else
+      {
+         scan_profile(f, envname);
         
-        (void) fclose (f);
+         (void) fclose(f);
         
-        fname = strdup(envname);
-    }
-    else
-    {
-        f = fopen (INDENT_PROFILE, "r");
+         fname = strdup(envname);
+      }
+   }
+   else
+   {
+      f = fopen(INDENT_PROFILE, "r");
         
-        if (f != NULL)
-        {
-            int len = strlen (INDENT_PROFILE) + 3;
+      if (f != NULL)
+      {
+         int len = strlen (INDENT_PROFILE) + 3;
 
-            scan_profile (f);
-            (void) fclose (f);
-            fname = xmalloc (len);
-            strcpy(fname, "./");
-            (void) strcat (fname, INDENT_PROFILE);
-        }
-        else
-        {
-            homedir = getenv ("HOME");
+         scan_profile (f, INDENT_PROFILE);
+         (void) fclose (f);
+
+         fname = xmalloc (len);
+         strcpy(fname, "./");
+         (void) strcat (fname, INDENT_PROFILE);
+      }
+      else
+      {
+         homedir = getenv ("HOME");
     
-            if (homedir)
-            {
-                fname = xmalloc (strlen (homedir) + strlen(PROFILE_FORMAT) + sizeof (prof));
-                sprintf (fname, PROFILE_FORMAT, homedir, prof);
+         if (homedir)
+         {
+            fname = xmalloc (strlen (homedir) + strlen(PROFILE_FORMAT) + sizeof (prof));
+            sprintf (fname, PROFILE_FORMAT, homedir, prof);
                 
-                if ((f = fopen (fname, "r")) != NULL)
-                {
-                    scan_profile (f);
-                    (void) fclose (f);
-                }
-                else
-                {
-                    free (fname);
-                    fname = NULL;
-                }
+            if ((f = fopen (fname, "r")) != NULL)
+            {
+               scan_profile (f, fname);
+               (void) fclose (f);
             }
-        }
-    }
+            else
+            {
+               free (fname);
+               fname = NULL;
+            }
+         }
+      }
+   }
     
-    return fname;
+   return fname;
 }

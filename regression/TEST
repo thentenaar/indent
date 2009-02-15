@@ -31,7 +31,7 @@ fi
 
 EXAMPLES="do.c else.c for.c func-def.c lshift.c ncs.c \
         proto.c typedef.h no-newline.c emacs-compatible.h fp.c unary.c \
-        struct_param.c no-newline2.c no-newline3.c wide.c"
+        struct_param.c no-newline2.c no-newline3.c wide.c goto.c"
 
 BUGS="case-label.c one-line-1.c one-line-2.c one-line-3.c \
         one-line-4.c struct-decl.c sizeof-in-while.c line-break-comment.c \
@@ -64,7 +64,8 @@ SPECIALS="typedef-bug.c bug-hp.c bug-di.c newlined-parms.c indent.pro.c \
         initializers.c else-if.c else-comment-br.c else-comment-bl.c \
         else-comment-br-ce.c const.c case.c case-br.c scope.c scope-br.c \
         comment-break.c cdb.c bbreak.c bad-break.c pre.c dont-line-up-parentheses.c \
-        bad-comment.c unknown-type.c unknown-type-npsl.c bug-npsl.c bug-psl.c"
+        bad-comment.c unknown-type.c unknown-type-npsl.c bug-npsl.c bug-psl.c do-cdw.c \
+        label.c goto-1.c goto-2.c"
 
 ARGS="-bad"
 $INDENT -npro $ARGS bad-break.c -o output/bad-break.c
@@ -178,6 +179,18 @@ $INDENT -npro $ARGS dont-line-up-parentheses.c -o output/dont-line-up-parenthese
 # Check line counting of input file
 $INDENT -npro line-count.c -o /dev/null 2>&1 | cut -d: -f3 > output/line-count.c
 
+ARGS="-cdw -bli0"
+$INDENT -npro do-cdw.c $ARGS -o output/do-cdw.c
+
+ARGS="-il2 -linux"
+$INDENT -npro label.c $ARGS -o output/label.c
+
+ARGS="-il1"
+$INDENT -npro goto.c $ARGS -o output/goto-1.c
+
+ARGS="-il-4"
+$INDENT -npro goto.c $ARGS -o output/goto-2.c
+
 echo "Done."
 
 ERR=output/errors
@@ -188,13 +201,24 @@ echo "Diffing generated code against standard..."
 
 for i in $EXAMPLES $INDENTSRC $SPECIALS $BUGS; do
   echo -n ...$i...
+
+  if [ ! -f standard/$i ]
+  then
+     echo ERROR: standard/$i missing
+  fi
+
+  if [ ! -f output/$i ]
+  then
+     echo ERROR: output/$i missing
+  fi
+
   diff --initial-tab standard/$i output/$i > output/$i-diffs 2>&1
   if [ -s output/$i-diffs ]; then
-    echo -n ERROR: $i failed | tee -a $ERR
+    echo ERROR: $i failed | tee -a $ERR
   else
     rm output/$i-diffs
+    echo
   fi
-  echo
 done
 echo "Diffing generated code against standard...Done."
 
@@ -331,7 +355,6 @@ $INDENT -npro right-margin-comment.c $A1 -o output/right-margin-comment.c
 $INDENT -npro on-off-1.c -o output/on-off-1.c
 $INDENT -npro on-off-2.c -o output/on-off-2.c
 
-
 cd output
 ERR=errors
 # currently fails:       two-on-line.c 
@@ -351,9 +374,36 @@ do
   fi
   echo
 done
-
+cd ..
 echo Testing new comment stuff...Done.
 
+
+echo Testing bad code handling....
+
+# This ends in a error from indent but it shouldn't coredump.
+$INDENT bug206785.c -o output/bug206785.c 2>output/bug206785.err
+if [ $? -ne 2 ]
+then
+    echo -n ERROR: bad return status from indent. | tee -a $ERR
+    echo >> $ERR
+fi
+cd output
+
+for i in bug206785.c bug206785.err
+do
+  echo -n ...$i...
+  diff --initial-tab ../standard/$i $i > $i-diffs 2>&1
+  if [ -s $i-diffs ]
+  then
+    echo -n ERROR: $i failed | tee -a $ERR
+    echo >> $ERR
+  else
+    rm $i-diffs
+  fi
+  echo
+done
+
+echo Testing bad code handling...Done.
 
 # Now see if any errors occured.  If so, bitch and moan, otherwise,
 # remove the output directory.

@@ -1,4 +1,4 @@
-struct templ;
+templ_ty;
 %%
 switch, rw_switch,
 case, rw_case,

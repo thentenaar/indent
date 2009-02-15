@@ -1,8 +1,9 @@
-/* Copyright (c) 1999 Carlo Wood.  All rights reserved.
+/** \file
+ * Copyright (c) 1999 Carlo Wood.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,8 +19,14 @@
 #ifndef INDENT_COMMENTS_H
 #define INDENT_COMMENTS_H
 
-RCSTAG_H (comments, "$Id: comments.h,v 1.6 2002/08/04 17:08:41 david Exp $");
+#include "sys.h" /* for RCSTAG_H */
 
-extern void print_comment (int *paren_targ);
+RCSTAG_H (comments, "$Id$");
+
+#include <indent.h> /* For BOOLEAN */
+
+extern void print_comment(
+    int     * paren_targ,
+    BOOLEAN * pbreak_line);
 
 #endif /* INDENT_COMMENTS_H */

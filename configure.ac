@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(GNU Indent, 2.2.9, bug-indent@gnu.org)
+AC_INIT(GNU Indent, 2.2.10, bug-indent@gnu.org)
 AC_CONFIG_SRCDIR(src/indent.c)
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE(indent, 2.2.9)
+AM_INIT_AUTOMAKE(indent, 2.2.10)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE
@@ -35,6 +35,7 @@ AC_PATH_PROG(TEXI2HTML, texi2html, $ac_aux_dir_abs/missing texi2html)
 dnl These are the only lines required to internationalize the package.
 dnl (OK, not quite, the AC_OUTPUT has also some parts.)
 AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION(0.11.5)
 
 AH_TEMPLATE(HAVE_LC_MESSAGES)
 AH_TEMPLATE(ENABLE_NLS)
@@ -57,12 +58,13 @@ fi
 
 AC_HEADER_DIRENT
 
-AC_OUTPUT([m4/Makefile 
-Makefile
-src/Makefile
-doc/Makefile
-man/Makefile
-po/Makefile.in
-intl/Makefile],
+AC_OUTPUT([ 
+   intl/Makefile
+   po/Makefile.in
+   Makefile
+   src/Makefile
+   doc/Makefile
+   man/Makefile
+],
 [touch Makefile.in])
 

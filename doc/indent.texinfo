@@ -93,7 +93,7 @@ by the Foundation.
 @end titlepage
 @page
 
-@c put the following line in the the file dir in the info directory
+@c put the following line in the file dir in the info directory
 @c under wherever you have installed emacs (assuming that
 @c the info file made from this file is in the file "indent")
 @c * indent:(indent).  How to change the appearance of a C program.
@@ -401,6 +401,21 @@ long option name).  This style is equivalent to the following settings:
 @end group
 @end example
 
+@cindex Linux style
+@kindex -linux
+@kindex --linux-style
+The Linux style is used in the linux kernel code and drivers. Code 
+generally has to follow the Linux coding style to be accepted. 
+This style is equivalent to the following settings:
+
+@example
+@group
+-nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4 
+-cli0 -d0 -di1 -nfc1 -i8 -ip0 -l80 -lp -npcs -nprs -npsl -sai
+-saf -saw -ncs -nsc -sob -nfca -cp33 -ss -ts8 -il1
+@end group
+@end example
+
 @node Blank lines, Comments, Common styles, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Blank lines
@@ -574,13 +589,13 @@ C++ comments begin with the delimiter @samp{//} and end at the newline.
 statements, comments which follow declarations, comments following
 preprocessor directives, and comments which are not preceded by code of
 any sort, i.e., they begin the text of the line (although not
-neccessarily in column 1).
+necessarily in column 1).
 
 @command{indent} further distinguishes between comments found outside of
 procedures and aggregates, and those found within them.  In particular,
 comments beginning a line found within a procedure will be indented to
-the column at which code is currently indented.  The exception to this a
-comment beginning in the leftmost column;  such a comment is output
+the column at which code is currently indented.  The exception to this 
+is a comment beginning in the leftmost column;  such a comment is output
 at that column.
 
 @command{indent} attempts to leave @dfn{boxed comments} unmodified.  The
@@ -657,12 +672,19 @@ there by default --- to get them aligned with the code, specify @option{-fc1}.
 @kindex --declaration-comment-column@var{n}
 @kindex -cp@var{n}
 @kindex --else-endif-column@var{n}
+@kindex --left-justify-declarations
+@kindex --dont-left-justify-declarations
+@kindex -dj
+@kindex -ndj
 Comments to the right of code will appear by default in column 33.
 This may be changed with one of three options.  @option{-c} will specify
 the column for comments following code, @option{-cd} specifies the
 column for comments following declarations, and @option{-cp} specifies
 the column for comments following preprocessor directives @code{#else}
-and @code{#endif}.
+and @code{#endif}. @option{-dj} together with @option{-cd0} can be used
+to suppress alignment of comments to the right of declarations, causing the 
+comment to follow one tabstop from the end of the declaration. Normally @option{-cd0}
+causes @option{-c} to become effective.
 
 If the code to the left of the comment exceeds the beginning column,
 the comment column will be extended to the next tabstop column past
@@ -915,27 +937,27 @@ known as the @samp{Bill_Shannon} option.
 @kindex --space-after-for
 @kindex -nsaf
 @kindex --no-space-after-for
-The @option{-saf} option forces a space between an @code{for}
+The @option{-saf} option forces a space between a @code{for}
 and the following parenthesis.  This is the default.
 
 @kindex -sai
 @kindex --space-after-if
 @kindex -nsai
 @kindex --no-space-after-if
-The @option{-sai} option forces a space between an @code{if}
+The @option{-sai} option forces a space between a @code{if}
 and the following parenthesis.  This is the default.
 
 @kindex -saw
 @kindex --space-after-while
 @kindex -nsaw
 @kindex --no-space-after-while
-The @option{-saw} option forces a space between an @code{while}
+The @option{-saw} option forces a space between a @code{while}
 and the following parenthesis.  This is the default.
 
 @kindex -prs
 @kindex --space-after-parentheses
-The @option{-prs} option causes all parentheses to be seperated with
-a space from the what is between them.  For example, using @option{-prs}
+The @option{-prs} option causes all parentheses to be separated with
+a space from whatever is between them.  For example, using @option{-prs}
 results in code like:
 
 @example
@@ -1087,6 +1109,11 @@ typedef enum @{red, blue, green@} COLOR;
 @noindent
 you would use the options @option{-T CODE_ADDR -T COLOR}.
 
+@kindex -bls
+@kindex --braces-after-struct-decl-line
+@kindex -brs
+@kindex --braces-on-struct-decl-line
+
 The @option{-brs} or @option{-bls} option specifies how to format braces
 in struct declarations.  The @option{-brs} option formats braces like
 this:
@@ -1107,6 +1134,36 @@ The @option{-bls} option formats them like this:
 struct foo
 @{
   int x;
+@};
+@end group
+@end example
+
+@kindex -blf
+@kindex --braces-after-func-def-line
+@kindex -brs
+@kindex --braces-on-func-def-line
+
+Similarly to the structure brace @option{-brs} and @option{-bls} options,
+ the function brace options @option{-brf} or @option{-blf} specify how to format the braces
+in function definitions.  The @option{-brf} option formats braces like
+this:
+
+@example
+@group
+int one(void) @{
+  return 1;
+@};
+@end group
+@end example
+
+@noindent
+The @option{-blf} option formats them like this:
+
+@example
+@group
+int one(void)
+@{
+  return 1;
 @};
 @end group
 @end example
@@ -1252,6 +1309,62 @@ becomes
 @end group
 @end example
 
+@kindex -il@var{n}
+@kindex --indent-label@var{n}
+This option sets the offset at which a label (except case labels)
+will be positioned. If it is set to zero or a positive number, this indicates how 
+far from the left margin to indent a label.  If it is set to a negative number, 
+this indicates how far back from the current indent level to place the label.  
+The default setting is -2 which matches the behaviour of earlier versions of indent.
+Note that this parameter does not affect the placing of case labels; see the
+@option{-cli} parameter for that. For example with the option @option{-il 1}
+
+@example
+@group
+function()
+@{
+    if (do_stuff1() == ERROR)
+        goto cleanup1;
+
+    if (do_stuff2() == ERROR)
+        goto cleanup2;
+
+    return SUCCESS;
+
+  cleanup2:
+    do_cleanup2();
+
+  cleanup1:
+    do_cleanup1();
+
+    return ERROR;
+@}
+@end group
+@end example
+becomes
+@example
+@group
+function()
+@{
+    if (do_stuff1() == ERROR)
+        goto cleanup1;
+
+    if (do_stuff2() == ERROR)
+        goto cleanup2;
+
+    return SUCCESS;
+
+ cleanup2:
+    do_cleanup2();
+
+ cleanup1:
+    do_cleanup1();
+
+    return ERROR;
+@}
+@end group
+@end example
+
 @node Breaking long lines, Disabling Formatting, Indentation, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Breaking long lines
@@ -1262,7 +1375,7 @@ With the option @option{-l@var{n}}, or @option{--line-length@var{n}}, it is
 possible to specify the maximum length of a line of C code, not including
 possible comments that follow it.
 
-When lines become longer then the specified line length, GNU @command{indent}
+When lines become longer than the specified line length, GNU @command{indent}
 tries to break the line at a logical place.  This is new as of version 2.1
 however and not very intelligent or flexible yet.
 
@@ -1274,7 +1387,7 @@ however and not very intelligent or flexible yet.
 @kindex --honour-newlines
 @kindex -nhnl
 @kindex --ignore-newlines
-Currently there are two options that allows one to interfere with the
+Currently there are two options that allow one to interfere with the
 algorithm that determines where to break a line.
 
 The @option{-bbo} option causes GNU @command{indent} to prefer to break
@@ -1512,6 +1625,11 @@ Force newline after comma in declaration.@*
 Put braces on line after @code{if}, etc.@*
 @xref{Statements}.
 
+@item -blf
+@itemx --braces-after-func-def-line
+Put braces on line following function definition line.@*
+@xref{Declarations}.
+
 @item -bli@var{n}
 @itemx --brace-indent@var{n}
 Indent braces @var{n} spaces.@*
@@ -1526,6 +1644,11 @@ Put braces on the line after @code{struct} declaration lines.@*
 @itemx --braces-on-if-line
 Put braces on line with @code{if}, etc.@*
 @xref{Statements}.
+
+@item -brf
+@itemx --braces-on-func-def-line
+Put braces on function definition line.@*
+@xref{Declarations}.
 
 @item -brs
 @itemx --braces-on-struct-decl-line
@@ -1560,12 +1683,12 @@ Put comment delimiters on blank lines.@*
 
 @item -cdw
 @itemx --cuddle-do-while
-Cuddle while of @code{do @{@} while;} and preceeding @samp{@}}.@*
+Cuddle while of @code{do @{@} while;} and preceding @samp{@}}.@*
 @xref{Comments}.
 
 @item -ce
 @itemx --cuddle-else
-Cuddle else and preceeding @samp{@}}.@*
+Cuddle else and preceding @samp{@}}.@*
 @xref{Comments}.
 
 @item -ci@var{n}
@@ -1605,6 +1728,12 @@ Break the line before all arguments in a declaration.@*
 Break the line after the last argument in a declaration.@*
 @xref{Declarations}.
 
+@item -dj@var{n}
+@itemx --left-justify-declarations
+If -cd 0 is used then comments after declarations are left justified
+behind the declaration.@*
+@xref{Declarations}.
+
 @item -di@var{n}
 @itemx --declaration-indentation@var{n}
 Put variables in column @var{n}.@*
@@ -1635,6 +1764,11 @@ Prefer to break long lines at the position of newlines in the input.@*
 Set indentation level to @var{n} spaces.@*
 @xref{Indentation}.
 
+@item -il@var{n}
+@itemx --indent-label@var{n}
+Set offset for labels to column @var{n}.@*
+@xref{Indentation}.
+
 @item -ip@var{n}
 @itemx --parameter-indentation@var{n}
 Indent parameter types in old-style function 
@@ -1655,6 +1789,11 @@ Set maximum line length for non-comment lines to @var{n}.@*
 @itemx --comment-line-length@var{n}
 Set maximum line length for comment formatting to @var{n}.@*
 @xref{Comments}.
+
+@item -linux
+@itemx --linux-style
+Use Linux coding style.@*
+@xref{Common styles}.
 
 @item -lp
 @itemx --continue-at-parentheses
@@ -1696,7 +1835,7 @@ Do not force newlines after commas in declarations.@*
 
 @item -nbfda
 @itemx --dont-break-function-decl-args
-Don't put each argument in a function declaration on a seperate line.@*
+Don't put each argument in a function declaration on a separate line.@*
 @xref{Declarations}.
 
 @item -ncdb
@@ -1718,6 +1857,12 @@ Do not cuddle @code{@}} and @code{else}.@*
 @itemx --no-space-after-casts
 Do not put a space after cast operators.@*
 @xref{Statements}.
+
+@item -ndj@var{n}
+@itemx --dont-left-justify-declarations
+Comments after declarations are treated the same as 
+comments after other statements.@*
+@xref{Declarations}.
 
 @item -nfc1
 @itemx --dont-format-first-column-comments
@@ -1827,6 +1972,11 @@ statement is broken.
 Preserve access and modification times on output files.
 @xref{Miscellaneous options}.
 
+@item -ppi@var{n}
+@itemx --preprocessor-indentation@var{n}
+Specify the indentation for preprocessor conditional statements.
+@xref{Indentation}.
+
 @item -prs
 @itemx --space-after-parentheses
 Put a space after every '(' and before every ')'.@*
@@ -1869,7 +2019,7 @@ Swallow optional blank lines.@*
 
 @item -ss
 @itemx --space-special-semicolon
-On one-line @code{for} and @code{while} statments, 
+On one-line @code{for} and @code{while} statements, 
 force a blank before the semicolon.@*
 @xref{Statements}.
 
@@ -1921,6 +2071,7 @@ the corresponding short option.
 \line{ --blank-lines-after-procedures \leaderfill     -bap\ }  
 \line{ --blank-lines-before-block-comments \leaderfill -bbb\ }
 \line{ --braces-after-if-line \leaderfill            -bl\ \ } 
+\line{ --braces-after-func-def-line \leaderfill       -blf\ \ }
 \line{ --brace-indent \leaderfill                -bli@var{n}}
 \line{ --braces-after-struct-decl-line \leaderfill    -bls\ \ }
 \line{ --break-after-boolean-operator \leaderfill     -nbbo\ \ }
@@ -1928,6 +2079,7 @@ the corresponding short option.
 \line{ --break-function-decl-args \leaderfill         -bfda} 
 \line{ --break-function-decl-args-end \leaderfill         -bfde} 
 \line{ --braces-on-if-line \leaderfill               -br\ \ }      
+\line{ --braces-on-func-def-line \leaderfill       -brf\ \ }
 \line{ --braces-on-struct-decl-line \leaderfill       -brs\ \ }
 \line{ --case-indentation \leaderfill            -cli@var{n}}
 \line{ --case-brace-indentation \leaderfill      -cbi@var{n}}
@@ -1946,22 +2098,26 @@ the corresponding short option.
 \line{ --dont-cuddle-else \leaderfill                    -nce\ }  
 \line{ --dont-format-comments \leaderfill                -nfca} 
 \line{ --dont-format-first-column-comments \leaderfill   -nfc1} 
+\line{ --dont-left-justify-declarations \leaderfill      -ndj\ }  
 \line{ --dont-line-up-parentheses \leaderfill            -nlp\ }  
 \line{ --dont-space-special-semicolon \leaderfill        -nss\ }
 \line{ --dont-star-comments \leaderfill                  -nsc\ }  
-\line{ --else-endif-column \leaderfill             -cp@var{n}\ }
+\line{ --else-endif-column \leaderfill                   -cp@var{n}\ }
 \line{ --format-all-comments \leaderfill                 -fca\ }  
 \line{ --format-first-column-comments \leaderfill        -fc1\ }  
 \line{ --gnu-style \leaderfill                           -gnu\ }  
 \line{ --honour-newlines \leaderfill                     -hnl\ \ }
 \line{ --ignore-newlines \leaderfill                     -nhnl\ \ }
 \line{ --ignore-profile \leaderfill                      -npro} 
-\line{ --indent-level \leaderfill                  -i@var{n}\ \ }
+\line{ --indent-label \leaderfill                  -il@var{n}\ \ }
+\line{ --indent-level \leaderfill                         -i@var{n}\ \ }
 \line{ --k-and-r-style \leaderfill                       -kr\ \ }
 \line{ --leave-optional-blank-lines \leaderfill          -nsob}    
+\line{ --leave-preprocessor-space \leaderfill            -lps\ }
+\line{ --left-justify-declarations \leaderfill           -dj\ }  
 \line{ --line-comments-indentation \leaderfill      -d@var{n}\ \ }
-\line{ --leave-preprocessor-space \leaderfill       -lps\ }
 \line{ --line-length \leaderfill                    -l@var{n}\ \ }
+\line{ --linux-style \leaderfill                         -linux\ \ }
 \line{ --no-blank-lines-after-commas \leaderfill         -nbc\ }   
 \line{ --no-blank-lines-after-declarations \leaderfill   -nbad}  
 \line{ --no-blank-lines-after-procedures \leaderfill     -nbap}  
@@ -1979,6 +2135,7 @@ the corresponding short option.
 \line{ --original \leaderfill                      -orig}
 \line{ --parameter-indentation \leaderfill         -ip@var{n}\ } 
 \line{ --paren-indentation \leaderfill             -pi@var{n}\ }
+\line{ --preprocessor-indentation \leaderfill      -ppi@var{n}\ }
 \line{ --preserve-mtime \leaderfill                -pmt\ }
 \line{ --procnames-start-lines \leaderfill         -psl\ }  
 \line{ --space-after-cast \leaderfill              -cs\ \ } 
@@ -2005,9 +2162,11 @@ the corresponding short option.
 --blank-lines-after-procedures                  -bap            
 --blank-lines-before-block-comments             -bbb            
 --braces-after-if-line                          -bl             
+--braces-after-func-def-line                    -blf
 --brace-indent                                  -bli
 --braces-after-struct-decl-line                 -bls
 --braces-on-if-line                             -br             
+--braces-on-func-def-line                       -brf
 --braces-on-struct-decl-line                    -brs
 --break-after-boolean-operator                  -nbbo
 --break-before-boolean-operator                 -bbo
@@ -2031,6 +2190,7 @@ the corresponding short option.
 --dont-format-comments                          -nfca           
 --dont-format-first-column-comments             -nfc1           
 --dont-line-up-parentheses                      -nlp            
+--dont-left-justify-declarations                -ndj  
 --dont-space-special-semicolon                  -nss
 --dont-star-comments                            -nsc            
 --else-endif-column                             -cp@var{n}
@@ -2040,12 +2200,15 @@ the corresponding short option.
 --honour-newlines                               -hnl
 --ignore-newlines                               -nhnl
 --ignore-profile                                -npro           
+--indent-label                                  -il@var{n}       
 --indent-level                                  -i@var{n}       
 --k-and-r-style                                 -kr             
 --leave-optional-blank-lines                    -nsob           
 --leave-preprocessor-space                      -lps
+--left-justify-declarations                     -dj 
 --line-comments-indentation                     -d@var{n}       
 --line-length                                   -l@var{n}       
+--linux-style                                   -linux             
 --no-blank-lines-after-commas                   -nbc            
 --no-blank-lines-after-declarations             -nbad           
 --no-blank-lines-after-procedures               -nbap           
@@ -2064,6 +2227,7 @@ the corresponding short option.
 --parameter-indentation                         -ip@var{n}      
 --paren-indentation                             -pi@var{n}
 --preserve-mtime				-pmt
+--preprocessor-indentation                      -ppi@var{n}
 --procnames-start-lines                         -psl            
 --space-after-cast                              -cs             
 --space-after-for				-saf

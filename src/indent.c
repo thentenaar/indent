@@ -1,30 +1,52 @@
-/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
- * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved.
- * Copyright (c) 1992, Free Software Foundation, Inc.  All rights reserved.
+/** \file
+ * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
+ * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
+ * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc.  All rights reserved. <br>
  *
- * Copyright (c) 1985 Sun Microsystems, Inc. 
- * Copyright (c) 1980 The Regents of the University of California.
+ * Copyright (c) 1980 The Regents of the University of California. <br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.
+ * Copyright (c) 1985 Sun Microsystems, Inc.  
+ *   All rights reserved.<br>
  *
- * Redistribution and use in source and binary forms are permitted
- * provided that
- * the above copyright notice and this paragraph are duplicated in all such
- * forms and that any documentation, advertising materials, and other
- * materials related to such distribution and use acknowledge that the
- * software was developed by the University of California, Berkeley, the
- * University of Illinois, Urbana, and Sun Microsystems, Inc.  The name of
- * either University or Sun Microsystems may not be used to endorse or
- * promote products derived from this software without specific prior written
- * permission.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * - 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * - 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * - 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.<br>
  *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
- * OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  *
- * Updates;
- * 2002-08-05: Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Updates:
+ * - 2002-08-05: Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
  *             Added support for -brf to place function opening brace after function
  *             declaration.
+ * - 28 Sep 2003 Erik de Castro Lopo
+ *             Fixed Bug#212320: --blank-lines-after-proceduresdoes not work
+ * - 28 Sep 2003 Erik de Castro Lopo
+ *             Fixed Bug#206785: indent segfaults on the attached file
+ * - 28 Sep 2003 Geoffrey Lee <glee@bogus.example.com>
+ *             Fixed Bug#205692: indent: [patch] fix garble shown in locale(fwd)
+ * - 2008-03-08 DI Re-baselined on the more acceptable (license-wise) OpenBSD release 3.4.
  */
 
 #include "sys.h"
@@ -49,16 +71,18 @@
 #endif
 #include "indent.h"
 #include "backup.h"
-#include "io.h"
+#include "code_io.h"
 #include "globs.h"
 #include "parse.h"
 #include "comments.h"
 #include "args.h"
 #include "output.h"
 
-RCSTAG_CC ("$Id: indent.c,v 1.77 2002/10/28 20:00:56 david Exp $");
+RCSTAG_CC ("$GNU$");
 
-/* Round up P to be a multiple of SIZE. */
+/**
+ * Round up P to be a multiple of SIZE.
+ */
 
 #ifndef ROUND_UP
 #define ROUND_UP(p, size) (((unsigned long) (p) + (size) - 1) & ~((size) - 1))
@@ -92,28 +116,29 @@ int              prefix_blankline_requested  = 0;
 codes_ty         prefix_blankline_requested_code;
 int              postfix_blankline_requested  = 0;
 codes_ty         postfix_blankline_requested_code;
-char           * in_name                     = 0; /* Points to current input file name */
-file_buffer_ty * current_input               = 0; /* Points to the current input buffer */
-int              embedded_comment_on_line    = 0; /* True if there is an embedded comment on this code line */
+char           * in_name                     = 0; /*!< Points to current input file name */
+file_buffer_ty * current_input               = 0; /*!< Points to the current input buffer */
+int              embedded_comment_on_line    = 0; /*!< True if there is an embedded comment on this code line */
 int              else_or_endif               = 0;
-int            * di_stack                    = NULL; /* structure indentation levels */
-int              di_stack_alloc              = 0; /* Currently allocated size of di_stack.  */
-int              squest                      = 0; /* when this is positive, we have seen a ? without
-                                                * the matching : in a <c>?<s>:<s> construct */
+int            * di_stack                    = NULL; /*!< structure indentation levels */
+int              di_stack_alloc              = 0; /*!< Currently allocated size of di_stack.  */
+int              squest                      = 0; /*!< when this is positive, we have seen a ? without
+                                                * the matching : in a [c]?[s]:[s] construct */
 unsigned long    in_prog_size   = 0U;
 char           * in_prog        = NULL;
-int              break_line     = 0;
 
-/* The position that we will line the current line up with when it comes time
+/** The position that we will line the current line up with when it comes time
  * to print it (if we are lining up to parentheses).  */
 
-static int       paren_target   = 0;
+int       paren_target   = 0;
 
 #ifdef DEBUG
 int            debug = 1;
 #endif
 
-/******************************************************************************/
+/**
+ *
+ */
 static void check_code_size(void)
 {
     if (e_code >= l_code)                               
@@ -126,7 +151,10 @@ static void check_code_size(void)
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void check_lab_size(void)
 {
     if (e_lab >= l_lab)
@@ -140,7 +168,10 @@ static void check_lab_size(void)
 }
 
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static INLINE void need_chars (
     buf_ty * bp,
     int      needed)
@@ -160,52 +191,10 @@ static INLINE void need_chars (
     }
 }
 
-/******************************************************************************/
-/* Compute the length of the line we will be outputting. */
+/**
+ *
+ */
 
-int output_line_length (void)
-{
-    int code_length = 0;
-    int com_length = 0;
-    int length;
-
-    if (s_lab == e_lab)
-    {
-        length = 0;
-    }
-    else
-    {
-        length = count_columns (compute_label_target (), s_lab, EOL) - 1;
-    }
-
-    if (s_code != e_code)
-    {
-        int code_col = compute_code_target (paren_target);
-
-        code_length = count_columns (code_col, s_code, EOL) - code_col;
-    }
-
-    if (s_com != e_com)
-    {
-        int com_col = parser_state_tos->com_col;
-
-        com_length = count_columns (com_col, s_com, EOL) - com_col;
-    }
-
-    if (code_length != 0)
-    {
-        length += compute_code_target(paren_target) - 1 + code_length;
-
-        if (embedded_comment_on_line)
-        {
-            length += com_length;
-        }
-    }
-
-    return length;
-}
-
-/******************************************************************************/
 static void copy_id(
     const codes_ty   type_code,
     BOOLEAN        * force_nl,
@@ -222,6 +211,9 @@ static void copy_id(
     else if (can_break)
     {
         set_buf_break (can_break, paren_target);
+    }
+    else
+    {
     }
 
     if (s_code == e_code)
@@ -280,25 +272,31 @@ static void copy_id(
     }
 }
 
-/******************************************************************************/
-static void handle_token_form_feed(void)
+/**
+ *
+ */
+
+static void handle_token_form_feed(
+    BOOLEAN * pbreak_line)
 {
     parser_state_tos->use_ff = true;        /* a form feed is treated
                                              * much like a newline */
-    dump_line (true, &paren_target);
+    dump_line (true, &paren_target, pbreak_line);
     parser_state_tos->want_blank = false;
 }
 
-/******************************************************************************
+/**
  * 2002-06-13 D.Ingamells Reset force_nl if the line is dumped.
  */
+
 static void handle_token_newline(
-    BOOLEAN * force_nl)
+    BOOLEAN * force_nl,
+    BOOLEAN * pbreak_line)
 {
             
     if (s_lab != e_lab && *s_lab == '#')
     {
-        dump_line (true, &paren_target);
+        dump_line (true, &paren_target, pbreak_line);
 
         if (s_code == e_code)
         {
@@ -348,7 +346,7 @@ static void handle_token_newline(
                 (s_com != e_com) || 
                 embedded_comment_on_line)
             {
-                dump_line (true, &paren_target);
+                dump_line (true, &paren_target, pbreak_line);
 
                 if (s_code == e_code)
                 {
@@ -367,14 +365,16 @@ static void handle_token_newline(
     ++line_no;              /* keep track of input line number */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_lparen(
-    BOOLEAN        * force_nl,
-   BOOLEAN        * sp_sw,
-   int            * dec_ind)
+    BOOLEAN       * force_nl,
+    BOOLEAN       * sp_sw,
+    int           * dec_ind,
+    BOOLEAN       * pbreak_line)
 {
-    char lparen = *token;
-    
     /* Braces in initializer lists should be put on new lines. This is
      * necessary so that -gnu does not cause things like char
      * *this_is_a_string_array[] = { "foo", "this_string_does_not_fit",
@@ -391,7 +391,7 @@ static void handle_token_lparen(
                               (s_com  != e_com)  ||
                               (s_lab  != e_lab)))
     {
-        dump_line (true, &paren_target);
+        dump_line (true, &paren_target, pbreak_line);
 
         /* Do not put a space before the '{'.  */
 
@@ -493,7 +493,7 @@ static void handle_token_lparen(
         parser_state_tos->in_decl         &&
         (parser_state_tos->paren_depth == 1))
     {
-        dump_line(true, &paren_target);
+        dump_line(true, &paren_target, pbreak_line);
         *force_nl = false;
         
         paren_target = parser_state_tos->paren_depth * settings.ind_size + 1;
@@ -522,13 +522,17 @@ static void handle_token_lparen(
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_rparen(
    BOOLEAN        * force_nl,
    BOOLEAN        * sp_sw,
    codes_ty       * hd_type,
    BOOLEAN        * last_token_ends_sp,
-   exit_values_ty * file_exit_value)
+   exit_values_ty * file_exit_value,
+   BOOLEAN        * pbreak_line)
 {
             
     parser_state_tos->paren_depth--;
@@ -546,7 +550,7 @@ static void handle_token_rparen(
     {
         if ((s_code != e_code) || (s_lab != e_lab) || (s_com != e_com))
         {
-            dump_line(true, &paren_target);
+            dump_line(true, &paren_target, pbreak_line);
         }
         
         paren_target = parser_state_tos->paren_depth * settings.ind_size;
@@ -577,6 +581,10 @@ static void handle_token_rparen(
              (parser_state_tos->paren_depth == 0))
     {
         parser_state_tos->want_blank = true;
+    }
+    else
+    {
+      /* what ? */
     }
 
     parser_state_tos->sizeof_mask &=
@@ -650,10 +658,13 @@ static void handle_token_rparen(
     parser_state_tos->search_brace = settings.btype_2;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_unary_op(
-   int            * dec_ind,
-   const bb_code_ty can_break)
+    int            * dec_ind,
+    const bb_code_ty can_break)
 {
     char           * t_ptr;
     
@@ -666,6 +677,10 @@ static void handle_token_unary_op(
     else if (can_break)
     {
         set_buf_break (can_break, paren_target);
+    }
+    else
+    {
+      /* what ? */
     }
 
     {
@@ -700,14 +715,18 @@ static void handle_token_unary_op(
 
     parser_state_tos->want_blank = false;
 }
-/******************************************************************************/
+
+/**
+ *
+ */
+
 static void handle_token_binary_op(
-   const bb_code_ty can_break)
+    const bb_code_ty can_break)
 {
     char           * t_ptr;
             
-    if (parser_state_tos->want_blank
-        || (e_code > s_code && *e_code != ' '))
+    if (parser_state_tos->want_blank        || 
+        (e_code > s_code && *e_code != ' '))
     {
         set_buf_break (bb_binary_op, paren_target);
         *e_code++ = ' ';
@@ -716,6 +735,10 @@ static void handle_token_binary_op(
     else if (can_break)
     {
         set_buf_break (can_break, paren_target);
+    }
+    else
+    {
+      /* what ? */
     }
 
     {
@@ -739,7 +762,11 @@ static void handle_token_binary_op(
     
     parser_state_tos->want_blank = true;
 }
-/******************************************************************************/
+
+/**
+ *
+ */
+
 static void handle_token_postop(void)
 {
     *e_code++ = token[0];
@@ -747,7 +774,10 @@ static void handle_token_postop(void)
     parser_state_tos->want_blank = true;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_question(
    const bb_code_ty can_break)
 {
@@ -764,13 +794,20 @@ static void handle_token_question(
     {
         set_buf_break (can_break, paren_target);
     }
+    else
+    {
+      /* what ? */
+    }
 
     *e_code++ = '?';
     parser_state_tos->want_blank = true;
     *e_code = '\0'; /* null terminate code sect */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_casestmt(
    BOOLEAN        * scase,
    exit_values_ty * file_exit_value)
@@ -787,12 +824,16 @@ static void handle_token_casestmt(
             
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_colon(
    BOOLEAN        * scase,
    BOOLEAN        * force_nl,
    int            * dec_ind,
-   const bb_code_ty can_break)
+   const bb_code_ty can_break,
+   BOOLEAN        * pbreak_line)
 {
     char           * t_ptr;
 
@@ -809,6 +850,10 @@ static void handle_token_colon(
         else if (can_break)
         {
             set_buf_break (can_break, paren_target);
+        }
+        else
+        {
+          /* what ? */
         }
 
         *e_code++ = ':';
@@ -869,21 +914,26 @@ static void handle_token_colon(
                 e_code -= *dec_ind;
                 *e_code = '\0';
             }
+            else
+            {
+              /* what ? */
+            }
         }
                 
         parser_state_tos->in_stmt = false;      /* seeing a label does not
                                                  * imply we are in a stmt */
         for (t_ptr = s_code; *t_ptr; ++t_ptr)
         {
+            check_lab_size();
             *e_lab++ = *t_ptr;  /* turn everything so far into a label */
         }
                 
         e_code = s_code;
-        clear_buf_break_list ();        /* This is bullshit for C code, because
-                                         * normally a label doesn't have breakpoints
-                                         * at all of course.  But in the case of
-                                         * wrong code, not clearing the list can make
-                                         * indent core dump. */
+        clear_buf_break_list (pbreak_line); /* This is bullshit for C code, because
+                                             * normally a label doesn't have breakpoints
+                                             * at all of course.  But in the case of
+                                             * wrong code, not clearing the list can make
+                                             * indent core dump. */
         *e_lab++ = ':';
         set_buf_break (bb_label, paren_target);
         *e_lab++ = ' ';
@@ -899,7 +949,10 @@ static void handle_token_colon(
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_doublecolon(void)
 {
     *e_code++ = ':';
@@ -910,14 +963,17 @@ static void handle_token_doublecolon(void)
     parser_state_tos->saw_double_colon = true;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_semicolon(
-   BOOLEAN        * scase,
-   BOOLEAN        * force_nl,
-   BOOLEAN        * sp_sw,
-   int            * dec_ind,
-   BOOLEAN        * last_token_ends_sp,
-   exit_values_ty * file_exit_value)
+    BOOLEAN        * scase,
+    BOOLEAN        * force_nl,
+    BOOLEAN        * sp_sw,
+    int            * dec_ind,
+    BOOLEAN        * last_token_ends_sp,
+    exit_values_ty * file_exit_value)
 {
     parser_state_tos->in_or_st = 0;
     parser_state_tos->saw_double_colon = false;
@@ -989,11 +1045,15 @@ static void handle_token_semicolon(
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_lbrace(
    BOOLEAN        * force_nl,
    int            * dec_ind,
-   exit_values_ty * file_exit_value)
+   exit_values_ty * file_exit_value,
+   BOOLEAN        * pbreak_line)
 {
     parser_state_tos->saw_double_colon = false;
 
@@ -1064,7 +1124,7 @@ static void handle_token_lbrace(
              !settings.braces_on_struct_decl_line &&
              !settings.braces_on_func_def_line))
         {
-            dump_line (true, &paren_target);
+            dump_line (true, &paren_target, pbreak_line);
             parser_state_tos->want_blank = false;
         }
         else
@@ -1076,7 +1136,7 @@ static void handle_token_lbrace(
                 
                 if (!settings.braces_on_func_def_line)
                 {
-                    dump_line (true, &paren_target);
+                    dump_line (true, &paren_target, pbreak_line);
                 }
                 else
                 {
@@ -1147,6 +1207,7 @@ static void handle_token_lbrace(
     } while(0);
             
     set_buf_break (bb_lbrace, paren_target);
+    
     if (parser_state_tos->want_blank && s_code != e_code)
     {
         /* put a blank before '{' if '{' is not at start of line */
@@ -1188,12 +1249,21 @@ static void handle_token_lbrace(
 
         parser_state_tos->want_blank = true;
     }
+    else
+    {
+      /* what ? */
+    }
 }
-/******************************************************************************/
+
+/**
+ *
+ */
+
 static void handle_token_rbrace(
     BOOLEAN        * force_nl,
     int            * dec_ind,
-    exit_values_ty * file_exit_value)
+    exit_values_ty * file_exit_value,
+    BOOLEAN        * pbreak_line)
 {
     /* semicolons can be omitted in declarations */
     if (((parser_state_tos->p_stack[parser_state_tos->tos] == decl) &&
@@ -1222,7 +1292,7 @@ static void handle_token_rbrace(
             /* The matching '{' is not on the same line:
              * put the '}' on its own line. */
 
-            dump_line (true, &paren_target);
+            dump_line (true, &paren_target, pbreak_line);
         }
         else
         {
@@ -1264,6 +1334,10 @@ static void handle_token_rbrace(
 
         parser_state_tos->in_decl = true;
     }
+    else
+    {
+      /* what ? */
+    }
 
     prefix_blankline_requested = 0;
             
@@ -1292,6 +1366,10 @@ static void handle_token_rbrace(
         {
             *force_nl = true;
         }
+        else
+        {
+          /* what ? */
+        }
 #endif
     }
 
@@ -1311,7 +1389,10 @@ static void handle_token_rbrace(
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_swstmt(
     BOOLEAN        * sp_sw,
     codes_ty       * hd_type)
@@ -1323,7 +1404,10 @@ static void handle_token_swstmt(
     parser_state_tos->in_decl = false;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_sp_paren(
     BOOLEAN        * sp_sw,
     codes_ty       * hd_type)
@@ -1336,11 +1420,15 @@ static void handle_token_sp_paren(
             (*token == 'i' ? ifstmt : (*token == 'w' ? whilestmt : forstmt));
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_nparen(
     BOOLEAN        * force_nl,
     exit_values_ty * file_exit_value,
-    BOOLEAN        * last_else)
+    BOOLEAN        * last_else,
+    BOOLEAN        * pbreak_line)
 {
     parser_state_tos->in_stmt = false;
     if (*token == 'e')
@@ -1352,7 +1440,7 @@ static void handle_token_nparen(
                 WARNING (_("Line broken"), 0, 0);
             }
             
-            dump_line (true, &paren_target);       /* make sure this starts a line */
+            dump_line (true, &paren_target, pbreak_line);       /* make sure this starts a line */
             parser_state_tos->want_blank = false;
         }
         
@@ -1378,7 +1466,7 @@ static void handle_token_nparen(
                 WARNING (_("Line broken"), 0, 0);
             }
             
-            dump_line (true, &paren_target);
+            dump_line (true, &paren_target, pbreak_line);
             parser_state_tos->want_blank = false;
         }
         
@@ -1393,7 +1481,10 @@ static void handle_token_nparen(
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_overloaded(
     const bb_code_ty can_break)
 {
@@ -1408,6 +1499,10 @@ static void handle_token_overloaded(
     {
         set_buf_break (can_break, paren_target);
     }
+    else
+    {
+      /* what ? */
+    }
 
     parser_state_tos->want_blank = true;
 
@@ -1420,10 +1515,14 @@ static void handle_token_overloaded(
     *e_code = '\0'; /* null terminate code sect */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_decl(
     int            * dec_ind,
-    exit_values_ty * file_exit_value)
+    exit_values_ty * file_exit_value,
+    BOOLEAN        * pbreak_line)
 {
     /* handle C++ const function declarations like
      * const MediaDomainList PVR::get_itsMediaDomainList() const
@@ -1467,7 +1566,7 @@ static void handle_token_decl(
             
             if (s_code != e_code)
             {
-                dump_line (true, &paren_target);
+                dump_line (true, &paren_target, pbreak_line);
                 parser_state_tos->want_blank = false;
             }
         }
@@ -1501,6 +1600,27 @@ static void handle_token_decl(
             }
         }
         
+#if 0
+        /* Erik de Castro Lopo Sun, 28 Sep 2003:
+         * I don't know what this is supposed to do, but I do know that it 
+         * breaks the operation of the blanklines_after_procs setting in 
+         * situations like this where a blank line is supposed to be inserted
+         * between the two functions:
+         *
+         *     int func1 (void)
+         *     {
+         *         return 42 ;
+         *     }
+         *     static int func2 (void)
+         *     {
+         *         return 43 ;
+         *     }
+         *
+         * If this code is removed, the regression tests still pass (except
+         * for one which needs to be modified because a blank line is 
+         * inserted as it should be.
+         */
+
         if (prefix_blankline_requested &&
             ((parser_state_tos->block_init != 0) ||
              (parser_state_tos->block_init_level != -1) ||
@@ -1511,13 +1631,16 @@ static void handle_token_decl(
         {
             prefix_blankline_requested = 0;
         }
-        
+#endif 
         *dec_ind = settings.decl_indent > 0 ? settings.decl_indent :
                                               token_end - token + 1; /* get length of token plus 1 */
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_ident(
     BOOLEAN        * force_nl,
     BOOLEAN        * sp_sw,
@@ -1525,7 +1648,8 @@ static void handle_token_ident(
     int            * dec_ind,
     exit_values_ty * file_exit_value,
     const bb_code_ty can_break,
-    BOOLEAN          is_procname_definition)
+    BOOLEAN          is_procname_definition,
+    BOOLEAN        * pbreak_line)
 {
     /* If we are in a declaration, we must indent identifier. But not
      * inside the parentheses of an ANSI function declaration.  */
@@ -1543,6 +1667,10 @@ static void handle_token_ident(
         else if (can_break)
         {
             set_buf_break (can_break, paren_target);
+        }
+        else
+        {
+          /* what ? */
         }
 
         parser_state_tos->want_blank = false;
@@ -1573,7 +1701,7 @@ static void handle_token_ident(
             if ((s_code != e_code) &&
                 (parser_state_tos->last_token != doublecolon))
             {
-                dump_line(true, &paren_target);
+                dump_line(true, &paren_target, pbreak_line);
             }
 
             *dec_ind = 0;
@@ -1592,9 +1720,15 @@ static void handle_token_ident(
             *file_exit_value = indent_error;
         }
     }
+    else
+    {
+      /* what ? */
+    }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
 
 static void handle_token_struct_delim(void)
 {
@@ -1610,7 +1744,10 @@ static void handle_token_struct_delim(void)
     parser_state_tos->can_break = bb_struct_delim;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
 static void handle_token_comma(
     BOOLEAN        * force_nl,
     int            * dec_ind,
@@ -1669,16 +1806,21 @@ static void handle_token_comma(
 
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static void handle_token_preesc(
-    exit_values_ty * file_exit_value)
+    exit_values_ty * file_exit_value,
+    BOOLEAN        * pbreak_line)
 {
     char * t_ptr;
     char * p;
 
     if ((s_com != e_com) || (s_lab != e_lab) || (s_code != e_code))
     {
-        dump_line(true, &paren_target);
+        dump_line(true, &paren_target, pbreak_line);
     }
 
     {
@@ -1706,7 +1848,7 @@ static void handle_token_preesc(
 
             if (buf_ptr >= buf_end)
             {
-                fill_buffer ();
+                fill_buffer();
             }
 
             switch (*e_lab++)
@@ -1717,7 +1859,7 @@ static void handle_token_preesc(
                     *e_lab++ = *buf_ptr++;
                     if (buf_ptr >= buf_end)
                     {
-                        fill_buffer ();
+                        fill_buffer();
                     }
                 }
                 break;
@@ -1760,6 +1902,10 @@ static void handle_token_preesc(
                 else if (e_lab[-1] == quote)
                 {
                     quote = 0;
+                }
+                else
+                {
+                  /* what ? */
                 }
 
                 break;
@@ -2005,6 +2151,10 @@ static void handle_token_preesc(
             n_real_blanklines = 0;
         }
     }
+    else
+    {
+      /* what ? */
+    }
 
     /* Don't put a blank line after declarations if they are directly
      * followed by an #else or #endif -Run */
@@ -2025,30 +2175,38 @@ static void handle_token_preesc(
         !parser_state_tos->block_init &&
         break_comma && (s_com == e_com))
     {
-        dump_line(true, &paren_target);
+        dump_line(true, &paren_target, pbreak_line);
         parser_state_tos->want_blank = false;
     }
 
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static void handle_token_comment(
     BOOLEAN        * force_nl,
-    BOOLEAN        * flushed_nl)
+    BOOLEAN        * flushed_nl,
+    BOOLEAN        * pbreak_line)
 {
             if (parser_state_tos->last_saw_nl && (s_code != e_code))
             {
                 *flushed_nl = false;
-                dump_line(true, &paren_target);
+                dump_line(true, &paren_target, pbreak_line);
                 parser_state_tos->want_blank = false;
                 *force_nl = false;
             }
-            print_comment (&paren_target);
+            print_comment (&paren_target, pbreak_line);
 }
 
-/******************************************************************************/
-static void handle_token_attribute(
-    )
+/**
+ *
+ */
+
+
+static void handle_token_attribute(void)
 {
     char           * t_ptr;
     
@@ -2068,7 +2226,11 @@ static void handle_token_attribute(
     parser_state_tos->want_blank = true;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static void handle_the_token(
     const codes_ty   type_code,
     BOOLEAN        * scase,
@@ -2081,25 +2243,26 @@ static void handle_the_token(
     exit_values_ty * file_exit_value,
     const bb_code_ty can_break,
     BOOLEAN        * last_else,
-    BOOLEAN          is_procname_definition)
+    BOOLEAN          is_procname_definition,
+    BOOLEAN        * pbreak_line)
 {
     switch (type_code)
     {
         case form_feed:     /* found a form feed in line */
-            handle_token_form_feed();
+            handle_token_form_feed(pbreak_line);
             break;
 
         case newline:
-            handle_token_newline(force_nl);
+            handle_token_newline(force_nl, pbreak_line);
             break;
 
         case lparen:
-            handle_token_lparen(force_nl, sp_sw, dec_ind);
+            handle_token_lparen(force_nl, sp_sw, dec_ind, pbreak_line);
             break;
 
         case rparen:
             handle_token_rparen(force_nl, sp_sw, hd_type, last_token_ends_sp,
-                                file_exit_value);
+                                file_exit_value, pbreak_line);
             break;
 
         case unary_op:
@@ -2125,12 +2288,14 @@ static void handle_the_token(
         case casestmt:
             /* got word 'case' or 'default' */
             handle_token_casestmt(scase, file_exit_value);
-            copy_id(type_code, force_nl, file_exit_value,can_break);
+            copy_id(type_code, force_nl, file_exit_value,
+                    can_break);
             break;
             
         case colon:
             /* got a ':' */
-            handle_token_colon(scase, force_nl, dec_ind, can_break);
+            handle_token_colon(scase, force_nl, dec_ind, can_break,
+                               pbreak_line);
             break;
 
         case doublecolon:
@@ -2146,12 +2311,14 @@ static void handle_the_token(
 
         case lbrace:
             /* got a '{' */
-            handle_token_lbrace(force_nl, dec_ind, file_exit_value);
+            handle_token_lbrace(force_nl, dec_ind, file_exit_value,
+                                pbreak_line);
             break;
 
         case rbrace:
             /* got a '}' */
-            handle_token_rbrace(force_nl, dec_ind, file_exit_value);
+            handle_token_rbrace(force_nl, dec_ind, file_exit_value,
+                                pbreak_line);
             
             break;
 
@@ -2171,8 +2338,9 @@ static void handle_the_token(
             /* got else */
         case sp_nparen:
             /* got do */
-            handle_token_nparen(force_nl, file_exit_value, last_else);
-            copy_id(type_code, force_nl, file_exit_value,can_break);
+            handle_token_nparen(force_nl, file_exit_value, last_else,
+                                pbreak_line);
+            copy_id(type_code, force_nl, file_exit_value, can_break);
             break;
             
         case overloaded:
@@ -2189,7 +2357,8 @@ static void handle_the_token(
         case decl:
             /* we have a declaration type (int, register, etc.) */
 
-            handle_token_decl(dec_ind, file_exit_value);
+            handle_token_decl(dec_ind, file_exit_value,
+                              pbreak_line);
             
             copy_id(type_code, force_nl, file_exit_value, can_break);
             break;
@@ -2200,7 +2369,8 @@ static void handle_the_token(
             /* got an identifier or constant */
             handle_token_ident(force_nl,  sp_sw, hd_type,
                                dec_ind, file_exit_value,
-                               can_break, is_procname_definition);
+                               can_break, is_procname_definition,
+                               pbreak_line);
             
             copy_id(type_code, force_nl, file_exit_value, can_break);
             
@@ -2211,18 +2381,21 @@ static void handle_the_token(
             break;
 
         case comma:
-            handle_token_comma(force_nl, dec_ind, is_procname_definition);
+            handle_token_comma(force_nl, dec_ind,
+                               is_procname_definition);
             break;
 
         case preesc:
             /* got the character '#' */
-            handle_token_preesc(file_exit_value);
+            handle_token_preesc(file_exit_value,
+                                pbreak_line);
             break;
 
         case comment:
         case cplus_comment:
             /* A C or C++ comment. */
-            handle_token_comment(force_nl, flushed_nl);
+            handle_token_comment(force_nl, flushed_nl,
+                                 pbreak_line);
             break;
 
             /* An __attribute__ qualifier */
@@ -2235,7 +2408,11 @@ static void handle_the_token(
     }                       /* end of big switch stmt */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static void sw_buffer(void)
 {
     parser_state_tos->search_brace = false;
@@ -2247,13 +2424,18 @@ static void sw_buffer(void)
     save_com.end = save_com.ptr;        /* make save_com empty */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static BOOLEAN search_brace(
     codes_ty       * type_code,
     BOOLEAN        * force_nl,
     BOOLEAN        * flushed_nl,
     BOOLEAN        * last_else,
-    BOOLEAN        * is_procname_definition)
+    BOOLEAN        * is_procname_definition,
+    BOOLEAN        * pbreak_line)
 {
     while (parser_state_tos->search_brace)
     {
@@ -2374,7 +2556,7 @@ static BOOLEAN search_brace(
 
                     if (buf_ptr >= buf_end)
                     {
-                        fill_buffer ();
+                        fill_buffer();
 
                         if (had_eof)
                         {
@@ -2394,7 +2576,7 @@ static BOOLEAN search_brace(
 
                 if (++buf_ptr >= buf_end)       /* get past / in buffer */
                 {
-                    fill_buffer ();
+                    fill_buffer();
                 }
 
                 break;
@@ -2416,6 +2598,10 @@ static BOOLEAN search_brace(
             else if (*flushed_nl)
             {
                 *force_nl = true;
+            }
+            else
+            {
+              /* what ? */
             }
 
             if (save_com.end == save_com.ptr)
@@ -2479,7 +2665,7 @@ static BOOLEAN search_brace(
                  ( (*type_code == comment) && parser_state_tos->last_saw_nl &&
                    (parser_state_tos->last_token != sp_else)))
             {
-                dump_line(true, &paren_target);
+                dump_line(true, &paren_target, pbreak_line);
                 *flushed_nl = true;
             }
 
@@ -2501,8 +2687,13 @@ static BOOLEAN search_brace(
     return true;
 }
 
-/******************************************************************************/
-static exit_values_ty indent_main_loop(void)
+/**
+ *
+ */
+
+
+static exit_values_ty indent_main_loop(
+    BOOLEAN * pbreak_line)
 {
     codes_ty         hd_type         = code_eof;
     char           * t_ptr           = NULL;
@@ -2536,7 +2727,7 @@ static exit_values_ty indent_main_loop(void)
          * we reach eof */
 
         BOOLEAN is_procname_definition;
-        bb_code_ty can_break;
+        bb_code_ty can_break = bb_none;
 
         if (type_code != newline)
         {
@@ -2546,9 +2737,9 @@ static exit_values_ty indent_main_loop(void)
         parser_state_tos->last_saw_nl = false;
         parser_state_tos->can_break = bb_none;
 
-        type_code = lexi ();    /* lexi reads one token.  "token" points to
-                                 * the actual characters. lexi returns a code
-                                 * indicating the type of token */
+        type_code = lexi (); /* lexi reads one token.  "token" points to
+                              * the actual characters. lexi returns a code
+                              * indicating the type of token */
 
         /* If the last time around we output an identifier or
          * a paren, then consider breaking the line here if it's
@@ -2571,7 +2762,7 @@ static exit_values_ty indent_main_loop(void)
                 (type_code != rparen) ) ) &&
             (output_line_length () > settings.max_col))
         {
-            break_line = 1;
+            *pbreak_line = true;
         }
 
         if (last_token_ends_sp > 0)
@@ -2591,7 +2782,8 @@ static exit_values_ty indent_main_loop(void)
 
         flushed_nl = false;
 
-        if (!search_brace(&type_code, &force_nl, &flushed_nl, &last_else, &is_procname_definition))
+        if (!search_brace(&type_code, &force_nl, &flushed_nl, &last_else,
+                          &is_procname_definition, pbreak_line))
         {
             /* Hit EOF unexpectedly in comment. */
             return indent_punt;
@@ -2602,7 +2794,7 @@ static exit_values_ty indent_main_loop(void)
             /* we got eof */
             if (s_lab != e_lab || s_code != e_code || s_com != e_com)   /* must dump end of line */
             {
-                dump_line(true, &paren_target);
+                dump_line(true, &paren_target, pbreak_line);
             }
 
             if (parser_state_tos->tos > 1)      /* check for balanced braces */
@@ -2645,7 +2837,7 @@ static exit_values_ty indent_main_loop(void)
                 }
 
                 flushed_nl = false;
-                dump_line(true, &paren_target);
+                dump_line(true, &paren_target, pbreak_line);
                 parser_state_tos->want_blank = false;
                 force_nl = false;
             }
@@ -2702,6 +2894,10 @@ static exit_values_ty indent_main_loop(void)
 
             force_nl = false;
         }
+        else
+        {
+          /* what ? */
+        }
 
         /* Main switch on type of token scanned */
 
@@ -2711,7 +2907,8 @@ static exit_values_ty indent_main_loop(void)
 
         handle_the_token(type_code, &scase, &force_nl, &sp_sw, &flushed_nl,
                          &hd_type, &dec_ind, &last_token_ends_sp, &file_exit_value,
-                         can_break, &last_else, is_procname_definition);
+                         can_break, &last_else, is_procname_definition,
+                         pbreak_line);
         
         *e_code = '\0';         /* make sure code section is null terminated */
 
@@ -2746,16 +2943,22 @@ static exit_values_ty indent_main_loop(void)
                    (type_code == comma)) &&
                  (output_line_length () > settings.max_col))
             {
-                break_line = 1;
+                *pbreak_line = true;
             }
         }
     }                           /* end of main infinite loop */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static exit_values_ty indent (
     file_buffer_ty * this_file)
 {
+    BOOLEAN break_line = false;       /* Whether or not we should break the line. */
+
     in_prog                     = this_file->data;
     in_prog_pos                 = this_file->data;
     in_prog_size                = this_file->size;
@@ -2763,10 +2966,8 @@ static exit_values_ty indent (
     n_real_blanklines           = 0;
     postfix_blankline_requested = 0;
 
-    clear_buf_break_list ();
+    clear_buf_break_list (&break_line);
     
-    break_line = 0;
-
     if (settings.decl_com_ind <= 0)      /* if not specified by user, set this */
     {
         settings.decl_com_ind = settings.ljust_decl ? (settings.com_ind <= 10 ? 2 :
@@ -2789,12 +2990,16 @@ static exit_values_ty indent (
         settings.case_brace_indent = settings.ind_size;   /* This was the previous default */
     }
 
-    fill_buffer ();             /* Fill the input buffer */
+    fill_buffer();             /* Fill the input buffer */
 
-    return indent_main_loop();         /* do the work. */
+    return indent_main_loop(&break_line);         /* do the work. */
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static char * handle_profile (int argc, char *argv[])
 {
     int i;
@@ -2818,14 +3023,22 @@ static char * handle_profile (int argc, char *argv[])
     return profile_pathname;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static char    * out_name        = 0; /* Points to the name of the output file */
 static int       input_files     = 0; /* How many input files were specified */
 static char **   in_file_names   = NULL; /* Names of all input files */
 static int       max_input_files = 128; /* Initial number of input filenames to allocate. */
 
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static exit_values_ty process_args (
     int       argc,
     char    * argv[],
@@ -2922,7 +3135,7 @@ static exit_values_ty process_args (
             }
             else
             {
-                i += set_option (argv[i], (i < argc ? argv[i + 1] : 0), 1);
+               i += set_option(argv[i], (i < argc ? argv[i + 1] : 0), 1, _("command line"));
             }
         }
     }
@@ -2930,7 +3143,11 @@ static exit_values_ty process_args (
     return exit_status;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static exit_values_ty indent_multiple_files(void)
 {
     exit_values_ty exit_status = total_success;
@@ -2977,13 +3194,17 @@ static exit_values_ty indent_multiple_files(void)
     return exit_status;
 }
 
-/******************************************************************************/
+/**
+ *
+ */
+
+
 static exit_values_ty indent_single_file(BOOLEAN using_stdin)
 {
     exit_values_ty exit_status = total_success;
     struct stat    file_stats;
 
-    if (input_files == 0 || using_stdin)
+    if ((input_files == 0) || using_stdin)
     {
         input_files = 1;
         in_file_names[0] = "Standard input";
@@ -2995,12 +3216,12 @@ static exit_values_ty indent_single_file(BOOLEAN using_stdin)
         /* 1 input file */
 
         in_name = in_file_names[0];
-        current_input = read_file (in_file_names[0], &file_stats);
+        current_input = read_file(in_file_names[0], &file_stats);
 
         if (!out_name && !settings.use_stdout)
         {
             out_name = in_file_names[0];
-            make_backup (current_input, &file_stats);
+            make_backup(current_input, &file_stats);
         }
     }
 
@@ -3032,8 +3253,12 @@ static exit_values_ty indent_single_file(BOOLEAN using_stdin)
     return exit_status;
 }
 
-/******************************************************************************/
-static exit_values_ty indent_all (BOOLEAN using_stdin)
+/**
+ *
+ */
+
+
+static exit_values_ty indent_all(BOOLEAN using_stdin)
 {
     exit_values_ty exit_status = total_success;
 
@@ -3052,26 +3277,28 @@ static exit_values_ty indent_all (BOOLEAN using_stdin)
     return exit_status;
 }
 
-/******************************************************************************/
-int main (
+/**
+ *
+ */
+
+int main(
     int     argc,
     char ** argv)
 {
-    int i;
     char *profile_pathname = 0;
     BOOLEAN using_stdin = false;
     exit_values_ty exit_status;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-    setlocale (LC_MESSAGES, "");
+#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES) && defined (HAVE_LCCTYPES)
+    setlocale(LC_MESSAGES, "");
 #endif
-    bindtextdomain (PACKAGE, LOCALEDIR);
-    textdomain (PACKAGE);
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
 
 #if defined (_WIN32) && !defined (__CYGWIN__)
     /* wildcard expansion of commandline arguments, see wildexp.c */
 
-    extern void wildexp (int *argc, char ***argv);
+    extern void wildexp(int *argc, char ***argv);
 
     wildexp (&argc, &argv);
 #endif /* defined (_WIN32) && !defined (__CYGWIN__) */
@@ -3079,7 +3306,7 @@ int main (
 #ifdef DEBUG
     if (debug)
     {
-        debug_init ();
+        debug_init();
     }
 #endif
 
@@ -3088,13 +3315,13 @@ int main (
     exit_status = total_success;
 
     input_files = 0;
-    in_file_names = (char **) xmalloc (max_input_files * sizeof (char *));
+    in_file_names = (char **) xmalloc(max_input_files * sizeof (char *));
 
-    set_defaults ();
+    set_defaults();
 
-    profile_pathname = handle_profile (argc, argv);
+    profile_pathname = handle_profile(argc, argv);
 
-    exit_status = process_args (argc, argv, &using_stdin);
+    exit_status = process_args(argc, argv, &using_stdin);
 
     if (exit_status == total_success)
     {
@@ -3103,9 +3330,9 @@ int main (
             fprintf (stderr, _("Read profile %s\n"), profile_pathname);
         }
 
-        set_defaults_after ();
+        set_defaults_after();
 
-        exit_status = indent_all (using_stdin);
+        exit_status = indent_all(using_stdin);
     }
     
     return (exit_status);

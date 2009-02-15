@@ -1,29 +1,44 @@
 #!/bin/sh
+
 echo
-cd aclocal
-ln -sf /usr/share/aclocal/codeset.m4   .
-ln -sf /usr/share/aclocal/gettext.m4   .
-ln -sf /usr/share/aclocal/glibc21.m4   .
-ln -sf /usr/share/aclocal/iconv.m4   .
-ln -sf /usr/share/aclocal/isc-posix.m4   .
-ln -sf /usr/share/aclocal/lcmessage.m4  .
-ln -sf /usr/share/aclocal/progtest.m4  .
-cd ..
+echo "#### making README"
 touch README
-aclocal --version
-aclocal -I aclocal
-echo "####"
-gettextize -c -f --intl
+
+echo
+echo "#### Running autopoint"
+#gettextize  --version
+#gettextize --copy --force --intl --no-changelog
+autopoint  --version
+autopoint -f
+
+echo
+echo "#### getting libgettext.h"
+
 cp /usr/share/gettext/gettext.h src/libgettext.h
-aclocal -I m4
-echo "####"
+
+echo
+echo "#### running aclocal"
+aclocal --version
+aclocal -I m4 -I ./aclocal
+
+if [ $? -ne 0 ]
+then
+    exit
+fi
+
+echo
+echo "#### running autoheader"
 autoheader --version
 autoheader
-echo "####"
+
+echo
+echo "#### running autoconf"
+autoconf --version
+autoconf
+
+echo
+echo "#### running automake"
 automake --version
 automake --add-missing
 rm README
-echo "####"
-autoconf --version
-autoconf
 ./configure --enable-maintainer-mode

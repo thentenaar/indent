@@ -28,6 +28,7 @@ __generic_memcpy_fromfs (void *to, const void *from, unsigned long n)
 	1:	movl %0,%%ecx
 		fs; rep; movsb");
 }
+
 static inline void
 __generic_memcpy_fromfs (void *to, const void *from, unsigned long n)
 {

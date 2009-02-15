@@ -1,9 +1,27 @@
-2002-12-16  gettextize  <bug-gnu-gettext@gnu.org>
+-2008-03-11 david <indent@isidore-it.eu>
+	* Re-baselined to the freeBSD indent version to avoid onerous constraints in the old BSD license.
+	* Release version 2.2.10
+	
+-2007-12-11 david <indent@isidore-it.eu>
+        *  Added GPL version 3 as the COPYING file.
+        *  Added missing documentation of blf and brf as reported by Tom Tromey <tromey@redhat.com>
+	
+-2007-11-27 Matthew Wilcox <matthew@wil.cx>
+	* extended --indent-label with negative offsets. -il0 now
+	  gives no indentation, -il-2 is the default to match the old
+	  behaviour.
+	
+2007-11-11 Jean-Christophe Dubois <jcd@tribudubois.net>
+        * added --indent-label and --linux-style options.
 
-	* Makefile.am (SUBDIRS): Add intl,
-	(EXTRA_DIST): Add config/config.rpath config/mkinstalldirs.
-	* configure.ac (AC_OUTPUT): Add intl/Makefile,
+2007-02-25 david Ingamells <david@ingamells.eu>
+	* Added doxygen profile and updated source to be better documented with doxygen.
+        * Cleanup of code.
 
+2003-09-28 Erik de Castro Lopo <nospam@bogus.example.com>
+        * indent.c Fixed Bug#212320: --blank-lines-after-procedures does not work
+	* indent.c Fixed Bug#206785: indent segfaults on the attached file
+	
 2002-12-16  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* configure.ac (AC_OUTPUT): Add po/Makefile.in.
@@ -35,7 +53,7 @@
 	* Added option break-function-decl-args-end 
           (bfde) to break the function arguments list before the closing bracket.
         * -bdfa now causes a break after the opening bracket and before the first 
-          argument so that the first argument and subsequent argments are indented
+          argument so that the first argument and subsequent arguments are indented
           one indentation step instead of being aligned with the opening bracket.
 	
 2002-08-05 Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
@@ -81,7 +99,7 @@
 	* indent.dsp, wildcard.c : improvements for vc++.
 	
 2001-12-04 Vladislav Naumov <vnaum@echo.ru>
-	* miscel/Makefile.mingw32 : Some fixes for the the mingw32 compiler's makefile.
+	* miscel/Makefile.mingw32 : Some fixes for the mingw32 compiler's makefile.
 	* miscel/config.h.vc++ : prevent UTIME for mingw32.
 	
 2001-11-27 David Ingamells <indent@dingamells.fsnet.co.uk>
@@ -96,4 +114,5 @@
 	* lexi.c : Allowed a string to be multi-line (i.e. newlines from code file is part of string).
 
 	* all_source_files : ANSI-ize all functions and clean-up layout. Break up some too-big functions.
+
 

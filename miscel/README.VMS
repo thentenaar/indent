@@ -1,4 +1,4 @@
-README.VMS for GNU `indent' 2.2.9
+README.VMS for GNU `indent' 2.2.10
 ----------------------------------
 This file describes how to build indent under VMS.
 
@@ -33,7 +33,7 @@ POSSIBLE PROBLEMS
 
 The function for reading, `read', is defined by the macro SYS_READ.
 By default under VMS, this is defined to be the functions `vms_read'
-defined in io.c.
+defined in code_io.c.
 
 People have sent me various versions of this function, with differring
 semantics.  I have no way of testing these, so I have done my best to

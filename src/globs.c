@@ -1,7 +1,13 @@
-/* Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
+/** \file
+ * Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
  *
  * Copyright (C) 1986, 1989, 1992 Free Software Foundation, Inc. All rights
  * reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
  *
  * This file is subject to the terms of the GNU General Public License as
  * published by the Free Software Foundation.  A copy of this license is
@@ -25,14 +31,16 @@
 #include <stdlib.h>
 #include <errno.h>
 
-RCSTAG_CC ("$Id: globs.c,v 1.13 2002/03/15 07:48:45 david Exp $");
+RCSTAG_CC ("$Id$");
 
-/* Like malloc but get error if no storage available.  size really should be
+/**
+ * Like malloc but get error if no storage available.  size really should be
  * size_t, but not all systems have size_t, so I hope "unsigned" will work.
  * It works for GNU style machines, where it is 32 bits, and works on
  * MS-DOS.  */
 
-char * xmalloc (unsigned size)
+extern char * xmalloc (
+   unsigned size)
 {
     char *val = (char *) calloc (1, size);
 
@@ -51,9 +59,11 @@ char * xmalloc (unsigned size)
     return val;
 }
 
-/* Like realloc but get error if no storage available.  */
+/**
+ * Like realloc but get error if no storage available. 
+ */
 
-char *xrealloc (
+extern char *xrealloc (
    char *ptr,
    unsigned size)
 {
@@ -68,7 +78,11 @@ char *xrealloc (
     return val;
 }
 
-void message (
+/**
+ *
+ */
+
+extern void message(
     char     * kind,
     char     * string,
     unsigned * a0,
@@ -83,10 +97,12 @@ void message (
     fprintf (stderr, "\n");
 }
 
-/* Print a fatal error message and exit, or, if compiled with
-   "DEBUG" defined, abort (). */
+/**
+ * Print a fatal error message and exit, or, if compiled with
+ * "DEBUG" defined, abort ().
+ */
 
-void fatal (
+extern void fatal (
     const char *string,
     const char *a0)
 {

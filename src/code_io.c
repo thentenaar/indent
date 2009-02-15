@@ -1,26 +1,45 @@
-/* Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.
- * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.
- * Copyright (c) 1992 Free Software Foundation, Inc.  All rights reserved.
+/** \file
+ * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.<br>
+ * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
+ * Copyright (c) 1992 Free Software Foundation, Inc.  All rights reserved.<br>
  *
- * Copyright (c) 1985 Sun Microsystems, Inc. Copyright (c) 1980 The Regents
- * of the University of California. Copyright (c) 1976 Board of Trustees of
- * the University of Illinois. All rights reserved.
+ * Copyright (c) 1985 Sun Microsystems, Inc. <br
+ * Copyright (c) 1980 The Regents of the University of California.<br
+ * Copyright (c) 1976 Board of Trustees of
+ * the University of Illinois. All rights reserved.<br>
  *
- * Redistribution and use in source and binary forms are permitted
- * provided that
- * the above copyright notice and this paragraph are duplicated in all such
- * forms and that any documentation, advertising materials, and other
- * materials related to such distribution and use acknowledge that the
- * software was developed by the University of California, Berkeley, the
- * University of Illinois, Urbana, and Sun Microsystems, Inc.  The name of
- * either University or Sun Microsystems may not be used to endorse or
- * promote products derived from this software without specific prior written
- * permission. THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
- * OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * - 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * - 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * - 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.<br>
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * This file is subject to the terms of the GNU General Public License as
+ * published by the Free Software Foundation.  A copy of this license is
+ * included with this software distribution in the file COPYING.  If you
+ * do not have a copy, you may obtain a copy by writing to the Free
+ * Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * HISTORY
- * 2002-01-17 D.Ingamells Add a final newline if not present in file.
+ * - 2002-01-17 D.Ingamells Add a final newline if not present in file.
  */
 
 #include "sys.h"
@@ -48,29 +67,29 @@
 #endif /* not VMS */
 
 #include "indent.h"
-#include "io.h"
+#include "code_io.h"
 #include "globs.h"
 #include "output.h"
 
-RCSTAG_CC ("$Id: io.c,v 1.50 2002/08/04 17:08:41 david Exp $");
+RCSTAG_CC ("$Id$");
 
-/* number of levels a label is placed to left of code */
-#define LABEL_OFFSET 2
-
-/******************************************************************************/
-/* Stuff that needs to be shared with the rest of indent. Documented in
+/**
+ * Stuff that needs to be shared with the rest of indent. Documented in
  * indent.h.
  */
 
-char          * in_prog_pos    = NULL;  /* used in output.c        io.c indent.c */
-char          * buf_ptr        = NULL;  /* used in output.c lexi.c io.c indent.c comments.c */
-char          * buf_end        = NULL;  /* used in output.c lexi.c io.c indent.c comments.c */
-BOOLEAN         had_eof        = false; /* used in output.c        io.c          comments.c parse.c */
-char          * cur_line       = NULL;  /* used in output.c        io.c */
+char          * in_prog_pos    = NULL;  /*!< used in output.c        code_io.c indent.c */
+char          * buf_ptr        = NULL;  /*!< used in output.c lexi.c code_io.c indent.c comments.c */
+char          * buf_end        = NULL;  /*!< used in output.c lexi.c code_io.c indent.c comments.c */
+BOOLEAN         had_eof        = false; /*!< used in output.c        code_io.c          comments.c parse.c */
+char          * cur_line       = NULL;  /*!< used in output.c        code_io.c */
 
-/******************************************************************************/
+/**
+ *
+ */
 
-char * skip_horiz_space(const char * p)
+extern char * skip_horiz_space(
+   const char * p)
 {
     while ((*p == ' ') || (*p == TAB))
     {
@@ -82,7 +101,7 @@ char * skip_horiz_space(const char * p)
 
 /******************************************************************************/
 
-void skip_buffered_space(void)
+extern void skip_buffered_space(void)
 {
     while ((*buf_ptr == ' ') ||
            (*buf_ptr == TAB))
@@ -91,12 +110,14 @@ void skip_buffered_space(void)
         
         if (buf_ptr >= buf_end)
         {
-            fill_buffer ();
+            fill_buffer();
         }
     }
 }
 
-/******************************************************************************/
+/**
+ *
+ */
 
 static BOOLEAN is_comment_start(const char * p)
 {
@@ -115,48 +136,9 @@ static BOOLEAN is_comment_start(const char * p)
     return ret;
 }
 
-/******************************************************************************/
-
-int count_columns (
-    int column,
-    char *bp,
-    int stop_char)
-{
-    while (*bp != stop_char && *bp != NULL_CHAR)
-    {
-        switch (*bp++)
-        {
-        case EOL:
-        case '\f':           /* form feed */
-            column = 1;
-            break;
-        case TAB:
-            column += settings.tabsize - (column - 1) % settings.tabsize;
-            break;
-        case 010:           /* backspace */
-            --column;
-            break;
-#ifdef COLOR_DEBUG
-        case '\e':          /* ANSI color */
-            while (*bp++ != 'm')
-            {
-            }
-                
-            break;
-#endif
-        default:
-            ++column;
-            break;
-        }
-    }
-
-    return column;
-}
-
-
 #ifdef VMS
-/******************************************************************************/
-/* Folks say VMS requires its own read routine.  Then again, some folks
+/**
+ * Folks say VMS requires its own read routine.  Then again, some folks
  * say it doesn't.  Different folks have also sent me conflicting versions
  * of this function.  Who's right?
  *
@@ -194,8 +176,9 @@ static int vms_read (
 }
 #endif /* VMS */
 
-/******************************************************************************/
-/* Return the column we are at in the input line. */
+/**
+ * Return the column we are at in the input line.
+ */
 
 int current_column (void)
 {
@@ -244,90 +227,20 @@ int current_column (void)
     return column;
 }
 
-/******************************************************************************/
-/* Return the column in which we should place the code in s_code. */
-
-int compute_code_target (
-    int paren_targ)
-{
-    int target_col;
-
-    if (buf_break_used)
-    {
-        return prev_target_col_break;
-    }
-
-    if (parser_state_tos->procname[0] &&
-        (s_code_corresponds_to == parser_state_tos->procname))
-    {
-        target_col = 1;
-        
-        if (!parser_state_tos->paren_level)
-        {
-            return target_col;
-        }
-    }
-    else
-    {
-        target_col = parser_state_tos->ind_level + 1;
-    }
-
-    if (!parser_state_tos->paren_level)
-    {
-        if (parser_state_tos->ind_stmt)
-        {
-            target_col += settings.continuation_indent;
-        }
-        
-        return target_col;
-    }
-
-    if (!settings.lineup_to_parens)
-    {
-        return target_col + settings.continuation_indent +
-                (settings.paren_indent * (parser_state_tos->paren_level - 1));
-    }
-
-    return paren_targ;
-}
-
-/******************************************************************************/
-int compute_label_target (void)
-{
-    /* maybe there should be some option to tell indent where to put public:,
-     * private: etc. ? */
-    
-    if (*s_lab == '#')
-    {
-        return 1;
-    }
-    
-    if (parser_state_tos->pcase)
-    {
-        return parser_state_tos->cstk[parser_state_tos->tos] + 1;
-    }
-    
-    if (settings.c_plus_plus && parser_state_tos->in_decl)
-    {
-        /* FIXME: does this belong here at all? */
-        return 1;
-    }
-    else
-    {
-        return parser_state_tos->ind_level - LABEL_OFFSET + 1;
-    }
-}
-
-/******************************************************************************/
-/* VMS defines it's own read routine, `vms_read' */
+/**
+ * VMS defines it's own read routine, `vms_read' 
+ */
 #ifndef INDENT_SYS_READ
+#include <unistd.h>
 #define INDENT_SYS_READ read
 #endif
 
-/* Read file FILENAME into a `fileptr' structure, and return a pointer to
-   that structure. */
+/**
+ * Read file FILENAME into a `fileptr' structure, and return a pointer to
+ * that structure. 
+ */
 
-file_buffer_ty * read_file (
+file_buffer_ty * read_file(
     char        * filename,
     struct stat * file_stats)
 {
@@ -364,7 +277,7 @@ file_buffer_ty * read_file (
     {
         if ((file_stats->st_size < 0) || (file_stats->st_size > (0xffff - 1)))
         {
-            fatal (_("File %s is too big to read"), filename);
+            fatal(_("File %s is too big to read"), filename);
         }
     }
     else
@@ -372,7 +285,7 @@ file_buffer_ty * read_file (
     {
         if (file_stats->st_size < 0)
         {
-            fatal (_("System problem reading file %s"), filename);
+            fatal(_("System problem reading file %s"), filename);
         }
     }
 
@@ -437,21 +350,24 @@ file_buffer_ty * read_file (
     return &fileptr;
 }
 
-/* This should come from stdio.h and be some system-optimal number */
+/**
+ * This should come from stdio.h and be some system-optimal number 
+ */
 #ifndef BUFSIZ
 #define BUFSIZ 1024
 #endif
 
-/******************************************************************************/
-/* Suck the standard input into a file_buffer structure, and
-   return a pointer to that structure. */
+/**
+ * Suck the standard input into a file_buffer structure, and
+ *  return a pointer to that structure.
+ */
 
-file_buffer_ty * read_stdin (void)
+file_buffer_ty * read_stdin(void)
 {
     static file_buffer_ty stdinptr;
 
     unsigned int          size = 15 * BUFSIZ;
-    int                   ch;
+    int                   ch = EOF;
     char                * p = NULL;
 
     if (stdinptr.data != 0)
@@ -494,8 +410,8 @@ file_buffer_ty * read_stdin (void)
     return &stdinptr;
 }
 
-/******************************************************************************/
-/* Advance `buf_ptr' so that it points to the next line of input.
+/*
+ * Advance `buf_ptr' so that it points to the next line of input.
  *
  * If the next input line contains an indent control comment turning
  * off formatting (a comment, C or C++, beginning with *INDENT-OFF*),
@@ -505,12 +421,13 @@ file_buffer_ty * read_stdin (void)
  * re-enables formatting.
  *
  * Note that if this is a C comment we do not look for the closing
- * delimiter.  Note also that older version of this program also
+ * delimiter.  Note also that older versions of this program also
  * skipped lines containing *INDENT** which represented errors
  * generated by indent in some previous formatting.  This version does
- * not recognize such lines. */
+ * not recognize such lines. 
+ */
 
-void fill_buffer (void)
+void fill_buffer(void)
 {
     char    * p = NULL;
     BOOLEAN   finished_a_line = false;
@@ -537,72 +454,68 @@ void fill_buffer (void)
     {
         cur_line = buf_ptr = in_prog_pos;
         had_eof = true;
-        return;
     }
-
-    /* Here if we know there are chars to read.  The file is
-     * NULL-terminated, so we can always look one character ahead
-     * safely. */
-    
-    p = cur_line = in_prog_pos;
-    finished_a_line = false;
-    
-    do
+    else
     {
-        p = skip_horiz_space(p);
+      /* Here if we know there are chars to read.  The file is
+       * NULL-terminated, so we can always look one character ahead
+       * safely. */
+    
+       p = cur_line = in_prog_pos;
+       finished_a_line = false;
+    
+       do
+       {
+          p = skip_horiz_space(p);
 
-        /* If we are looking at the beginning of a comment, see
-         * if it turns off formatting with off-on directives. */
+         /* If we are looking at the beginning of a comment, see
+          * if it turns off formatting with off-on directives. */
         
-        if (is_comment_start(p))
-        {
-            p += 2;
+          if (is_comment_start(p))
+          {
+             p += 2;
             
-            p = skip_horiz_space(p);
+             p = skip_horiz_space(p);
             
             /* Skip all lines between the indent off and on directives. */
             
-            if (strncmp (p, "*INDENT-OFF*", 12) == 0)
-            {
+             if (strncmp (p, "*INDENT-OFF*", 12) == 0)
+             {
                 inhibit_indenting(true);
-            }
-        }
+             }
+          }
 
-        while ((*p != EOS) && *p != EOL)
-        {
-            p++;
-        }
+          while ((*p != EOS) && *p != EOL)
+          {
+             p++;
+          }
 
-        /* Here for newline -- finish up unless formatting is off */
+         /* Here for newline -- finish up unless formatting is off */
         
-        if (*p == EOL)
-        {
-            finished_a_line = true;
-            in_prog_pos = p + 1;
-        }
+          if (*p == EOL)
+          {
+             finished_a_line = true;
+             in_prog_pos = p + 1;
+          }
         
-        /* Here for embedded NULLs */
+         /* Here for embedded NULLs */
         
-        else if ((unsigned int) (p - current_input->data) < current_input->size)
-        {
-            WARNING (_("Warning: File %s contains NULL-characters\n"), current_input->name, 0);
-            p++;
-        }
+          else if ((unsigned int) (p - current_input->data) < current_input->size)
+          {
+             WARNING (_("Warning: File %s contains NULL-characters\n"), current_input->name, 0);
+             p++;
+          }
         
-        /* Here for EOF with no terminating newline char. */
-        else
-        {
-            in_prog_pos = p;
-            finished_a_line = true;
-        }
-    } while (!finished_a_line);
+         /* Here for EOF with no terminating newline char. */
+          else
+          {
+             in_prog_pos = p;
+             finished_a_line = true;
+          }
+       } while (!finished_a_line);
 
-    buf_ptr = cur_line;
-    buf_end = in_prog_pos;
-    
-    if (buf_break && ((buf_break->offset >= e_code - s_code) || (buf_break->offset <= 0)))
-    {
-        clear_buf_break_list ();
+       buf_ptr = cur_line;
+       buf_end = in_prog_pos;
     }
 }
 

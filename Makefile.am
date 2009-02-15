@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 AUTOMAKE_OPTIONS = no-texinfo.tex
 
-SUBDIRS = intl m4 src doc po man
+SUBDIRS = intl src doc po man
 
 BUILT_SOURCES = 
 
@@ -36,7 +36,7 @@ html-split:
 MAINTAINERCLEANFILES = intl/* aclocal.m4 Makefile.in config.h.in stamp-h1 stamp-h.in configure \
 	@PACKAGE@-1.spec \
 	@PACKAGE@.lsm indent-2.spec .gdbinit \
-	COPYING INSTALL ABOUT-NLS 
+	INSTALL ABOUT-NLS 
 
 ## Use -g when in maintainer mode
 if MAINTAINER_MODE
