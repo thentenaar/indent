@@ -11,7 +11,7 @@ HTMLSTYLE = monolithic
 
 AUTOMAKE_OPTIONS = 1.2 gnits
 
-EXTRA_DIST = @PACKAGE@.html
+#EXTRA_DIST = @PACKAGE@.html
 
 SED = sed
 RM = rm -f
@@ -78,4 +78,4 @@ CLEANFILES = @PACKAGE@.pdf
 
 # --------------- Maintainer's Section
 
-MAINTAINERCLEANFILES = Makefile.in version.texi stamp.vti indent*.html
+MAINTAINERCLEANFILES = Makefile.in version.texi stamp.vti @PACKAGE@*.html

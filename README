@@ -1,4 +1,4 @@
-README for GNU `indent' 2.2.10.
+README for GNU `indent' 2.2.11.
 
   GNU indent changes the appearance of a C program by inserting or
   deleting whitespace according to a plethora of options.  Some
@@ -24,7 +24,7 @@ DOCUMENTATION
 
   For complete documentation on the Web, please visit:
 
-     http://myweb.freeserve.com/indent/beautify.html
+     http://indent.isidore-it.eu/beautify.html
 
   GNU uses a language called "texinfo" for its documentation source
   which produces both an on-line, interactive version and a hardcopy
@@ -53,7 +53,7 @@ DOCUMENTATION
      doc/indent.html
 
   This file can also be accessed at the URL 
-        http://mysite.wanadoo-members.co.uk/indent/indent.html
+        http://indent.isidore-it.eu/indent.html
 
   To create the HTML version from the texinfo version, type:
 

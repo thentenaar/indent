@@ -1,4 +1,9 @@
 #!/bin/sh
+# get the latest translations
+
+echo
+echo "#### get the latest translations"
+rsync -Lrtvz  translationproject.org::tp/latest/indent/  po
 
 echo
 echo "#### making README"
@@ -35,6 +40,13 @@ echo
 echo "#### running autoconf"
 autoconf --version
 autoconf
+
+# get the latest config files.
+
+cd config
+wget -q "http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.guess"
+wget -q "http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.sub"
+cd ..
 
 echo
 echo "#### running automake"

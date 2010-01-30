@@ -246,18 +246,18 @@ static int highest_version (
 {
     DIR           * dirp = opendir (dirname);
     struct dirent * dp = NULL;
-    int             highest_version;
+    int             highestVersion;
 
     if (!dirp)
     {
-        highest_version = 0;
+        highestVersion = 0;
     }
     else
     {
        int             this_version;
        int             file_name_length = strlen(filename);
 
-       highest_version = 0;
+       highestVersion = 0;
 
        while ((dp = readdir (dirp)) != 0)
        {
@@ -269,16 +269,16 @@ static int highest_version (
 
           this_version = version_number (filename, dp->d_name, file_name_length);
 
-          if (this_version > highest_version)
+          if (this_version > highestVersion)
           {
-             highest_version = this_version;
+             highestVersion = this_version;
           }
        }
 
        closedir (dirp);
     }
 
-    return highest_version;
+    return highestVersion;
 }
 
 
@@ -330,19 +330,19 @@ static int max_version (
  */
 
 static char * generate_backup_filename (
-    backup_mode_ty   version_control,
+    backup_mode_ty   versionControl,
     char           * pathname)
 {
     int last_numbered_version;
     char *backup_name;
 
-    if (version_control == none)
+    if (versionControl == none)
     {
         backup_name = NULL;
     }
     else
     {
-       if (version_control == simple)
+       if (versionControl == simple)
        {
            backup_name = simple_backup_name (pathname);
        }
@@ -350,7 +350,7 @@ static char * generate_backup_filename (
        {
           last_numbered_version = max_version (pathname);
 
-          if ((version_control == numbered_existing) && (last_numbered_version == 0))
+          if ((versionControl == numbered_existing) && (last_numbered_version == 0))
           {
              backup_name = simple_backup_name (pathname);
           }

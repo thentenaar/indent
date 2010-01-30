@@ -590,31 +590,31 @@ static void set_next_buf_break (
  */
 
 static int pad_output(
-    int current_column,
+    int currentColumn,
     int target_column)
 {
-    if (current_column < target_column)
+    if (currentColumn < target_column)
     {
         if (settings.use_tabs && (settings.tabsize > 1))
         {
-            int offset = settings.tabsize - (current_column - 1) % settings.tabsize;
+            int offset = settings.tabsize - (currentColumn - 1) % settings.tabsize;
 
-            while (current_column + offset <= target_column)
+            while (currentColumn + offset <= target_column)
             {
                 putc(TAB, output);
-                current_column += offset;
+                currentColumn += offset;
                 offset = settings.tabsize;
             }
         }
 
-        while (current_column < target_column)
+        while (currentColumn < target_column)
         {
             putc(' ', output);
-            current_column++;
+            currentColumn++;
         }
     }
 
-    return current_column;
+    return currentColumn;
 }
 
 /**
@@ -749,11 +749,11 @@ static int dump_line_label(void)
 
          if (s[0] == '/' && (s[1] == '*' || s[1] == '/'))
          {
-            fprintf (output, "%.*s", e_lab - s, s);
+            fprintf (output, "%.*s", (int)(e_lab - s), s);
          }
          else
          {
-            fprintf (output, "/* %.*s */", e_lab - s, s);
+            fprintf (output, "/* %.*s */", (int)(e_lab - s), s);
          }
 
         /* no need to update cur_col: the very next thing will
@@ -811,7 +811,6 @@ static void dump_line_code(
     BOOLEAN * pbreak_line,
     int       target_col_break)
 {
-   int saved_cur_col = *pcur_col;
    int paren_level   = 0;
 
    if (s_code != e_code)
@@ -1023,7 +1022,11 @@ extern void dump_line (
     {
         if (prefix_blankline_requested && (n_real_blanklines == 0))
         {
-            n_real_blanklines = 1;
+            if ((prefix_blankline_requested_code != decl) ||
+                !parser_state_tos->decl_on_line)
+            {
+                n_real_blanklines = 1;
+            }
         }
         else if (settings.swallow_optional_blanklines && (n_real_blanklines > 1))
         {

@@ -1,99 +1,105 @@
-# Dutch translation for the indent program.
-# Copyright (C) 2000 Free Software Foundation, Inc.
-# Gerald Raucamp <cavey@vengeance.et.tudelft.nl>, 2000.
+# Dutch translations for indent.
+# Copyright (C) 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the indent package.
 #
+# Gerald Raucamp <cavey@vengeance.et.tudelft.nl>, 2000.
+# Benno Schulenberg <benno@vertaalt.nl>, 2005, 2007, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: indent 2.2.7\n"
+"Project-Id-Version: indent-2.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-11 19:55+0100\n"
-"PO-Revision-Date: 2002-01-28 18:23+01:00\n"
-"Last-Translator: Gerald Raucamp <cavey@vengeance.et.tudelft.nl>\n"
-"Language-Team: Dutch <vertaling@nl.linux.org>\n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2008-05-17 21:27+0200\n"
+"Last-Translator: Benno Schulenberg <benno@vertaalt.nl>\n"
+"Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/args.c:610
-#, fuzzy
+#: src/args.c:611
 msgid ""
 "usage: indent file [-o outfile ] [ options ]\n"
 "       indent file1 file2 ... fileN [ options ]\n"
-msgstr "       indent bestand1 bestand2 ... bestandN [ argumenten ]\n"
+msgstr ""
+"Gebruik:  indent BESTAND [-o UITVOERBESTAND] [OPTIES]\n"
+"     of:  indent BESTAND1 BESTAND2 ... BESTANDn [OPTIES]\n"
 
-#: src/args.c:676
-#, fuzzy, c-format
+#: src/args.c:677
+#, c-format
 msgid "%s: missing argument to parameter %s\n"
-msgstr "Indent: ontbrekend argument of parameter %s\n"
+msgstr "%s: ontbrekend argument bij optie %s\n"
 
-#: src/args.c:801
-#, fuzzy, c-format
+#: src/args.c:802
+#, c-format
 msgid "%s: unknown option \"%s\"\n"
-msgstr "indent: onbekend argument \"%s\"\n"
+msgstr "%s: onbekende optie '%s'\n"
 
-#: src/args.c:811
+#: src/args.c:812
 #, c-format
 msgid "option: %s\n"
-msgstr "argument: %s\n"
+msgstr "optie: %s\n"
 
-#: src/args.c:827
-#, fuzzy, c-format
+#: src/args.c:828
+#, c-format
 msgid "GNU indent %s\n"
-msgstr "indent: %s"
+msgstr "GNU indent %s\n"
 
-#: src/args.c:912
-#, fuzzy, c-format
+#: src/args.c:913
+#, c-format
 msgid "%s: option ``%s'' requires a numeric parameter\n"
-msgstr "indent: argument ``%s'' vereist een numerieke parameter\n"
+msgstr "%s: optie '%s' vereist een numeriek argument\n"
 
-#: src/args.c:920
-#, fuzzy, c-format
+#: src/args.c:921
+#, c-format
 msgid "set_option: internal error: p_type %d\n"
-msgstr "indent: set_option: interne fout: p_type %d\n"
+msgstr "set_option(): *interne fout*: p_type %d\n"
 
-#: src/args.c:976
-#, fuzzy
+#: src/args.c:977
 msgid "Profile contains an unterminated comment"
-msgstr "Profiel bevat foutieve karakters"
+msgstr "Profiel bevat een onafgemaakt commentaar"
 
-#: src/args.c:1014
+#: src/args.c:1015
 msgid "Profile contains unpalatable characters"
-msgstr "Profiel bevat foutieve karakters"
+msgstr "Profiel bevat ongeldige tekens"
 
-#: src/args.c:1182
+#: src/args.c:1183
 #, c-format
 msgid "File named by environment variable %s does not exist or is not readable"
 msgstr ""
+"Het bestand genoemd in omgevingsvariable %s bestaat niet\n"
+"of is niet leesbaar"
 
 #: src/backup.c:466
 #, c-format
 msgid "indent:  Strange version-control value\n"
-msgstr "indent:  Onbekende waarde voor versie-controle\n"
+msgstr "indent: vreemde waarde voor versiebeheer\n"
 
 #: src/backup.c:467
-#, fuzzy, c-format
+#, c-format
 msgid "indent:  Using numbered-existing\n"
-msgstr "indent:  Gebruik makend van bestaande nummering\n"
+msgstr "indent: bestaande nummering wordt gebruikt\n"
 
 #: src/backup.c:498
 #, c-format
 msgid "indent: Can't make backup filename of %s\n"
-msgstr "indent: Kan geen reserve kopie maken van bestand %s\n"
+msgstr "indent: kan geen bestandsnaam maken voor een reservekopie van %s\n"
 
 #: src/backup.c:506
 #, c-format
 msgid "Can't open backup file %s"
-msgstr "indent: Kan reserve kopie van bestand %s niet openen"
+msgstr "Kan reservekopiebestand %s niet openen"
 
 #: src/backup.c:513
 #, c-format
 msgid "Can't write to backup file %s"
-msgstr "indent: Kan niet naar reserve kopie %s schrijven"
+msgstr "Kan reservekopiebestand %s niet schrijven"
 
 #: src/backup.c:526
 #, c-format
 msgid "Can't preserve modification time on backup file %s"
-msgstr "Kan modificatie tijd van reserve kopie %s niet bewaren"
+msgstr "Kan wijzigingstijd van reservekopiebestand %s niet behouden"
 
 #: src/globs.c:49 src/globs.c:74
 #, c-format
@@ -108,12 +114,12 @@ msgstr "indent: %s:%d: %s:"
 #: src/globs.c:109
 #, c-format
 msgid "indent: Fatal Error: "
-msgstr "indent: Fatale Fout: "
+msgstr "indent: Fatale fout: "
 
 #: src/globs.c:119
 #, c-format
 msgid "indent: System Error: "
-msgstr "indent: Systeem Fout: "
+msgstr "indent: Systeemfout: "
 
 #: src/globs.h:27
 msgid "Warning"
@@ -123,108 +129,84 @@ msgstr "Waarschuwing"
 msgid "Error"
 msgstr "Fout"
 
-#: src/indent.c:187
-msgid "Ran out of memory"
-msgstr "Onvoldoende geheugen beschikbaar"
-
-#: src/indent.c:596 src/indent.c:1318
-#, c-format
-msgid "Extra %c"
-msgstr "Extra %c"
-
-#: src/indent.c:1440 src/indent.c:1466 src/indent.c:2624
-msgid "Line broken"
-msgstr "Gebroken regel"
-
-#: src/indent.c:2115
-#, fuzzy
-msgid "Unmatched #else"
-msgstr "#else hoort nergens bij"
-
-#: src/indent.c:2116
-#, fuzzy
-msgid "Unmatched #elif"
-msgstr "#endif hoort nergens bij"
-
-#: src/indent.c:2143
-#, fuzzy
-msgid "Unmatched #endif"
-msgstr "#endif hoort nergens bij"
-
-#: src/indent.c:2563
+#: src/indent.c:284
 msgid "EOF encountered in comment"
-msgstr "EOF geconstateerd binnen commentaar blok"
+msgstr "Einde van bestand werd bereikt midden in een commentaar"
 
-#: src/indent.c:2802
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Regel afgebroken"
+
+#: src/indent.c:522
 msgid "Unexpected end of file"
-msgstr "Onverwachts bestands einde"
+msgstr "Onverwacht bestandseinde"
 
-#: src/indent.c:2808
+#: src/indent.c:528
 #, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
-msgstr "Er waren %d uitvoer regels en %d commentaar regels\n"
+msgstr "Er waren %d niet-lege uitvoerregels en %d commentaarregels\n"
 
-#: src/indent.c:2812
+#: src/indent.c:532
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
 msgstr "(Regels met commentaar)/(Regels met code): %6.3f\n"
 
-#: src/indent.c:2836
-#, fuzzy
+#: src/indent.c:556
 msgid "Line broken 2"
-msgstr "Gebroken regel 2"
+msgstr "Regel afgebroken 2"
 
-#: src/indent.c:3059
-#, fuzzy, c-format
+#: src/indent.c:778
+#, c-format
 msgid "indent: only one output file (2nd was %s)\n"
-msgstr "%s: slechts een uitvoer bestand (tweede was %s)\n"
+msgstr "indent: slechts één uitvoerbestand is mogelijk (het tweede was %s)\n"
 
-#: src/indent.c:3068 src/indent.c:3094
-#, fuzzy, c-format
+#: src/indent.c:787 src/indent.c:813
+#, c-format
 msgid "indent: only one input file when output file is specified\n"
 msgstr ""
-"%s: slechts een invoer bestand mogelijk als uitvoer bestand is gegeven\n"
+"indent: slechts één invoerbestand is toegestaan als uitvoerbestand gegeven "
+"is\n"
 
-#: src/indent.c:3082 src/indent.c:3129
+#: src/indent.c:801 src/indent.c:848
 #, c-format
 msgid "indent: can't have filenames when specifying standard input\n"
 msgstr ""
-"indent: bestandsnamen niet toegestaan bij gebruik van standaard invoer\n"
+"indent: bestandsnamen niet toegestaan bij gebruik van standaardinvoer\n"
 
-#: src/indent.c:3102
+#: src/indent.c:821
 #, c-format
 msgid "indent: only one input file when stdout is used\n"
 msgstr ""
-"indent: slechts een invoer bestand mogelijk bij gebruik van standaard "
-"uitvoer\n"
+"indent: slechts één invoerbestand toegestaan bij gebruik van "
+"standaarduitvoer\n"
 
-#: src/indent.c:3138
+#: src/indent.c:857
 msgid "command line"
-msgstr ""
+msgstr "opdrachtregel"
 
-#: src/indent.c:3330
+#: src/indent.c:1049
 #, c-format
 msgid "Read profile %s\n"
-msgstr "Lees profiel %s\n"
+msgstr "Profiel %s gelezen\n"
 
 #: src/code_io.c:169
 msgid "Internal buffering error"
-msgstr "Interne buffer fout"
+msgstr "*Interne bufferfout*"
 
 #: src/code_io.c:262
 #, c-format
 msgid "Can't open input file %s"
-msgstr "Kan bestand %s niet openen"
+msgstr "Kan invoerbestand %s niet openen"
 
 #: src/code_io.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "Can't stat input file %s"
-msgstr "Kan invoer bestand %s niet statten"
+msgstr "Kan status van invoerbestand %s niet opvragen"
 
 #: src/code_io.c:272
-#, c-format
-msgid "Warning: Zero-length file %s"
-msgstr "Waarschuwing: Bestand %s heeft een lengte van nul"
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Waarschuwing: bestand %s heeft lengte nul"
 
 #: src/code_io.c:280
 #, c-format
@@ -239,65 +221,62 @@ msgstr "Systeem heeft problemen met het lezen van bestand %s"
 #: src/code_io.c:312
 #, c-format
 msgid "Error reading input file %s"
-msgstr "Fout opgetreden bij lezen van bestand %s"
+msgstr "Fout bij lezen van invoerbestand %s"
 
 #: src/code_io.c:317
-#, c-format
-msgid "Error closeing input file %s"
-msgstr "Fout opgetreden bij sluiten van invoer file %s"
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Fout bij sluiten van invoerbestand %s"
 
-#: src/code_io.c:505
-#, c-format
-msgid "Warning: File %s contains NULL-characters\n"
-msgstr "Waarschuwing: Bestand %s bevat NULL-karakters\n"
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Waarschuwing: bestand %s bevat NULL-tekens\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Onafgemaakte tekenconstante"
 
 #: src/lexi.c:787
-msgid "Unterminated character constant"
-msgstr "Niet beeindigd karakter constante"
-
-#: src/lexi.c:788
 msgid "Unterminated string constant"
-msgstr "Niet beeindigde string constante"
+msgstr "Onafgemaakte tekenreeksconstante"
 
-#: src/lexi.c:1034
-#, fuzzy, c-format
+#: src/lexi.c:1044
+#, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
-msgstr ""
-"dubbelzinnigheids toewijzing oude stijl in \"=%c\".  Aangenomen \"= %c\"\n"
+msgstr "toewijzing in oude stijl ('=%c') is meerduidig; begrepen als '= %c'\n"
 
-#: src/output.c:1312
+#: src/output.c:1315
 #, c-format
 msgid "indent: can't create %s\n"
 msgstr "indent: kan %s niet aanmaken\n"
 
-#: src/output.c:1351
+#: src/output.c:1354
 #, c-format
 msgid "Can't close output file %s"
-msgstr "Kan uitvoer bestand %s niet sluiten"
+msgstr "Kan uitvoerbestand %s niet sluiten"
 
-#: src/output.c:1364
+#: src/output.c:1367
 #, c-format
 msgid "Can't preserve modification time on output file %s"
-msgstr "Kan modificatie tijd op uitvoer bestand %s niet bewaren"
+msgstr "Kan wijzigingstijd van uitvoerbestand %s niet behouden"
 
 #: src/parse.c:447
 msgid "Unmatched 'else'"
-msgstr "'else' hoort nergens bij"
+msgstr "Losse 'else'"
 
 #: src/parse.c:473
 msgid "Stmt nesting error."
-msgstr "Statement nestings fout."
+msgstr "Nestingsfout van statements."
 
 #: src/parse.c:515
 msgid "Unknown code to parser"
-msgstr "Onbekende code voor de verwerker"
+msgstr "Onbekende code voor de ontleder"
 
 #: src/parse.c:525
-#, fuzzy, c-format
+#, c-format
 msgid "ParseStack [%d]:\n"
-msgstr ""
-"\n"
-"ParseStack [%d]:\n"
+msgstr "OntleedStapel [%d]:\n"
 
 #: src/parse.c:529
 #, c-format
@@ -306,37 +285,19 @@ msgstr "  stapel[%d] =>   stapel: %d   inspring_niveau: %d\n"
 
 #: src/wildexp.c:126
 msgid "CANNOT FIND '@' FILE!"
-msgstr "KAN '@' BESTAND NIET VINDEN!"
+msgstr "KAN '@'-BESTAND NIET VINDEN!"
 
-#, fuzzy
-#~ msgid "usage: indent file [-o outfile ] [ options ]\n"
-#~ msgstr "gebruik: %s bestand [-o uitvoerbestand ] [ argumenten ]\n"
+#~ msgid "Ran out of memory"
+#~ msgstr "Onvoldoende geheugen beschikbaar"
 
-#, fuzzy
-#~ msgid "Stuff missing from end of file."
-#~ msgstr "Er mist wat spul aan het einde van het bestand."
+#~ msgid "Extra %c"
+#~ msgstr "Extra %c"
 
-#~ msgid "Unbalanced parens"
-#~ msgstr "Onjuist gebalanceerde haakjes"
+#~ msgid "Unmatched #else"
+#~ msgstr "Losse '#else'"
 
-#~ msgid "%s: can't have filenames when specifying standard input\n"
-#~ msgstr ""
-#~ "%s: bestandsnamen niet toegestaan bij gebruik van standaard invoer\n"
+#~ msgid "Unmatched #elif"
+#~ msgstr "Losse '#elif'"
 
-#~ msgid "Standard input"
-#~ msgstr "Standaard invoer"
-
-#, fuzzy
-#~ msgid "indent: bad font specification: %s\n"
-#~ msgstr "indent: foutieve specificatie van het lettertype: %s\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "\n"
-#~ "*** Debug output marker line ***\n"
-#~ msgstr ""
-#~ "\n"
-#~ "*** Debug markeer regel ***\n"
-
-#~ msgid "Parse: Unknown code: %d for %s\n"
-#~ msgstr "Verwerking: Onbekende code: %d voor %s\n"
+#~ msgid "Unmatched #endif"
+#~ msgstr "Losse '#endif'"

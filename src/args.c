@@ -517,6 +517,7 @@ const long_option_conversion_ty option_conversions[] =
     {"no-space-after-if",                           "nsai"},
     {"no-space-after-function-call-names",          "npcs"},
     {"no-space-after-for",                          "nsaf"},
+    {"no-space-after-cast",                         "ncs"},
     {"no-space-after-casts",                        "ncs"},
     {"no-parameter-indentation",                    "nip"},
     {"no-extra-expression-indentation",             "neei"},

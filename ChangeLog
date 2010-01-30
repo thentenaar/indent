@@ -1,7 +1,14 @@
--2008-03-11 david <indent@isidore-it.eu>
-	* Re-baselined to the freeBSD indent version to avoid onerous constraints in the old BSD license.
-	* Release version 2.2.10
+-2010-01-31 david <indent@isidore-it.eu>
+	* Fixed Debian Bug report logs - #485764, Regression with --blank-lines-after-declarations in 2.2.10
+	* Fail instead of removing embedded NULLs in input files.
+	* Release 2.2.11
 	
+-2009-11-11 Jean-Christophe Dubois jcd@tribudubois.net
+	* fixed handling of '...' range 'operator in C++ language.
+	
+-2009-10-11 david <indent@isidore-it.eu>
+	* fixed -nlps option.
+
 -2007-12-11 david <indent@isidore-it.eu>
         *  Added GPL version 3 as the COPYING file.
         *  Added missing documentation of blf and brf as reported by Tom Tromey <tromey@redhat.com>

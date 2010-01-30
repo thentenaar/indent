@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indent 2.2.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-11 19:55+0100\n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
 "PO-Revision-Date: 2002-10-27 20:30GMT\n"
 "Last-Translator: Josep Maria Balasch <jbalasch@mailtvc.com>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
@@ -14,53 +14,53 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/args.c:610
+#: src/args.c:611
 #, fuzzy
 msgid ""
 "usage: indent file [-o outfile ] [ options ]\n"
 "       indent file1 file2 ... fileN [ options ]\n"
 msgstr "    indent fitxer1 fitxer2 ... fitxerN [ opcions ]\n"
 
-#: src/args.c:676
+#: src/args.c:677
 #, fuzzy, c-format
 msgid "%s: missing argument to parameter %s\n"
 msgstr "indent: argument inexistent al paràmetre %s\n"
 
-#: src/args.c:801
+#: src/args.c:802
 #, fuzzy, c-format
 msgid "%s: unknown option \"%s\"\n"
 msgstr "indent: opció desconeguda \"%s\"\n"
 
-#: src/args.c:811
+#: src/args.c:812
 #, c-format
 msgid "option: %s\n"
 msgstr "opció: %s\n"
 
-#: src/args.c:827
+#: src/args.c:828
 #, c-format
 msgid "GNU indent %s\n"
 msgstr "GNU indent %s\n"
 
-#: src/args.c:912
+#: src/args.c:913
 #, fuzzy, c-format
 msgid "%s: option ``%s'' requires a numeric parameter\n"
 msgstr "indent: l'opció ``%s'' requereix un paràmetre numèric\n"
 
-#: src/args.c:920
+#: src/args.c:921
 #, fuzzy, c-format
 msgid "set_option: internal error: p_type %d\n"
 msgstr "indent: set_option: error intern: p_type %d\n"
 
-#: src/args.c:976
+#: src/args.c:977
 #, fuzzy
 msgid "Profile contains an unterminated comment"
 msgstr "El perfil conté caràcters no acceptables"
 
-#: src/args.c:1014
+#: src/args.c:1015
 msgid "Profile contains unpalatable characters"
 msgstr "El perfil conté caràcters no acceptables"
 
-#: src/args.c:1182
+#: src/args.c:1183
 #, c-format
 msgid "File named by environment variable %s does not exist or is not readable"
 msgstr ""
@@ -124,81 +124,60 @@ msgstr "Advertència"
 msgid "Error"
 msgstr "Error"
 
-#: src/indent.c:187
-msgid "Ran out of memory"
-msgstr "S'ha quedat sense memòria"
-
-#: src/indent.c:596 src/indent.c:1318
-#, c-format
-msgid "Extra %c"
-msgstr "Extra %c"
-
-#: src/indent.c:1440 src/indent.c:1466 src/indent.c:2624
-msgid "Line broken"
-msgstr "Línia trencada"
-
-#: src/indent.c:2115
-msgid "Unmatched #else"
-msgstr "#else desaparellat"
-
-#: src/indent.c:2116
-msgid "Unmatched #elif"
-msgstr "#elif desaparellat"
-
-#: src/indent.c:2143
-msgid "Unmatched #endif"
-msgstr "#endif desaparellat"
-
-#: src/indent.c:2563
+#: src/indent.c:284
 msgid "EOF encountered in comment"
 msgstr "S'ha trobat EOF en el comentari"
 
-#: src/indent.c:2802
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Línia trencada"
+
+#: src/indent.c:522
 msgid "Unexpected end of file"
 msgstr "Inesperat final de fitxer"
 
-#: src/indent.c:2808
+#: src/indent.c:528
 #, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
 msgstr "Hi havia %d de línies no buides de sortida i %d comentaris\n"
 
-#: src/indent.c:2812
+#: src/indent.c:532
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
 msgstr "(Línies amb comentaris)/(Línies amb codi): %6.3f\n"
 
-#: src/indent.c:2836
+#: src/indent.c:556
 msgid "Line broken 2"
 msgstr "Línia trencada 2"
 
-#: src/indent.c:3059
+#: src/indent.c:778
 #, c-format
 msgid "indent: only one output file (2nd was %s)\n"
 msgstr "indent: només un fitxer de sortida (el 2n era %s)\n"
 
-#: src/indent.c:3068 src/indent.c:3094
+#: src/indent.c:787 src/indent.c:813
 #, c-format
 msgid "indent: only one input file when output file is specified\n"
 msgstr ""
 "indent: només un fitxer d'entrada quan el fitxer de sortida és especificat\n"
 
-#: src/indent.c:3082 src/indent.c:3129
+#: src/indent.c:801 src/indent.c:848
 #, c-format
 msgid "indent: can't have filenames when specifying standard input\n"
 msgstr ""
 "indent: no hi pot haver noms de fitxer quan s'especifica l'entrada "
 "estàndard\n"
 
-#: src/indent.c:3102
+#: src/indent.c:821
 #, c-format
 msgid "indent: only one input file when stdout is used\n"
 msgstr "indent: només un fitxer d'entrada quan stdout és emprat\n"
 
-#: src/indent.c:3138
+#: src/indent.c:857
 msgid "command line"
 msgstr ""
 
-#: src/indent.c:3330
+#: src/indent.c:1049
 #, c-format
 msgid "Read profile %s\n"
 msgstr "Llegir perfil %s\n"
@@ -218,8 +197,8 @@ msgid "Can't stat input file %s"
 msgstr "No hi pot haver el fitxer d'entrada %s"
 
 #: src/code_io.c:272
-#, c-format
-msgid "Warning: Zero-length file %s"
+#, fuzzy, c-format
+msgid "Zero-length file %s"
 msgstr "Advertència: Fitxer de longitud zero %s"
 
 #: src/code_io.c:280
@@ -238,39 +217,39 @@ msgid "Error reading input file %s"
 msgstr "Error en llegir el fitxer d'entrada %s"
 
 #: src/code_io.c:317
-#, c-format
-msgid "Error closeing input file %s"
+#, fuzzy, c-format
+msgid "Error closing input file %s"
 msgstr "Error en tancar el fitxer d'entrada %s"
 
-#: src/code_io.c:505
-#, c-format
-msgid "Warning: File %s contains NULL-characters\n"
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
 msgstr "Advertència: El fitxer %s conté NULL-caràcters\n"
 
-#: src/lexi.c:787
+#: src/lexi.c:786
 msgid "Unterminated character constant"
 msgstr "La constant caràcter no és acabada"
 
-#: src/lexi.c:788
+#: src/lexi.c:787
 msgid "Unterminated string constant"
 msgstr "La constant string no és acabada"
 
-#: src/lexi.c:1034
+#: src/lexi.c:1044
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr "ambigüetat d'assignació old-style en \"=%c\".  S'assumeix \"= %c\"\n"
 
-#: src/output.c:1312
+#: src/output.c:1315
 #, c-format
 msgid "indent: can't create %s\n"
 msgstr "indent: no es pot crear %s\n"
 
-#: src/output.c:1351
+#: src/output.c:1354
 #, c-format
 msgid "Can't close output file %s"
 msgstr "No es pot tancar el fitxer de sortida %s"
 
-#: src/output.c:1364
+#: src/output.c:1367
 #, c-format
 msgid "Can't preserve modification time on output file %s"
 msgstr ""
@@ -301,6 +280,21 @@ msgstr "  stack[%d] =>   stack: %d   ind_level: %d\n"
 #: src/wildexp.c:126
 msgid "CANNOT FIND '@' FILE!"
 msgstr "NO ES POT TROBAR EL FITXER '@'!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "S'ha quedat sense memòria"
+
+#~ msgid "Extra %c"
+#~ msgstr "Extra %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "#else desaparellat"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "#elif desaparellat"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "#endif desaparellat"
 
 #~ msgid "usage: indent file [-o outfile ] [ options ]\n"
 #~ msgstr "ús: indent fitxer [-o fitxer_de_sortida ] [ opcions ]\n"

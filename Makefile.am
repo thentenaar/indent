@@ -33,22 +33,25 @@ html-split:
 
 # --------------- Maintainer's Section
 
-MAINTAINERCLEANFILES = intl/* aclocal.m4 Makefile.in config.h.in stamp-h1 stamp-h.in configure \
+MAINTAINERCLEANFILES = intl/* aclocal.m4 Makefile.in \
+	config.h.in config/* \
+	po/Makefile.in.in po/Rules-quot po/boldquot.sed po/en@boldquot.header \
+	po/en@quot.header po/insert-header.sin po/quot.sed po/remove-potcdate.sin \
+	stamp-h1 stamp-h.in configure \
 	@PACKAGE@-1.spec \
 	@PACKAGE@.lsm indent-2.spec .gdbinit \
 	INSTALL ABOUT-NLS 
 
 ## Use -g when in maintainer mode
 if MAINTAINER_MODE
-CFLAGS=-g -I.
+CFLAGS+= -g -Wall -I.
 else
-CFLAGS=@CFLAGS@ -I.
+CFLAGS+= -I.
 endif
 
 if MAINTAINER_MODE
 README: Makefile miscel/README.in configure.ac
 	sed -e 's%!VERSION!%@VERSION@%g'  miscel/$@.in > $@
-
 
 miscel/Makefile.mingw32 miscel/makefile.watcom :%: %.in
 	cat $@.in | perl -e 'while (<>) {chomp; print "$$_\015\012"; }'  > $@
@@ -61,7 +64,7 @@ tar:
 	install -D @PACKAGE@-@VERSION@.tar.gz $(REDHAT)/SOURCES/@PACKAGE@-@VERSION@.tar.gz
 
 WWWDIR=/home/david/www/@PACKAGE@
-REDHAT:=$(shell grep '^%_topdir' rpm/macros | cut -d \  -f 2)
+REDHAT=$(shell grep '^%_topdir' rpm/macros | cut -d \  -f 2)
 SPECFILE=@PACKAGE@-${shell echo "@VERSION@" | cut -d. -f1}.spec
 
 rpm: tar $(SPECFILE)

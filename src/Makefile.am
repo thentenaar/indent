@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = 1.2 gnits
 
 bin_PROGRAMS = indent
-indent_SOURCES = indent.c args.c backup.c comments.c lexi.c parse.c globs.c code_io.c output.c utils.c
-noinst_HEADERS = indent.h args.h backup.h comments.h lexi.h parse.h globs.h code_io.h output.h utils.h sys.h libgettext.h
+indent_SOURCES = indent.c args.c backup.c comments.c lexi.c parse.c globs.c code_io.c output.c utils.c handletoken.c
+noinst_HEADERS = indent.h args.h backup.h comments.h lexi.h parse.h globs.h code_io.h output.h utils.h sys.h libgettext.h handletoken.h
 indent_LDADD =  $(INTLLIBS)
 EXTRA_DIST = @PACKAGE@.gperf @PACKAGE@-cc.gperf wildexp.c gperf.c gperf-cc.c \
 	     @PACKAGE@.dsp \
@@ -16,7 +16,14 @@ DEFS = @DEFS@ -DLOCALEDIR=\"${localedir}\"
 LIBS = @LIBINTL@ @LIBS@
 
 
-MAINTAINERCLEANFILES= Makefile.in
+MAINTAINERCLEANFILES= Makefile.in libgettext.h
+
+## Use -g when in maintainer mode
+if MAINTAINER_MODE
+AM_CFLAGS= -g -Wall -I.
+else
+AM_CFLAGS= -I.
+endif
 
 
 gperf.c: indent.gperf

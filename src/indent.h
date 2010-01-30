@@ -60,6 +60,14 @@ RCSTAG_H (indent, "$Id$");
 
 #include "lexi.h"
 
+/**
+ * Round up P to be a multiple of SIZE.
+ */
+
+#ifndef ROUND_UP
+#define ROUND_UP(p, size) (((unsigned long) (p) + (size) - 1) & ~((size) - 1))
+#endif
+
 /** Values that `indent' can return for exit status.
  *
  *  `total_success' means no errors or warnings were found during a successful

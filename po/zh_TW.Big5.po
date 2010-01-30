@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indent 2.2.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-11 19:55+0100\n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
 "PO-Revision-Date: 2001-09-05 08:38+0800\n"
 "Last-Translator: Franklin W. <franklin@hyweb.com.tw>\n"
 "Language-Team: zh_TW.Big5 <LL@li.org>\n"
@@ -14,53 +14,53 @@ msgstr ""
 "Content-Type: text/plain; charset=big5\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/args.c:610
+#: src/args.c:611
 #, fuzzy
 msgid ""
 "usage: indent file [-o outfile ] [ options ]\n"
 "       indent file1 file2 ... fileN [ options ]\n"
 msgstr "      indent <輸入檔1> <輸入檔2> ... [ 選項 ]\n"
 
-#: src/args.c:676
+#: src/args.c:677
 #, fuzzy, c-format
 msgid "%s: missing argument to parameter %s\n"
 msgstr "indent: 找不到 %s 的參數\n"
 
-#: src/args.c:801
+#: src/args.c:802
 #, fuzzy, c-format
 msgid "%s: unknown option \"%s\"\n"
 msgstr "indent: 未知的選項 \"%s\"\n"
 
-#: src/args.c:811
+#: src/args.c:812
 #, c-format
 msgid "option: %s\n"
 msgstr "選項：%s\n"
 
-#: src/args.c:827
+#: src/args.c:828
 #, c-format
 msgid "GNU indent %s\n"
 msgstr ""
 
-#: src/args.c:912
+#: src/args.c:913
 #, fuzzy, c-format
 msgid "%s: option ``%s'' requires a numeric parameter\n"
 msgstr "indent: ``%s'' 選項需要一個數字做為參數\n"
 
-#: src/args.c:920
+#: src/args.c:921
 #, fuzzy, c-format
 msgid "set_option: internal error: p_type %d\n"
 msgstr "indent: 內部錯誤：set_option 函式中出現錯誤的 proto type %d\n"
 
-#: src/args.c:976
+#: src/args.c:977
 #, fuzzy
 msgid "Profile contains an unterminated comment"
 msgstr "設定檔中含有錯誤的字元"
 
-#: src/args.c:1014
+#: src/args.c:1015
 msgid "Profile contains unpalatable characters"
 msgstr "設定檔中含有錯誤的字元"
 
-#: src/args.c:1182
+#: src/args.c:1183
 #, c-format
 msgid "File named by environment variable %s does not exist or is not readable"
 msgstr ""
@@ -123,79 +123,58 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/indent.c:187
-msgid "Ran out of memory"
-msgstr "記憶體已用完"
-
-#: src/indent.c:596 src/indent.c:1318
-#, c-format
-msgid "Extra %c"
-msgstr "多的字元 %c"
-
-#: src/indent.c:1440 src/indent.c:1466 src/indent.c:2624
-msgid "Line broken"
-msgstr "有一至數行被分割，請確認"
-
-#: src/indent.c:2115
-msgid "Unmatched #else"
-msgstr "#else 找不到相對應的關鍵字"
-
-#: src/indent.c:2116
-msgid "Unmatched #elif"
-msgstr "#elif 找不到相對應的關鍵字"
-
-#: src/indent.c:2143
-msgid "Unmatched #endif"
-msgstr "#endif 找不到相對應的關鍵字"
-
-#: src/indent.c:2563
+#: src/indent.c:284
 msgid "EOF encountered in comment"
 msgstr "在註解中碰到檔案結尾"
 
-#: src/indent.c:2802
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "有一至數行被分割，請確認"
+
+#: src/indent.c:522
 msgid "Unexpected end of file"
 msgstr "檔案結尾有問題"
 
-#: src/indent.c:2808
+#: src/indent.c:528
 #, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
 msgstr "已編排 %d 個非空白行與 %d 個註解\n"
 
-#: src/indent.c:2812
+#: src/indent.c:532
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
 msgstr "註解行與程式碼行的比例為：%6.3f\n"
 
-#: src/indent.c:2836
+#: src/indent.c:556
 #, fuzzy
 msgid "Line broken 2"
 msgstr "有一至數行被分割，請確認"
 
-#: src/indent.c:3059
+#: src/indent.c:778
 #, c-format
 msgid "indent: only one output file (2nd was %s)\n"
 msgstr "indent: 只能有一個輸出檔 (您指定了第二個輸出檔為 %s)\n"
 
-#: src/indent.c:3068 src/indent.c:3094
+#: src/indent.c:787 src/indent.c:813
 #, c-format
 msgid "indent: only one input file when output file is specified\n"
 msgstr "indent: 指定輸出檔時，只能有一個輸入檔\n"
 
-#: src/indent.c:3082 src/indent.c:3129
+#: src/indent.c:801 src/indent.c:848
 #, c-format
 msgid "indent: can't have filenames when specifying standard input\n"
 msgstr "indent: 指定使用標準輸入時，不能附帶輸入檔名\n"
 
-#: src/indent.c:3102
+#: src/indent.c:821
 #, c-format
 msgid "indent: only one input file when stdout is used\n"
 msgstr "indent: 使用標準輸出時，只能有一個輸入檔\n"
 
-#: src/indent.c:3138
+#: src/indent.c:857
 msgid "command line"
 msgstr ""
 
-#: src/indent.c:3330
+#: src/indent.c:1049
 #, c-format
 msgid "Read profile %s\n"
 msgstr "讀取設定檔 %s\n"
@@ -215,8 +194,8 @@ msgid "Can't stat input file %s"
 msgstr "無法找到輸入檔 %s 的資訊"
 
 #: src/code_io.c:272
-#, c-format
-msgid "Warning: Zero-length file %s"
+#, fuzzy, c-format
+msgid "Zero-length file %s"
 msgstr "警告：檔案 %s 沒有內容"
 
 #: src/code_io.c:280
@@ -235,40 +214,40 @@ msgid "Error reading input file %s"
 msgstr "讀取輸入檔 %s 時發生錯誤"
 
 #: src/code_io.c:317
-#, c-format
-msgid "Error closeing input file %s"
+#, fuzzy, c-format
+msgid "Error closing input file %s"
 msgstr "關閉輸入檔 %s 時發生問題"
 
-#: src/code_io.c:505
-#, c-format
-msgid "Warning: File %s contains NULL-characters\n"
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
 msgstr "警告：檔案 %s 包含空字元（NULL-char）\n"
 
-#: src/lexi.c:787
+#: src/lexi.c:786
 msgid "Unterminated character constant"
 msgstr "可能少掉一個字元單引號"
 
-#: src/lexi.c:788
+#: src/lexi.c:787
 msgid "Unterminated string constant"
 msgstr "可能少掉一個字串雙引號"
 
-#: src/lexi.c:1034
+#: src/lexi.c:1044
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr ""
 "有疑義的指定敘述 \"=%c\"，可能為舊式的寫法。indent 將假設它為 \"= %c\"\n"
 
-#: src/output.c:1312
+#: src/output.c:1315
 #, c-format
 msgid "indent: can't create %s\n"
 msgstr "indent: 無法產生 %s\n"
 
-#: src/output.c:1351
+#: src/output.c:1354
 #, c-format
 msgid "Can't close output file %s"
 msgstr "無法關閉輸出檔 %s"
 
-#: src/output.c:1364
+#: src/output.c:1367
 #, c-format
 msgid "Can't preserve modification time on output file %s"
 msgstr "無法在輸出檔 %s 保留最後變更日期"
@@ -298,6 +277,21 @@ msgstr ""
 #: src/wildexp.c:126
 msgid "CANNOT FIND '@' FILE!"
 msgstr "無法找到 '@' 檔案。"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "記憶體已用完"
+
+#~ msgid "Extra %c"
+#~ msgstr "多的字元 %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "#else 找不到相對應的關鍵字"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "#elif 找不到相對應的關鍵字"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "#endif 找不到相對應的關鍵字"
 
 #~ msgid "usage: indent file [-o outfile ] [ options ]\n"
 #~ msgstr "用法：indent <輸入檔> [-o 輸出檔] [選項]\n"

@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(GNU Indent, 2.2.10, bug-indent@gnu.org)
+AC_INIT(GNU Indent, 2.2.11, bug-indent@gnu.org)
 AC_CONFIG_SRCDIR(src/indent.c)
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE(indent, 2.2.10)
+AM_INIT_AUTOMAKE(indent, 2.2.11)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE

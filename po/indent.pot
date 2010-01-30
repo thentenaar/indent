@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-11 19:55+0100\n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,51 +16,51 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/args.c:610
+#: src/args.c:611
 msgid ""
 "usage: indent file [-o outfile ] [ options ]\n"
 "       indent file1 file2 ... fileN [ options ]\n"
 msgstr ""
 
-#: src/args.c:676
+#: src/args.c:677
 #, c-format
 msgid "%s: missing argument to parameter %s\n"
 msgstr ""
 
-#: src/args.c:801
+#: src/args.c:802
 #, c-format
 msgid "%s: unknown option \"%s\"\n"
 msgstr ""
 
-#: src/args.c:811
+#: src/args.c:812
 #, c-format
 msgid "option: %s\n"
 msgstr ""
 
-#: src/args.c:827
+#: src/args.c:828
 #, c-format
 msgid "GNU indent %s\n"
 msgstr ""
 
-#: src/args.c:912
+#: src/args.c:913
 #, c-format
 msgid "%s: option ``%s'' requires a numeric parameter\n"
 msgstr ""
 
-#: src/args.c:920
+#: src/args.c:921
 #, c-format
 msgid "set_option: internal error: p_type %d\n"
 msgstr ""
 
-#: src/args.c:976
+#: src/args.c:977
 msgid "Profile contains an unterminated comment"
 msgstr ""
 
-#: src/args.c:1014
+#: src/args.c:1015
 msgid "Profile contains unpalatable characters"
 msgstr ""
 
-#: src/args.c:1182
+#: src/args.c:1183
 #, c-format
 msgid "File named by environment variable %s does not exist or is not readable"
 msgstr ""
@@ -123,78 +123,57 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/indent.c:187
-msgid "Ran out of memory"
-msgstr ""
-
-#: src/indent.c:596 src/indent.c:1318
-#, c-format
-msgid "Extra %c"
-msgstr ""
-
-#: src/indent.c:1440 src/indent.c:1466 src/indent.c:2624
-msgid "Line broken"
-msgstr ""
-
-#: src/indent.c:2115
-msgid "Unmatched #else"
-msgstr ""
-
-#: src/indent.c:2116
-msgid "Unmatched #elif"
-msgstr ""
-
-#: src/indent.c:2143
-msgid "Unmatched #endif"
-msgstr ""
-
-#: src/indent.c:2563
+#: src/indent.c:284
 msgid "EOF encountered in comment"
 msgstr ""
 
-#: src/indent.c:2802
+#: src/indent.c:345
+msgid "Line broken"
+msgstr ""
+
+#: src/indent.c:522
 msgid "Unexpected end of file"
 msgstr ""
 
-#: src/indent.c:2808
+#: src/indent.c:528
 #, c-format
 msgid "There were %d non-blank output lines and %d comments\n"
 msgstr ""
 
-#: src/indent.c:2812
+#: src/indent.c:532
 #, c-format
 msgid "(Lines with comments)/(Lines with code): %6.3f\n"
 msgstr ""
 
-#: src/indent.c:2836
+#: src/indent.c:556
 msgid "Line broken 2"
 msgstr ""
 
-#: src/indent.c:3059
+#: src/indent.c:778
 #, c-format
 msgid "indent: only one output file (2nd was %s)\n"
 msgstr ""
 
-#: src/indent.c:3068 src/indent.c:3094
+#: src/indent.c:787 src/indent.c:813
 #, c-format
 msgid "indent: only one input file when output file is specified\n"
 msgstr ""
 
-#: src/indent.c:3082 src/indent.c:3129
+#: src/indent.c:801 src/indent.c:848
 #, c-format
 msgid "indent: can't have filenames when specifying standard input\n"
 msgstr ""
 
-#: src/indent.c:3102
+#: src/indent.c:821
 #, c-format
 msgid "indent: only one input file when stdout is used\n"
 msgstr ""
 
-#: src/indent.c:3138
+#: src/indent.c:857
 msgid "command line"
 msgstr ""
 
-#: src/indent.c:3330
+#: src/indent.c:1049
 #, c-format
 msgid "Read profile %s\n"
 msgstr ""
@@ -215,7 +194,7 @@ msgstr ""
 
 #: src/code_io.c:272
 #, c-format
-msgid "Warning: Zero-length file %s"
+msgid "Zero-length file %s"
 msgstr ""
 
 #: src/code_io.c:280
@@ -235,38 +214,38 @@ msgstr ""
 
 #: src/code_io.c:317
 #, c-format
-msgid "Error closeing input file %s"
+msgid "Error closing input file %s"
 msgstr ""
 
-#: src/code_io.c:505
+#: src/code_io.c:507
 #, c-format
-msgid "Warning: File %s contains NULL-characters\n"
+msgid "File %s contains NULL-characters: cannot proceed\n"
 msgstr ""
 
-#: src/lexi.c:787
+#: src/lexi.c:786
 msgid "Unterminated character constant"
 msgstr ""
 
-#: src/lexi.c:788
+#: src/lexi.c:787
 msgid "Unterminated string constant"
 msgstr ""
 
-#: src/lexi.c:1034
+#: src/lexi.c:1044
 #, c-format
 msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
 msgstr ""
 
-#: src/output.c:1312
+#: src/output.c:1315
 #, c-format
 msgid "indent: can't create %s\n"
 msgstr ""
 
-#: src/output.c:1351
+#: src/output.c:1354
 #, c-format
 msgid "Can't close output file %s"
 msgstr ""
 
-#: src/output.c:1364
+#: src/output.c:1367
 #, c-format
 msgid "Can't preserve modification time on output file %s"
 msgstr ""

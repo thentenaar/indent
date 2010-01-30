@@ -180,7 +180,7 @@ static int vms_read (
  * Return the column we are at in the input line.
  */
 
-int current_column (void)
+extern int current_column (void)
 {
     char *p;
     int column;
@@ -240,11 +240,11 @@ int current_column (void)
  * that structure. 
  */
 
-file_buffer_ty * read_file(
+extern file_buffer_ty * read_file(
     char        * filename,
     struct stat * file_stats)
 {
-    static file_buffer_ty fileptr;
+    static file_buffer_ty fileptr = {NULL};
     
     /*
      * size is required to be unsigned for MSDOS,
@@ -269,7 +269,7 @@ file_buffer_ty * read_file(
 
     if (file_stats->st_size == 0)
     {
-        ERROR (_("Warning: Zero-length file %s"), filename, 0);
+        ERROR (_("Zero-length file %s"), filename, 0);
     }
 
 #if !defined(__DJGPP__)
@@ -314,7 +314,7 @@ file_buffer_ty * read_file(
     
     if (close (fd) < 0)
     {
-        fatal (_("Error closeing input file %s"), filename);
+        fatal (_("Error closing input file %s"), filename);
     }
     
 
@@ -364,7 +364,7 @@ file_buffer_ty * read_file(
 
 file_buffer_ty * read_stdin(void)
 {
-    static file_buffer_ty stdinptr;
+    static file_buffer_ty stdinptr = {NULL};
 
     unsigned int          size = 15 * BUFSIZ;
     int                   ch = EOF;
@@ -452,7 +452,8 @@ void fill_buffer(void)
 
     if (*in_prog_pos == EOS)
     {
-        cur_line = buf_ptr = in_prog_pos;
+        buf_ptr = in_prog_pos;
+        cur_line = buf_ptr;
         had_eof = true;
     }
     else
@@ -461,7 +462,8 @@ void fill_buffer(void)
        * NULL-terminated, so we can always look one character ahead
        * safely. */
     
-       p = cur_line = in_prog_pos;
+       cur_line = in_prog_pos;
+       p = cur_line;
        finished_a_line = false;
     
        do
@@ -502,7 +504,8 @@ void fill_buffer(void)
         
           else if ((unsigned int) (p - current_input->data) < current_input->size)
           {
-             WARNING (_("Warning: File %s contains NULL-characters\n"), current_input->name, 0);
+             ERROR (_("File %s contains NULL-characters: cannot proceed\n"), current_input->name, 0);
+             exit(1);
              p++;
           }
         

@@ -923,9 +923,12 @@ the procedure being called and the @samp{(} (for example, @w{@code{puts
 @kindex -cs
 @kindex --space-after-cast
 @kindex -ncs
-@kindex --no-space-after-casts
-If the @option{-cs} option is specified, @command{indent} puts a space after
-a cast operator.
+@kindex --no-space-after-cast
+If the @option{-cs} option is specified, @command{indent} puts a space between
+a cast operator and the object to be cast. The @option{-ncs} ensures that there 
+is no space between the cast operator and the object. Remember that @command{indent}
+only knows about the standard C data types and so cannot recognise user-defined types
+in casts. Thus @code{(mytype)thing} is not treated as a cast.
 
 @kindex -bs
 @kindex --blank-after-sizeof
@@ -1724,7 +1727,7 @@ Break the line before all arguments in a declaration.@*
 @xref{Declarations}.
 
 @item -bfde
-@itemx --break-function-decl-args
+@itemx --break-function-decl-args-end
 Break the line after the last argument in a declaration.@*
 @xref{Declarations}.
 
