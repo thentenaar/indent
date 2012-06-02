@@ -1731,7 +1731,7 @@ Break the line before all arguments in a declaration.@*
 Break the line after the last argument in a declaration.@*
 @xref{Declarations}.
 
-@item -dj@var{n}
+@item -dj
 @itemx --left-justify-declarations
 If -cd 0 is used then comments after declarations are left justified
 behind the declaration.@*
