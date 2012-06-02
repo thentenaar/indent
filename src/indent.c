@@ -1008,8 +1008,8 @@ int main(
     BOOLEAN using_stdin = false;
     exit_values_ty exit_status;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES) && defined (HAVE_LCCTYPES)
-    setlocale(LC_MESSAGES, "");
+#if defined (HAVE_SETLOCALE)
+    setlocale(LC_ALL, "");
 #endif
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
