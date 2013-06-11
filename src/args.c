@@ -1,11 +1,12 @@
 /** \file
+ * Copyright (c) 2013 Łukasz Stelmach.  All rights reserved.<br>
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved.<br>
  * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
- * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc. 
+ * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc. 
  *   All rights reserved.<br>
  *
  * Copyright (c) 1980, 1993
- *	 The Regents of the University of California.<br>
+ *       The Regents of the University of California.<br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois.<br>
  * Copyright (c) 1985 Sun Microsystems, Inc.
  *   All rights reserved.<br>
@@ -39,11 +40,13 @@
  * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
- * This file is subject to the terms of the GNU General Public License as
- * published by the Free Software Foundation.  A copy of this license is
- * included with this software distribution in the file COPYING.  If you
- * do not have a copy, you may obtain a copy by writing to the Free
- * Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * HISTORY
  * - 2002-03-14 DI restructured scan_profile and fixed bug handling comments
@@ -191,6 +194,7 @@ static int exp_ts   = 0;
 static int exp_ut   = 0;
 static int exp_v    = 0;
 static int exp_version = 0;
+static int exp_par  = 0;
 
 /**
  * The following structure is controlled by command line parameters and
@@ -333,7 +337,7 @@ const pro_ty pro[] =
     {"c",       PRO_INT,                               33, ONOFF_NA, &settings.com_ind,                          &exp_c},
     {"bs",      PRO_BOOL,                           false,       ON, &settings.blank_after_sizeof,               &exp_bs},
     {"brs",     PRO_BOOL,                            true,       ON, &settings.braces_on_struct_decl_line,       &exp_bls},
-    {"brf",     PRO_BOOL,                           false,       ON, &settings.braces_on_func_def_line,		 &exp_blf},
+    {"brf",     PRO_BOOL,                           false,       ON, &settings.braces_on_func_def_line,          &exp_blf},
     {"br",      PRO_BOOL,                            true,       ON, &settings.btype_2,                          &exp_bl},
     {"bls",     PRO_BOOL,                            true,      OFF, &settings.braces_on_struct_decl_line,       &exp_bls},
     {"blf",     PRO_BOOL,                           false,      OFF, &settings.braces_on_func_def_line,          &exp_blf},
@@ -350,6 +354,8 @@ const pro_ty pro[] =
     {"bacc",    PRO_BOOL,                           false,       ON, &settings.blanklines_around_conditional_compilation, &exp_bacc},
     {"T",       PRO_KEY,                                0, ONOFF_NA, 0,                                          &exp_T},
     {"ppi",     PRO_INT,                                0, ONOFF_NA, &settings.force_preproc_width,              &exp_ppi},
+    {"pal",     PRO_BOOL,                            true,      OFF, &settings.pointer_align_right,              &exp_par},
+    {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
 };
@@ -469,6 +475,8 @@ const pro_ty pro[] =
     {"bacc",    PRO_BOOL,                           false,       ON, &settings.blanklines_around_conditional_compilation, &exp_bacc},
     {"T",       PRO_KEY,                                0, ONOFF_NA, 0,                                          &exp_T},
     {"ppi",     PRO_INT,                                0, ONOFF_NA, &settings.force_preproc_width,              &exp_ppi},
+    {"pal",     PRO_BOOL,                            true,      OFF, &settings.pointer_align_right,              &exp_par},
+    {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
 };
@@ -598,6 +606,8 @@ const long_option_conversion_ty option_conversions[] =
     {"berkeley",                                    "orig"},
     {"Bill-Shannon",                                "bs"},
     {"preprocessor-indentation",                    "ppi"},
+    {"pointer-align-right",                         "par"},
+    {"pointer-align-left",                          "pal"},
     /* Signify end of structure.  */
     {0,                                             0},
 };

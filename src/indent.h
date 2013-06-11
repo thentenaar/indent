@@ -1,7 +1,8 @@
 /** \file
+ * Copyright (c) 2013 Łukasz Stelmach.  All rights reserved.<br>
  * Copyright (c) 1999 Carlo Wood.  All rights reserved.<br>
  * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
- * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc.  All rights reserved.<br>
+ * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved.<br>
  *
  * Copyright (c) 1985 Sun Microsystems, Inc. <br>
  * Copyright (c) 1980 The Regents of the University of California. <br>
@@ -31,9 +32,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * History:
  * - 2002-11-10 Cristalle Azundris Sabon <cristalle@azundris.com>
@@ -135,10 +140,10 @@ typedef enum bb_code
   bb_ident,
   bb_attribute,
   bb_struct_delim,
-  bb_operator2,			/* member selection (bb_struct_delim `.' or `->') */
-  bb_operator4,			/* member selection (bb_struct_delim `.*' or `->*') */
-  bb_operator5,			/* multiply, divide or modulo */
-  bb_operator6,			/* add or subtract */
+  bb_operator2,                 /* member selection (bb_struct_delim `.' or `->') */
+  bb_operator4,                 /* member selection (bb_struct_delim `.*' or `->*') */
+  bb_operator5,                 /* multiply, divide or modulo */
+  bb_operator6,                 /* add or subtract */
   bb_doublecolon,
   bb_cast
 } bb_code_ty;
@@ -318,6 +323,7 @@ typedef struct user_options_st
     int brace_indent; /*!< number of spaces to indent braces from the suround if, while, etc. in -bl
                        * (bype_2 == 0) code */
     int expect_output_file;  /*!< Means "-o" was specified. */
+    int pointer_align_right;  /*!< true: "char *a", false: "char* a" */
 } user_options_ty;
 
 extern user_options_ty settings;

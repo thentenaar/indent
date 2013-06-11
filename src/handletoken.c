@@ -1,6 +1,7 @@
 /** \file
  * handletoken.c  GNU indent, processing of tokens returned by the parser.
  *
+ * Copyright (c) 2013 Łukasz Stelmach.  All rights reserved.<br>
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
  * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved. <br>
@@ -585,11 +586,15 @@ static void handle_token_unary_op(
 {
     char           * t_ptr;
     
-    if (parser_state_tos->want_blank)
+    if (parser_state_tos->want_blank &&
+        !(parser_state_tos->in_decl &&
+          !settings.pointer_align_right &&
+          *token == '*'))
     {
         set_buf_break (bb_unary_op, paren_target);
         *(e_code++) = ' ';
         *e_code = '\0';     /* null terminate code sect */
+        parser_state_tos->want_blank = false;
     }
     else if (can_break)
     {
@@ -636,6 +641,15 @@ static void handle_token_unary_op(
         {
             check_code_size();
             *(e_code++) = *t_ptr;
+        }
+
+        if (parser_state_tos->want_blank &&
+            !(parser_state_tos->in_decl &&
+              settings.pointer_align_right &&
+              *token == '*'))
+        {
+            set_buf_break (bb_unary_op, paren_target);
+            *(e_code++) = ' ';
         }
 
         *e_code = '\0';     /* null terminate code sect */

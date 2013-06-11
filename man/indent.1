@@ -378,6 +378,14 @@ Do not read \(oq.indent.pro\(cq files.
 .br
 See \fB\ INVOKING\ INDENT\fR.
 .TP
+.B -pal\fR, \fB--pointer-align-left\fR
+Put asterisks in pointer declarations on the left of spaces, next to
+types: \(oq\(oqchar* p\(cq\(cq.
+.TP
+.B -par\fR, \fB--pointer-align-right\fR
+Put asterisks in pointer declarations on the right of spaces, next to
+variable names: \(oq\(oqchar *p\(cq\(cq. This is the default behavior.
+.TP
 .B -pcs\fR, \fB--space-after-procedure-calls\fR
 Insert a space between the name of the 
 procedure being called and the \(oq(\(cq.
@@ -1883,10 +1891,11 @@ David Ingamells
 .SH "HISTORY"
 Derived from the UCB program "indent".
 .SH "COPYING"
-Copyright (C) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
+Copyright (C) 1989, 1992, 1993, 1994, 1995, 1996, 2014 Free Software Foundation, Inc.
 Copyright (C) 1995, 1996 Joseph Arceneaux.
 Copyright (C) 1999 Carlo Wood.
 Copyright (C) 2001 David Ingamells.
+Copyright (C) 2013 Łukasz Stelmach.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice

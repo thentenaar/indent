@@ -1,3 +1,7 @@
+-2014-03-24 Daniel P. Valentine <dpv@world.std.com>, Łukasz Stelmach <l.stelmach@samsung.com>
+        * Added -pal and -par options to customize position of pointer declaration * relative to whitespace.
+          GNU patch 8404 submitted 11 Jun 2013.
+
 -2014-03-23 Daniel P. Valentine <dpv@world.std.com>
         * Fixed GNU bug #33364: Spaces around + omitted in an edge case (handle_token.c, lexi.c)
         * Adjusted a couple of warnings from automake (.texinfo->.texi; AM_CPPFLAGS->INCLUDES)
