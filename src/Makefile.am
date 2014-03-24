@@ -11,7 +11,7 @@ EXTRA_DIST = @PACKAGE@.gperf @PACKAGE@-cc.gperf wildexp.c gperf.c gperf-cc.c \
 
 
 BUILT_SOURCES = gperf.c gperf-cc.c
-INCLUDES = -I. -I$(srcdir) -I$(top_srcdir)/intl
+AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/intl
 DEFS = @DEFS@ -DLOCALEDIR=\"${localedir}\"
 LIBS = @LIBINTL@ @LIBS@
 

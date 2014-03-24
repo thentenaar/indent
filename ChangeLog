@@ -1,3 +1,8 @@
+-2014-03-23 Daniel P. Valentine <dpv@world.std.com>
+        * Fixed GNU bug #33364: Spaces around + omitted in an edge case (handle_token.c, lexi.c)
+        * Adjusted a couple of warnings from automake (.texinfo->.texi; AM_CPPFLAGS->INCLUDES)
+        * Added regression to make subdirectories, so a "make check" runs the test. Fixed "echo -n" to be "printf" for compatibility.
+
 -2010-01-31 david <indent@isidore-it.eu>
 	* Fixed Debian Bug report logs - #485764, Regression with --blank-lines-after-declarations in 2.2.10
 	* Fail instead of removing embedded NULLs in input files.

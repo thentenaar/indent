@@ -15,7 +15,7 @@ if test -x $INDENT; then
     ls -ld ./output
     exit 1
   fi
-  echo -n "Regression testing "
+  printf "Regression testing "
   $INDENT --version
   echo
 else
@@ -35,7 +35,8 @@ EXAMPLES="do.c else.c for.c func-def.c lshift.c ncs.c \
 
 BUGS="case-label.c one-line-1.c one-line-2.c one-line-3.c \
         one-line-4.c struct-decl.c sizeof-in-while.c line-break-comment.c \
-        macro.c enum.c elif.c nested.c wrapped-string.c minus_predecrement.c"
+        macro.c enum.c elif.c nested.c wrapped-string.c minus_predecrement.c \
+        bug-gnu-33364.c"
 
 INDENTSRC="args.c backup.h backup.c dirent_def.h globs.c indent.h \
         indent.c indent_globs.h io.c lexi.c memcpy.c parse.c pr_comment.c \
@@ -43,7 +44,7 @@ INDENTSRC="args.c backup.h backup.c dirent_def.h globs.c indent.h \
 
 mkdir output
 
-echo -n "Generating indent et al with default settings..."
+printf "Generating indent et al with default settings..."
 
 for i in $EXAMPLES $INDENTSRC $BUGS
 do
@@ -53,7 +54,7 @@ echo "Done."
 
 
 # Cases testing certain options
-echo -n "Generating special option examples..."
+printf "Generating special option examples..."
 
 SPECIALS="typedef-bug.c bug-hp.c bug-di.c newlined-parms.c indent.pro.c \
         comments1.c comments1-fca.c ncs-on-return.c cs-on-return.c sob.c continue.c continue-lp.c \
@@ -213,7 +214,7 @@ echo "Diffing generated code against standard..."
 
 for i in $EXAMPLES $INDENTSRC $SPECIALS $BUGS
 do
-  echo -n ...$i...
+  printf ...$i...
 
   if [ ! -f standard/$i ]
   then
@@ -239,7 +240,7 @@ echo "Diffing generated code against standard...Done."
 
 # Testing indent (x) == indent (indent (x))
 echo
-echo -n "Testing meta-indent..."
+printf "Testing meta-indent..."
 
 ARGS="-bacc -nbad -nbap -nbc -br -cdb -nce -ci4 -cli4 -cs -nfc1 \
 -fca -i4 -ip0 -l78 -lp -npcs -psl -sc -ss -ts4"
@@ -255,7 +256,7 @@ fi
 
 for j in 1 2 3 4 5
 do
-  echo -n " $j"
+  printf " $j"
   $INDENT -npro $ARGS output/meta-indent.c -o output/meta-indent.c-o
 
   diff --initial-tab output/meta-indent.c-o standard/meta-indent.c  > output/meta-diffs-$j
@@ -388,11 +389,11 @@ for i in boxed.c-* outer.c-* newlines.c-* cplus.c-* tabs.c-* cplus-one.c class-f
         on-off-1.c on-off-2.c \
         method.c right-margin-comment.c
 do
-  echo -n ...$i...
+  printf ...$i...
   diff --initial-tab ../standard/$i $i > $i-diffs 2>&1
   if [ -s $i-diffs ]
   then
-    echo -n ERROR: $i failed | tee -a $ERR
+    printf ERROR: $i failed | tee -a $ERR
     echo >> $ERR
   else
     rm $i-diffs $i
@@ -410,18 +411,18 @@ $INDENT input/bug206785.c -o output/bug206785.c 2>output/bug206785.err
 
 if [ $? -ne 2 ]
 then
-    echo -n ERROR: bad return status from indent. | tee -a $ERR
+    printf ERROR: bad return status from indent. | tee -a $ERR
     echo >> $ERR
 fi
 cd output
 
 for i in bug206785.c bug206785.err
 do
-  echo -n ...$i...
+  printf ...$i...
   diff --initial-tab ../standard/$i $i > $i-diffs 2>&1
   if [ -s $i-diffs ]
   then
-    echo -n ERROR: $i failed | tee -a $ERR
+    printf ERROR: $i failed | tee -a $ERR
     echo >> $ERR
   else
     rm $i-diffs

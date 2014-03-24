@@ -1,6 +1,6 @@
-all: test
+all: 
 
-test:
+check:
 	./TEST
 
 clean:

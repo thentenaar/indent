@@ -1,7 +1,9 @@
 /** \file
+ * handletoken.c  GNU indent, processing of tokens returned by the parser.
+ *
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
- * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc.  All rights reserved. <br>
+ * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved. <br>
  *
  * Copyright (c) 1980 The Regents of the University of California. <br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.
@@ -32,9 +34,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  * Updates:
  * - 2002-08-05: Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
@@ -47,6 +53,7 @@
  * - 28 Sep 2003 Geoffrey Lee <glee@bogus.example.com>
  *             Fixed Bug#205692: indent: [patch] fix garble shown in locale(fwd)
  * - 2008-03-08 DI Re-baselined on the more acceptable (license-wise) OpenBSD release 3.4.
+ *              
  */
 
 #include "sys.h"
@@ -413,7 +420,10 @@ static void handle_token_lparen(
     }
 
     /* The '(' that starts a cast can never be preceded by an
-     * indentifier or decl.  */
+     * indentifier or decl.  There is an exception immediately
+     * following a return.  To prevent that influence from going
+     * too far, it is reset by a following ident in lexi.c. 
+     */
 
     if ((parser_state_tos->last_token == decl) ||
         ((parser_state_tos->last_token == ident) &&
