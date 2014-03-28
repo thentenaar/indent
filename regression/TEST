@@ -66,7 +66,8 @@ SPECIALS="typedef-bug.c bug-hp.c bug-di.c newlined-parms.c indent.pro.c \
         else-comment-br-ce.c const.c case.c case-br.c scope.c scope-br.c \
         comment-break.c cdb.c bbreak.c bad-break.c pre.c pre_lps.c pre_nlps.c dont-line-up-parentheses.c \
         bad-comment.c unknown-type.c unknown-type-npsl.c bug-npsl.c bug-psl.c do-cdw.c \
-        label.c goto-1.c goto-2.c line-count.c decl_block.c pointer-pal.c"
+        label.c goto-1.c goto-2.c line-count.c decl_block.c pointer-pal.c else-comment-2-br.c else-comment-2-bl.c \
+        else-comment-2-br-ce.c"
 
 ARGS="-bad"
 $INDENT -npro $ARGS input/bad-break.c -o output/bad-break.c
@@ -167,6 +168,9 @@ ARGS=""
 $INDENT -npro -bl     input/else-comment.c -o output/else-comment-bl.c
 $INDENT -npro -br     input/else-comment.c -o output/else-comment-br.c
 $INDENT -npro -br -ce input/else-comment.c -o output/else-comment-br-ce.c
+$INDENT -npro -bl     input/else-comment-2.c -o output/else-comment-2-bl.c
+$INDENT -npro -br     input/else-comment-2.c -o output/else-comment-2-br.c
+$INDENT -npro -br -ce input/else-comment-2.c -o output/else-comment-2-br-ce.c
 
 ARGS="-kr -cp0 -l132 -lps -br -psl"
 $INDENT -npro $ARGS input/const.c -o output/const.c

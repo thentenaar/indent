@@ -1,7 +1,7 @@
 /** \file
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
- * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc.  All rights reserved. <br>
+ * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved. <br>
  *
  * Copyright (c) 1980 The Regents of the University of California. <br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.
@@ -32,9 +32,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Updates:
  * - 2002-08-05: Matthias <moh@itec.uni-klu.ac.at> and Eric Lloyd <ewlloyd@neta.com>
@@ -165,6 +169,22 @@ static BOOLEAN search_brace(
          * statement which follows.  Use save_com to do so.
          */
 
+        /* The saved buffer has space at the beginning to hold a brace if
+         * needed and otherwise collects comments, separating them with newlines
+         * if there are more than one.
+         *
+         * The process stops if we find a left brace or the beginning of a statement.
+         *
+         * A left brace is moved before any comments in a -br situation.  Otherwise,
+         * it comes after comments.
+         *
+         * A statement comes after any comments, but in the case of an else that needs
+         * to be on the same line as a preceding left brace, we don't force a new line.
+         * Why the else logic is in here is an interesting question.
+         *
+         * At the moment any form feeds before we get to braces or a statement are just
+         * dropped.
+         */
         switch (*type_code)
         {
         case newline:
@@ -187,8 +207,18 @@ static BOOLEAN search_brace(
 
             if (settings.btype_2 && (parser_state_tos->last_token != rbrace))
             {
+                /* We are asking the brace to jump ahead of the comment.  In 
+                 * the event that it was between two comments, the regression
+                 * examples want to insert a newline to put the comments on 
+                 * separate lines.  If it is followed by something not a 
+                 * comment, we don't want to add a newline.
+                 *
+                 * To make that work, we'll put the brace up front and let the
+                 * process continue to pick up another comment or not.
+                 */
+
                 /* Kludge to get my newline back */
-                if ((parser_state_tos->last_token == sp_else) &&
+/*                if ((parser_state_tos->last_token == sp_else) &&
                     (save_com.end > &save_com.ptr[4]) &&
                     (save_com.end[-2] == '*') &&
                     (save_com.end[-1] == '/') &&
@@ -204,10 +234,10 @@ static BOOLEAN search_brace(
 
                     if (*p != '\n')
                     {
-                        *save_com.end++ = EOL;
+                        *save_com.end++ = ' ';
                     }
                 }
-
+*/
                 /* Put the brace at the beginning of the saved buffer */
 
                 save_com.ptr[0] = '{';
@@ -224,11 +254,11 @@ static BOOLEAN search_brace(
                 *save_com.end++ = EOL;
                 *save_com.end++ = '{';
                 save_com.len += 2;
+
+                /* Go to common code to get out of this loop.  */
+
+                sw_buffer();
             }
-
-            /* Go to common code to get out of this loop.  */
-
-            sw_buffer();
             break;
                     
         case comment:
@@ -312,7 +342,9 @@ static BOOLEAN search_brace(
             if (((*type_code == sp_paren) && (*token == 'i') &&    /* "if" statement */
                  *last_else) ||
                 ((*type_code == sp_else)  &&     /* "else" statement */
-                 (e_code != s_code) && (e_code[-1] == '}')))       /* The "else" follows '}' */
+                 (e_code != s_code) && (e_code[-1] == '}') &&      /* The "else" follows '}' */
+                 (save_com.end == save_com.ptr)))                  /* And we haven't found an 
+                                                                    * intervening comment. */
             {
                 *force_nl = false;
             }
@@ -382,6 +414,12 @@ static BOOLEAN search_brace(
 
             *type_code = lexi ();
 
+            /* This appears to dump out a line on repeated newlines or a comment
+             * after a newline.  If we have already collected a comment, it might
+             * dump in the wrong order?  Since all regression tests pass without
+             * it, I'm leaving it commented out.  DPV 2014-03-28
+             */
+            /*
             if ( ( (*type_code == newline) && (just_saw_nl == true)) ||
                  ( (*type_code == comment) && parser_state_tos->last_saw_nl &&
                    (parser_state_tos->last_token != sp_else)))
@@ -389,7 +427,7 @@ static BOOLEAN search_brace(
                 dump_line(true, &paren_target, pbreak_line);
                 *flushed_nl = true;
             }
-
+            */
             *is_procname_definition = ((parser_state_tos->procname[0] != '\0') &&
                                        parser_state_tos->in_parameter_declaration);
         }

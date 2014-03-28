@@ -1053,7 +1053,13 @@ else {
 .ad
 .fi
 
-This causes the \fBwhile\fR in a do-while
+An exception to the behavior occurs when there is a comment between the 
+right brace and the subsequent else statement.  While the \(oq-br\(cq 
+option will cause a left brace to jump over the comment, the else does 
+not jump over the comment to cuddle because it has a strong likelihood 
+of changing the meaning of the comment.
+
+The \(oq-cdw\(cq option causes the \fBwhile\fR in a do-while
 loop to cuddle up to the immediately preceding \(oq}\(cq.  For
 example, with \(oq-cdw\(cq you get the following:
 
@@ -1750,7 +1756,7 @@ end of \(oqindent.1\(cq.
 Copyright (c) 2001 David Ingamells.
 Copyright (c) 1999 Carlo Wood.
 Copyright (c) 1995, 1996 Joseph Arceneaux.
-Copyright (c) 1989, 1992, 1993, 1994, 1995, 1996 Free Software Foundation
+Copyright (c) 1989, 1992, 1993, 1994, 1995, 1996, 2014 Free Software Foundation
 Copyright (c) 1985 Sun Microsystems, Inc.
 Copyright (c) 1980 The Regents of the University of California.
 Copyright (c) 1976 Board of Trustees of the University of Illinois.
