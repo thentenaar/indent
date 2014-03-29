@@ -1,0 +1,295 @@
+# indent sk.po
+# Copyright (C) 1999, 2002, 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the indent package.
+# Marcel Telka <marcel@telka.sk>, 2002, 2008.
+# Miroslav Vasko <vasko@debian.cz>, 1999.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2008-05-22 06:36+0200\n"
+"Last-Translator: Marcel Telka <marcel@telka.sk>\n"
+"Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: src/args.c:611
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr ""
+"použitie: indent súbor [-o výstupný_súbor ] [ voľby ]\n"
+"          indent súbor1 súbor2 ... súborN [ voľby ]\n"
+
+#: src/args.c:677
+#, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "%s: chýbajúci argument k parametru %s\n"
+
+#: src/args.c:802
+#, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "%s: neznáma voľba \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "voľba: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent: %s\n"
+
+#: src/args.c:913
+#, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "%s: voľba ``%s'' vyžaduje ako parameter číslo\n"
+
+#: src/args.c:921
+#, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "set_option: interná chyba: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Profil obsahuje neukončený komentár"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Profil obsahuje nepríjemné znaky"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr "Súbor určený premennou prostredia %s neexistuje alebo je nečitateľný"
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Divná hodnota version-control\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Použijú sa existujúce očíslované\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Nemôžem vytvoriť záložnú kópiu súboru %s\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Nemôžem otvoriť záložný súbor %s"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Nemôžem zapísať do záložného súboru %s"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Nemôžem zachovať čas zmeny záložného súboru %s"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Vyčerpaná virtuálna pamäť.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Závažná chyba: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Systémová chyba: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Upozornenie"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Chyba"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "V komentári sa vyskytol koniec súboru"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Riadok poškodený"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Neočakávaný koniec súboru"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Spracovaných %d neprázdnych výstupných riadkov a %d komentárov\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Riadkov s komentármi)/(Riadkov s kódom): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Riadok poškodený 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: iba jeden výstupný súbor (druhý bol %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: iba jeden vstupný súbor, keď je zadaný výstupný súbor\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: nemožno zadať súbory, ak ste zadali štandardný vstup\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: iba jeden vstupný súbor, keď je použitý štandardný výstup\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr "príkazový riadok"
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Čítať profil %s\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Interná chyba vyrovnávacej pamäte"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Nemôžem otvoriť vstupný súbor %s"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Nemôžem zistiť stav vstupného súboru %s"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Varovanie: Súbor %s má nulovú dĺžku"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Súbor %s je príliš veľký na čítanie"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Systémový problém pri čítaní súboru %s"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Chyba pri čítaní vstupného súboru %s"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Chyba pri zatváraní vstupného súboru %s"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Upozornenie: Súbor %s obsahuje nulové znaky\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Neukončená znaková konštanta"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Neukončená reťazcová konštanta"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr ""
+"nejednoznačnosť priradenia starého štýlu v \"=%c\". Predpokladá sa \"= %c\"\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: nemôžem vytvoriť %s\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Nemôžem zatvoriť výstupný súbor %s"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Nemôžem zachovať čas zmeny výstupného súboru %s"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "Nezodpovedajúce 'else'"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Chyba vnorenia stmt."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Analyzátor nepozná tento kód"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "Zásobník analyzátora [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  zásobník[%d] =>   zásobník: %d   ind_úroveň: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "NEPODARILO SA NÁJSŤ SÚBOR '@'!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Beh vyčerpal pamäť"
+
+#~ msgid "Extra %c"
+#~ msgstr "Navyše %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "Nezodpovedaj�ce #else"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "Nezodpovedajúce #elif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "Nezodpovedajúce #endif"

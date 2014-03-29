@@ -1,0 +1,56 @@
+#!/bin/sh
+# get the latest translations
+
+echo
+echo "#### get the latest translations"
+rsync -Lrtvz  translationproject.org::tp/latest/indent/  po
+
+echo
+echo "#### making README"
+touch README
+
+echo
+echo "#### Running autopoint"
+#gettextize  --version
+#gettextize --copy --force --intl --no-changelog
+autopoint  --version
+autopoint -f
+
+echo
+echo "#### getting libgettext.h"
+
+cp /usr/share/gettext/gettext.h src/libgettext.h
+
+echo
+echo "#### running aclocal"
+aclocal --version
+aclocal -I m4 -I ./aclocal
+
+if [ $? -ne 0 ]
+then
+    exit
+fi
+
+echo
+echo "#### running autoheader"
+autoheader --version
+autoheader
+
+echo
+echo "#### running autoconf"
+autoconf --version
+autoconf
+
+# get the latest config files.
+
+cd config
+wget -q "http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.guess"
+wget -q "http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.sub"
+cd ..
+
+echo
+echo "#### running automake"
+automake --version
+automake --add-missing
+rm README
+./configure --enable-maintainer-mode

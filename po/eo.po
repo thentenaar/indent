@@ -1,0 +1,299 @@
+# Esperantaj mesaĝoj por GNU indent.
+# This file is distributed under the same license as the indent package.
+#
+# Copyright (C) 2002 Free Software Foundation, Inc.
+# Edmund GRIMLEY EVANS <edmundo@rano.org>, 2001-2002.
+# Felipe Castro <fefcas@gmail.com>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU indent 2.2.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2009-01-20 12:00-0300\n"
+"Last-Translator: Edmund GRIMLEY EVANS <edmundo@rano.org>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/args.c:611
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr ""
+"uzado: indent dosiero [-o eligdosiero ] [ opcioj ]\n"
+"       indent dosiero1 dosiero2 ... dosieroN [ opcioj ]\n"
+
+#: src/args.c:677
+#, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "%s: argumento mankas por parametro %s\n"
+
+#: src/args.c:802
+#, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "%s: nekonata opcio \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "opcio: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:913
+#, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "%s: opcio \"%s\" bezonas numeran parametron\n"
+
+#: src/args.c:921
+#, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "set_option: interna eraro: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Profilo enhavas nefinitan komenton"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Profilo enhavas malagrablajn signojn"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+"La dosiero nomita de la ĉirkaŭaĵa variablo %s ne ekzistas aŭ ne legeblas"
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Stranga valoro por versi-administrado\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Uzas 'numbered-existing'\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Ne povas fari sekurkopian dosiernomon de %s\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Ne povas malfermi sekurkopian dosieron %s"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Ne povas skribi al sekurkopia dosiero %s"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Ne povas konservi modif-tempon en la sekurkopia dosiero %s"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Virtuala memoro elĉerpiĝis.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Grava Eraro: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Sistem-Eraro: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Averto"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Eraro"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "Dosierfino (EOF) en komento"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Linio rompita"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Neatendita fino de dosiero"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Estis %d nemalplenaj eliglinioj kaj %d komentoj\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Linioj kun komentoj)/(Linioj kun kodumo): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Linio rompita 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: nur unu eligdosiero (dua estis %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: nur unu enigdosiero, kiam eligdosiero estas specifita\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: dosiernomoj ne eblas, kiam la normala enigo estas specifita\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: nur unu enigdosiero, kiam la normala eligo estas uzata\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr "komand-linio"
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Legi profilon %s\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Interna eraro ĉe bufrado"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Ne povas malfermi enigdosieron %s"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Ne povas uzi 'stat' sur enigdosiero %s"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Avero: Malplena dosiero %s"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Dosiero %s estas tro granda por legado"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Sistemproblemo ĉe legado de %s"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Eraro dum legado de %s"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Eraro dum fermado de %s"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Averto: Dosiero %s enhavas NUL-signojn\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Nefinita signo-konstanto"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Nefinita ĉen-konstanto"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr "malnovstila plursenceco de atribuado en \"=%c\". Supozas \"= %c\"\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: ne povas krei %s\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Ne povas fermi eligdosieron %s"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Ne povas konservi modif-tempon en la eligdosiero %s"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "Senpara 'else'"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Eraro en ingado de ordonoj."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Nekonata kodo por analizilo"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ParseStack [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  stack[%d] =>   stack: %d   ind_level: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "NE POVAS TROVI '@'-DOSIERON!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Memoro elĉerpiĝis"
+
+#~ msgid "Extra %c"
+#~ msgstr "Kroma %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "Senpara #else"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "Senpara #elif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "Senpara #endif"
+
+#~ msgid "usage: indent file [-o outfile ] [ options ]\n"
+#~ msgstr "uzado: indent dosiero [-o eligdosiero ] [ opcioj ]\n"

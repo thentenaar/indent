@@ -1,0 +1,35 @@
+.TH INDENT 1L 
+.SH "NAME"
+indent \- @NAME@
+.SH "SYNOPSIS"
+.B "indent "
+[options] [input\-files]
+.sp
+.B "indent "
+[options] [single\-input\-file] [\-o output\-file]
+.sp
+.B "indent "
+\-\-version
+.SH "DESCRIPTION"
+This man page is generated from the file \fIindent.texinfo\fR.
+@INTRO@
+
+@DESCRIPTION@
+.SH "OPTIONS"
+@OPTIONS@
+@THEREST@
+@CROSSREF@
+.SH "RETURN VALUE"
+Unknown
+.SH FILES
+.br
+.nf
+.\" set tabstop to longest possible filename, plus a wee bit
+.ta \w'$HOME/.indent.pro   'u
+\fI$HOME/.indent.pro\fR	holds default options for indent.
+.SH "AUTHORS"
+@AUTHORS@
+.SH "HISTORY"
+Derived from the UCB program "indent".
+.SH "COPYING"
+@COPYING@

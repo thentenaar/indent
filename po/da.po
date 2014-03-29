@@ -1,0 +1,328 @@
+# Danske tekststrenge til GNU indent
+# Copyright (C) 2008 Free Software Foundation, Inc.
+# This file is distributed under the same license as the indent package.
+# Anders Wegge Jakobsen <wegge@daimi.aau.dk>, 1997.
+# Joe Hansen <joedalton2@yhahoo.dk>, 2008, 2009.
+# Keld Simonsen <keld@dkuug.dk>, 2008, 2009.
+#
+# Konventioner
+# options -> tilvalg (har bibeholdt denne da den var der da jeg ajourførte joe 12.09.08)
+# NB der er konsekvent brugt lille bogstav efter kolon på dansk når det er tilfældet på engelsk
+# (det kan være i orden, men det sikreste er vel at bruge stort bogstav på dansk i alle tilfælde).
+# character -> tegn  (alternativ var karakter der er fravalgt)
+msgid ""
+msgstr ""
+"Project-Id-Version: indent-2.2.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2009-04-29 00:00+0000\n"
+"Last-Translator: Keld Simonsen <keld@dkuug.dk>\n"
+"Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/args.c:611
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr ""
+"brug: indent fil [-o udfil ] [ tilvalg ]\n"
+"      indent fil1 fil2 ... filN [ tilvalg ]\n"
+
+#: src/args.c:677
+#, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "%s: argument mangler til parametren %s\n"
+
+#: src/args.c:802
+#, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "%s: ukendt tilvalg \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "tilvalg: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent: %s\n"
+
+#: src/args.c:913
+#, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "%s: tilvalg ``%s'' kræver en numerisk parameter\n"
+
+#: src/args.c:921
+#, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "set_option: intern fejl: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Profil indeholder en uafsluttet bemærkning"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Profil indeholder uacceptable tegn"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr "Fil navngivet af miljøvariabel %s eksisterer ikke eller kan ikke læses"
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Ukendt versionskontrol-værdi\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Anvender nummereret sikkerhedskopiering\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Kan ikke fortage sikkerhedskopi af %s\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Kan ikke åbne sikkerhedskopi %s"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Kan ikke skrive til sikkerhedskopi %s"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Kan ikke bevare ændringstidsstempel på sikkerhedskopi %s"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Virtuel hukommelse opbrugt.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Fatal fejl: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Systemfejl: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Advarsel"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Fejl"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "EOF i kommentar"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Linje delt"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Uventet afslutning på fil"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Der var %d ikke-tomme uddatalinjer og %d kommentarer\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Kommentarlinjer)/(Kodelinjer): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Linje delt 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: Netop én uddatafil (nummer 2 var %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: Netop én inddatafil, når en uddatafil er angivet\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: ingen filnavne, når standard inddata angives\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: netop én inddatafil, når standarduddata angives\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr "kommandolinje"
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Læste profilen %s\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Intern bufferfejl"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Kan ikke åbne inddatafil %s"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Kan ikke give status på inddatafil %s"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Advarsel: tom fil %s"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Fil %s er for stor til at kunne læses"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Systemproblem ved læsning af fil %s"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Fejl ved læsning af inddatafil %s"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Fejl ved lukning af inddatafil %s"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Advarsel: Filen %s indeholder NULL-tegn\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Uafsluttet tegnkonstant"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Uafsluttet strengkonstant"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr "tildeling i gammel stil er flertydig: \"=%c\". Antager \"= %c\"\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: kan ikke danne %s\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Kan ikke lukke uddatafil %s"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Kan ikke bevare ændringstidspunkt på uddatafil %s"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "Ubalanceret 'else'"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Fejl i lagdelt erklæring."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Parser fandt en uventet værdi"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ParseStack [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  stak[%d] =>   stak: %d   indry_kning: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "KAN IKKE FINDE '@' FIL!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Løb tør for hukommelse"
+
+#~ msgid "Extra %c"
+#~ msgstr "Overskydende %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "Ubalanceret #else"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "Ubalanceret #elif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "Ubalanceret #endif"
+
+#~ msgid "usage: %s file [-o outfile ] [ options ]\n"
+#~ msgstr "anvendelse: %s fil [-o outputfil ] [ tilvalg ]\n"
+
+#~ msgid "Stuff missing from end of file."
+#~ msgstr "Uventet filafslutning."
+
+#~ msgid "Unbalanced parens"
+#~ msgstr "Ubalancerede parenteser"
+
+#~ msgid "%s: can't have filenames when specifying standard input\n"
+#~ msgstr "%s: ingen filnavne, når standard input angives\n"
+
+#~ msgid "Standard input"
+#~ msgstr "Standard input"
+
+#~ msgid "indent: bad font specification: %s\n"
+#~ msgstr "indent: fejlagtig angivelse af skriftsnit: %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "*** Debug output marker line ***\n"
+#~ msgstr ""
+#~ "\n"
+#~ "*** Debug output markørlinie ***\n"
+
+#~ msgid "Parse: Unknown code: %d for %s\n"
+#~ msgstr "Parse: Ukendt kode: %d for %s\n"

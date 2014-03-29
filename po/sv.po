@@ -1,0 +1,319 @@
+# Swedish messages for indent.
+# Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+# Christian Rose <menthos@menthos.com>, 1999, 2000, 2001.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2002-10-25 19:20+0200\n"
+"Last-Translator: Christian Rose <menthos@menthos.com>\n"
+"Language-Team: Swedish <sv@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/args.c:611
+#, fuzzy
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       indent fil1 fil2 ... filN [ flaggor ]\n"
+
+#: src/args.c:677
+#, fuzzy, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "indent: parametern %s saknar argument\n"
+
+#: src/args.c:802
+#, fuzzy, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "indent: okänd flagga \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "flagga: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:913
+#, fuzzy, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: flaggan \"%s\" kräver en numerisk parameter\n"
+
+#: src/args.c:921
+#, fuzzy, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: internt fel: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Profilen innehåller en oavslutad kommentar"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Profilen innehåller osmakliga tecken"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  Konstigt versionskontrollvärde\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  Använder \"numbered-existing\"\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Kan inte skapa filnamn för säkerhetskopia av %s\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Kan inte öppna säkerhetskopian %s"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Kan inte skriva till säkerhetskopian %s"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Kan inte bevara modifieringstiden på säkerhetskopian %s"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Virtuellt minne förbrukat.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Ödesdigert fel: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Systemfel: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Varning"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Fel"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "Filslut påträffades i kommentar"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Rad bruten"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Oväntat slut på filen"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Det fanns %d icke-tomma utdatarader och %d kommentarer\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Rader med kommentarer)/(Rader med kod): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Rad bruten 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: endast en utdatafil tillåten (andra var %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: endast en indatafil när utdatafil är angiven\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: filnamn är inte tillåtna när standard in används\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: endast en indatafil när standard ut används\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr ""
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Läste profilen %s\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Internt buffringsfel"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Kan inte öppna indatafilen %s"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Kan inte ta status på indatafilen %s"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Varning: Filen %s är tom"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Filen %s är för stor för att läsas"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Systemproblem vid läsning av filen %s"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Fel vid läsning av indatafilen %s"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Fel vid stängning av indatafilen %s"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Varning: Filen %s innehåller NULL-tecken\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Oavslutad teckenkonstant"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Oavslutad strängkonstant"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr "tvetydighet i tilldelningen \"=%c\" (gammal form).  Antar \"= %c\"\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: kan inte skapa %s\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Kan inte stänga utdatafilen %s"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Kan inte bevara modifieringstiden på utdatafilen %s"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "Omaka \"else\""
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Fel i kapsling av uttryck."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Kod okänd för tolken"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "Tolkningsstack [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  stack[%d] =>   stack: %d   ind_level: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "KAN INTE HITTA \"@\"-FIL!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Slut på minne"
+
+#~ msgid "Extra %c"
+#~ msgstr "Överflödigt %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "Omaka #else"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "Omaka #elif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "Omaka #endif"
+
+#~ msgid "usage: indent file [-o outfile ] [ options ]\n"
+#~ msgstr "användning: indent fil [-o utfil ] [ flaggor ]\n"
+
+#~ msgid "Stuff missing from end of file."
+#~ msgstr "Saker saknas i slutet av filen."
+
+#~ msgid "Unbalanced parens"
+#~ msgstr "Obalanserade parenteser"
+
+#~ msgid "%s: can't have filenames when specifying standard input\n"
+#~ msgstr "%s: filnamn är inte tillåtna när standard in används\n"
+
+#~ msgid "Standard input"
+#~ msgstr "Standard in"
+
+#~ msgid "indent: bad font specification: %s\n"
+#~ msgstr "indent: felaktig fontspecifikation: %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "*** Debug output marker line ***\n"
+#~ msgstr ""
+#~ "\n"
+#~ "*** Markör för felsökningsinformation ***\n"
+
+#~ msgid "Parse: Unknown code: %d for %s\n"
+#~ msgstr "Parse: Okänd kod: %d för %s\n"

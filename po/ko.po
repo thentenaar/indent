@@ -1,0 +1,316 @@
+# Korean messages for indent.
+# Copyright (C) 1996 Free Software Foundation, Inc.
+# Bang Jun-Young <bangjy@nownuri.nowcom.co.kr>, 1997.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 1.9.1a\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 1997-01-24 10:21+0900\n"
+"Last-Translator: Bang Jun-Young <bangjy@nownuri.nowcom.co.kr>\n"
+"Language-Team: Korean <ko@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=EUC-KR\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: src/args.c:611
+#, fuzzy
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       %s 파일1 파일2 ... 파일# [ 옵션 ]\n"
+
+#: src/args.c:677
+#, fuzzy, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "indent: 매개변수 %s에 대한 인수가 빠졌음\n"
+
+#: src/args.c:802
+#, fuzzy, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "indent: 알 수 없는 옵션 \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "옵션: %s\n"
+
+#: src/args.c:828
+#, fuzzy, c-format
+msgid "GNU indent %s\n"
+msgstr "indent: %s"
+
+#: src/args.c:913
+#, fuzzy, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: 옵션 `%s''는 숫자 매개변수가 필요합니다\n"
+
+#: src/args.c:921
+#, fuzzy, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: 내부 오류: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr ""
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr ""
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  이상한 버전-제어 값\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr ""
+
+#: src/backup.c:498
+#, fuzzy, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: %s의 보관용 파일이름을 만들 수 없습니다"
+
+#: src/backup.c:506
+#, fuzzy, c-format
+msgid "Can't open backup file %s"
+msgstr "indent: %s의 보관용 파일이름을 만들 수 없습니다"
+
+#: src/backup.c:513
+#, fuzzy, c-format
+msgid "Can't write to backup file %s"
+msgstr "indent: %s의 보관용 파일이름을 만들 수 없습니다"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr ""
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: 가상 메모리가 바닥남.\n"
+
+#: src/globs.c:93
+#, fuzzy, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent:%s:%d: %s: "
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr ""
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr ""
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr ""
+
+#: src/globs.h:31
+msgid "Error"
+msgstr ""
+
+#: src/indent.c:284
+#, fuzzy
+msgid "EOF encountered in comment"
+msgstr "닫히지 않은 주석"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "행이 깨어짐"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr ""
+
+#: src/indent.c:528
+#, fuzzy, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "%d 개의 출력행과 %d 개의 주석\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(주석으로 된 행)/(코드로 된 행): %6.3f\n"
+
+#: src/indent.c:556
+#, fuzzy
+msgid "Line broken 2"
+msgstr "행이 깨어짐"
+
+#: src/indent.c:778
+#, fuzzy, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "%s: 오직 하나의 출력 파일 (두번째는 %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, fuzzy, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "%s: 출력 파일이 지정되면 입력 파일은 오직 하나만 있어야 합니다\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: 표준 입력을 지정할 때에는 파일명을 지정할 수 없습니다\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: 표준출력이 사용되면 입력 파일은 오직 하나만 있어야 합니다\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr ""
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "프로파일 %s을 읽었습니다\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "내부 버퍼링 오류"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr ""
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr ""
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "경고: 파일 %s는 크기가 0입니다"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr ""
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr ""
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr ""
+
+#: src/code_io.c:317
+#, c-format
+msgid "Error closing input file %s"
+msgstr ""
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "경고: 파일 %s는 NULL 문자를 포함하고 있습니다\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr ""
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr ""
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr ""
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: %s를 만들 수 없습니다\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr ""
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr ""
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "짝이 맞지 않는 'else'"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "문장 중첩 오류."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "파서가 알 수 없는 코드"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr ""
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  스택[%d] =>   스택: %d   ind_level: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr ""
+
+#~ msgid "Extra %c"
+#~ msgstr "여분의 %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "짝이 맞지 않는 #else"
+
+#, fuzzy
+#~ msgid "Unmatched #elif"
+#~ msgstr "짝이 맞지 않는 #endif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "짝이 맞지 않는 #endif"
+
+#~ msgid "usage: %s file [-o outfile ] [ options ]\n"
+#~ msgstr "사용법: %s 파일 [-o 출력파일] [ 옵션 ]\n"
+
+#~ msgid "Stuff missing from end of file."
+#~ msgstr "파일끝의 빠진 부분"
+
+#~ msgid "Unbalanced parens"
+#~ msgstr "균형이 맞지 않는 괄호"
+
+#~ msgid "%s: can't have filenames when specifying standard input\n"
+#~ msgstr "%s: 표준 입력을 지정할 때에는 파일명을 지정할 수 없습니다\n"
+
+#~ msgid "Standard input"
+#~ msgstr "표준 입력"
+
+#~ msgid "indent: bad font specification: %s\n"
+#~ msgstr "indent: 잘못된 폰트 지정: %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "*** Debug output marker line ***\n"
+#~ msgstr ""
+#~ "\n"
+#~ "*** 디버그 출력 표시행 ***\n"

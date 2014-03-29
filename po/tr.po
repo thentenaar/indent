@@ -1,0 +1,297 @@
+# translation of indent-2.2.9.tr.po to Turkish
+# Copyright (C) 1996, 2005 Free Software Foundation, Inc.
+# Deniz Akkus Kanca <deniz@arayan.com>, 2001.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2005-03-05 10:19+0200\n"
+"Last-Translator: Deniz Akkus Kanca <deniz@arayan.com>\n"
+"Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-9\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
+
+#: src/args.c:611
+#, fuzzy
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       indent dosya1 dosya2 ... dosyaN [ seçenekler ]\n"
+
+#: src/args.c:677
+#, fuzzy, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "indent: parametrede eksik argüman %s\n"
+
+#: src/args.c:802
+#, fuzzy, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "indent: bilinmeyen seçenek \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "seçenek: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:913
+#, fuzzy, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: ``%s'' seçeneði sayýsal parametre gerektirir\n"
+
+#: src/args.c:921
+#, fuzzy, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: içsel hata: p_type %d\n"
+
+#
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Profil sonlanmamýþ bir açýklama içeriyor"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Profil geçersiz karakterler içeriyor"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent: Garip sürüm-kontrolü deðeri\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent: Varolan sürüm kullanýlýyor\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: %s yedek dosyasý oluþturulamadý\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "%s yedek dosyasý açýlamadý"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "%s yedek dosyasýna yazýlamadý"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "%s yedek dosyasýnýn deðiþim zaman damgasý korunamadý"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Sanal bellek tükendi.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s: "
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Ölümcül Hata:"
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Sistem Hatasý: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Uyarý"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Hata"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "Açýklama içinde dosyasonu (EOF)"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Satýr hatalý"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Beklenmeyen dosyasonu"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "%d boþ olmayan çýktý satýrý ve %d açýklama vardý\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(Açýklama satýrlarý)/(Program satýrlarý): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Satýr hatalý 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: Yalnýzca bir çýktý dosyasý (2. %s idi)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: Çýktý dosyasý verildiði zaman yalnýzca bir girdi dosyasý\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: standart girdi belirtildiði zaman dosyaadý verilemez\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: standart çýktý kullanýldýðý zaman yalnýzca bir girdi dosyasý\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr ""
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Profile %s okundu\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Ýçsel önbellek hatasý"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "%s girdi dosyasý açýlamadý"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "%s girdi dosyasý durumlanamadý"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Uyarý: %s dosyasý boþ"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "%s dosyasý okumak için fazla büyük"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "%s dosyasý okunurken sistem problemi"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "%s girdi dosyasý okunurken hata"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "%s girdi dosyasý kapatýlýrken hata"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Uyarý: %s dosyasý NULL karakter içeriyor\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Sonlanmamýþ karakter sabiti"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Sonlanmamýþ dizge sabiti"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr ""
+"\"=%c\" içerisinde eski tarz deðer atama belirsizliði. =%c varsayýldý.\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: %s oluþturulamadý\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "%s çýktý dosyasý kapatýlamadý"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "%s çýktý dosyasýnýn deðiþim zamaný korunamadý"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "Karþýlýksýz 'else'"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Ýfade iç-içeliði hatasý."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Ayrýþtýrýcýya bilinmeyen kod"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ÇözümlemeYýðýtý [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  yýðýn[%d] =>  yýðýn: %d  ind_level: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "'@' DOSYASI BULUNAMADI!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Bellek tükendi"
+
+#~ msgid "Extra %c"
+#~ msgstr "Fazladan %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "Karþýlýksýz #else"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "Karþýlýksýz #elif"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "Karþýlýksýz #endif"
+
+#~ msgid "usage: indent file [-o outfile ] [ options ]\n"
+#~ msgstr "kullaným: indent dosya_adý [-o çýktý_dosyasý] [seçenekler]\n"

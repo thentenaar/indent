@@ -1,0 +1,11 @@
+OBJ = src\args.obj src\backup.obj src\comments.obj src\globs.obj src\indent.obj src\io.obj src\lexi.obj src\parse.obj src\wildexp.obj
+
+.BEFORE :
+        @set WCC386=/zq /oneatx /oh /ei /zp8 /6 /fp6 -bt=nt -DHAVE_CONFIG_H -i=intl
+
+indent.exe : $(OBJ)
+        wlink name indent.exe sys nt op q FIL *.obj
+
+.c : src
+.c.obj : .AUTODEPEND
+        wcc386 $[@ -fo=$^@

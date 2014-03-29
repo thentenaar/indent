@@ -1,0 +1,301 @@
+# translation of indent-2.2.10.ru.po to Russian
+# Локализация indent
+# This file is distributed under the same license as the indent package.
+# Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2009 Free Software Foundation, Inc.
+#
+# Denis Perchine <dyp@perchine.com>, 1997, 1998, 1999, 2000, 2001, 2002.
+# Yuri Kozlov <yuray@komyakino.ru>, 2009.
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2009-07-07 21:25+0400\n"
+"Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
+"Language-Team: Russian <gnu@mx.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/args.c:611
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr ""
+"использование: indent файл [-o выходной­­_файл ] [ параметры ]\n"
+"               indent файл1 файл2 ... файлN [ параметры ]\n"
+
+#: src/args.c:677
+#, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "%s: отсутствует аргумент у параметра %s\n"
+
+#: src/args.c:802
+#, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "%s: неизвестный параметр \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "параметр: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent: %s\n"
+
+#: src/args.c:913
+#, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "%s: параметру «%s» необходим числовой аргумент\n"
+
+#: src/args.c:921
+#, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "set_option: внутренняя ошибка: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "Профиль содержит незавершённый комментарий"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "Профиль содержит недопустимые символы"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+"Файл, указанный в переменной окружения %s, не существует или недоступен для "
+"чтения"
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent: Странное значение версии\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent: Используются существующие числа\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: Не удалось создать резервную копию файла %s\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "Не удалось открыть резервную копию файла %s"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "Не удалось записать резервную копию файла %s"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "Не удалось сохранить дату изменения на файле резервной копии %s"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: Закончилась виртуальная память.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: Неисправимая ошибка: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: Системная ошибка: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "Предупреждение"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "Конец файла внутри комментария"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "Строка повреждена"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "Неожиданный конец файла"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "Было %d непустых выходных строк и %d комментариев\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(комментарии)/(код): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "Строка повреждена 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: только один выходной файл (второй был %s)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: только один входной файл, когда указан выходной файл\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: нельзя указывать имена файлов, когда указан стандартный ввод\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: только один входной файл, когда указан стандартный ввод\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr "командная строка"
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "Чтение профиля %s\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "Внутренняя ошибка буферизации"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "Не удалось открыть входной файл %s"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "Не удалось получить статус входного файла %s"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "Предупреждение: Файл %s имеет нулевую длину"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "Файл %s слишком велик для чтения"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "Системная ошибка чтения файла %s"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "Ошибка чтения входного файла %s"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "Ошибка закрытия входного файла %s"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "Предупреждение: Файл %s содержит символы NULL\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "Незавершённая символьная константа"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "Незавершённая строковая константа"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr ""
+"двусмысленное присваивание в старом стиле в \"=%c\". Принимается \"= %c\"\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: невозможно создать %s\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "Не удалось закрыть выходной файл %s"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "Не удалось сохранить время изменения выходного файла %s"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "'else' без пары"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "Ошибка вложенности stmt."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "Неизвестный для анализатора код"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ParseStack [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  стек[%d] =>   стек: %d    уровень: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "НЕ УДАЛОСЬ НАЙТИ ФАЙЛ '@'!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "Закончилась память"
+
+#~ msgid "Extra %c"
+#~ msgstr "Лишний %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "#else без пары"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "#elif без пары"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "#endif без пары"

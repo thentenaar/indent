@@ -1,0 +1,296 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2002 Free Software Foundation, Inc.
+# GOTO Masanori <gotom@debian.or.jp>, 2002-2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indent 2.2.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-31 17:27+0100\n"
+"PO-Revision-Date: 2006-03-20 10:36+0900\n"
+"Last-Translator: GOTO Masanori <gotom@debian.or.jp>\n"
+"Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/args.c:611
+#, fuzzy
+msgid ""
+"usage: indent file [-o outfile ] [ options ]\n"
+"       indent file1 file2 ... fileN [ options ]\n"
+msgstr "       indent ファイル1 ファイル2 ... ファイルN [ オプション ]\n"
+
+#: src/args.c:677
+#, fuzzy, c-format
+msgid "%s: missing argument to parameter %s\n"
+msgstr "indent: パラメータ %s への引数が足りません\n"
+
+#: src/args.c:802
+#, fuzzy, c-format
+msgid "%s: unknown option \"%s\"\n"
+msgstr "indent: 不明なオプション \"%s\"\n"
+
+#: src/args.c:812
+#, c-format
+msgid "option: %s\n"
+msgstr "オプション: %s\n"
+
+#: src/args.c:828
+#, c-format
+msgid "GNU indent %s\n"
+msgstr "GNU indent %s\n"
+
+#: src/args.c:913
+#, fuzzy, c-format
+msgid "%s: option ``%s'' requires a numeric parameter\n"
+msgstr "indent: オプション ``%s'' には数値パラメータが必要です\n"
+
+#: src/args.c:921
+#, fuzzy, c-format
+msgid "set_option: internal error: p_type %d\n"
+msgstr "indent: set_option: 内部エラー: p_type %d\n"
+
+#: src/args.c:977
+msgid "Profile contains an unterminated comment"
+msgstr "プロファイルは閉じていないコメントを含んでいます"
+
+#: src/args.c:1015
+msgid "Profile contains unpalatable characters"
+msgstr "プロファイルは適切でない文字を含んでいます"
+
+#: src/args.c:1183
+#, c-format
+msgid "File named by environment variable %s does not exist or is not readable"
+msgstr ""
+
+#: src/backup.c:466
+#, c-format
+msgid "indent:  Strange version-control value\n"
+msgstr "indent:  おかしな version-control 値です\n"
+
+#: src/backup.c:467
+#, c-format
+msgid "indent:  Using numbered-existing\n"
+msgstr "indent:  numbered-existing を使用します\n"
+
+#: src/backup.c:498
+#, c-format
+msgid "indent: Can't make backup filename of %s\n"
+msgstr "indent: バックアップファイル名 %s を作成できません\n"
+
+#: src/backup.c:506
+#, c-format
+msgid "Can't open backup file %s"
+msgstr "バックアップファイル %s が開けません"
+
+#: src/backup.c:513
+#, c-format
+msgid "Can't write to backup file %s"
+msgstr "バックアップファイル %s に書込めません"
+
+#: src/backup.c:526
+#, c-format
+msgid "Can't preserve modification time on backup file %s"
+msgstr "バックアップファイル %s の変更時刻を保存できませんでした"
+
+#: src/globs.c:49 src/globs.c:74
+#, c-format
+msgid "indent: Virtual memory exhausted.\n"
+msgstr "indent: メモリを使い果たしました.\n"
+
+#: src/globs.c:93
+#, c-format
+msgid "indent: %s:%d: %s:"
+msgstr "indent: %s:%d: %s:"
+
+#: src/globs.c:109
+#, c-format
+msgid "indent: Fatal Error: "
+msgstr "indent: 致命的エラー: "
+
+#: src/globs.c:119
+#, c-format
+msgid "indent: System Error: "
+msgstr "indent: システムエラー: "
+
+#: src/globs.h:27
+msgid "Warning"
+msgstr "警告"
+
+#: src/globs.h:31
+msgid "Error"
+msgstr "エラー"
+
+#: src/indent.c:284
+msgid "EOF encountered in comment"
+msgstr "コメント中で EOF に遭遇しました"
+
+#: src/indent.c:345
+msgid "Line broken"
+msgstr "行が壊れています"
+
+#: src/indent.c:522
+msgid "Unexpected end of file"
+msgstr "予期しないファイルの終端です"
+
+#: src/indent.c:528
+#, c-format
+msgid "There were %d non-blank output lines and %d comments\n"
+msgstr "非空行が %d 行、コメントが %d 行あります\n"
+
+#: src/indent.c:532
+#, c-format
+msgid "(Lines with comments)/(Lines with code): %6.3f\n"
+msgstr "(コメント付きの行)/(コード付きの行): %6.3f\n"
+
+#: src/indent.c:556
+msgid "Line broken 2"
+msgstr "行が壊れています 2"
+
+#: src/indent.c:778
+#, c-format
+msgid "indent: only one output file (2nd was %s)\n"
+msgstr "indent: 唯一の出力ファイル (2番目は %s でした)\n"
+
+#: src/indent.c:787 src/indent.c:813
+#, c-format
+msgid "indent: only one input file when output file is specified\n"
+msgstr "indent: 出力ファイルが指定されたときの唯一の入力ファイルです\n"
+
+#: src/indent.c:801 src/indent.c:848
+#, c-format
+msgid "indent: can't have filenames when specifying standard input\n"
+msgstr "indent: 標準入力で指定された時にファイル名がありませんでした\n"
+
+#: src/indent.c:821
+#, c-format
+msgid "indent: only one input file when stdout is used\n"
+msgstr "indent: stdout が使用された時唯一の入力ファイルです\n"
+
+#: src/indent.c:857
+msgid "command line"
+msgstr ""
+
+#: src/indent.c:1049
+#, c-format
+msgid "Read profile %s\n"
+msgstr "プロファイル %s を読みます\n"
+
+#: src/code_io.c:169
+msgid "Internal buffering error"
+msgstr "内部バッファリングエラー"
+
+#: src/code_io.c:262
+#, c-format
+msgid "Can't open input file %s"
+msgstr "入力ファイル %s が開けません"
+
+#: src/code_io.c:267
+#, c-format
+msgid "Can't stat input file %s"
+msgstr "入力ファイル %s を stat できません"
+
+#: src/code_io.c:272
+#, fuzzy, c-format
+msgid "Zero-length file %s"
+msgstr "警告: 長さゼロのファイル %s です"
+
+#: src/code_io.c:280
+#, c-format
+msgid "File %s is too big to read"
+msgstr "ファイル %s は読込むには大きすぎます"
+
+#: src/code_io.c:288
+#, c-format
+msgid "System problem reading file %s"
+msgstr "ファイル %s を読込み中にシステム問題が発生しました"
+
+#: src/code_io.c:312
+#, c-format
+msgid "Error reading input file %s"
+msgstr "入力ファイル %s の読込みエラー"
+
+#: src/code_io.c:317
+#, fuzzy, c-format
+msgid "Error closing input file %s"
+msgstr "入力ファイル %s を閉じるときにエラー"
+
+#: src/code_io.c:507
+#, fuzzy, c-format
+msgid "File %s contains NULL-characters: cannot proceed\n"
+msgstr "警告: ファイル %s は NULL文字を含んでいます\n"
+
+#: src/lexi.c:786
+msgid "Unterminated character constant"
+msgstr "文字定数が終了していません"
+
+#: src/lexi.c:787
+msgid "Unterminated string constant"
+msgstr "文字列が終了していません"
+
+#: src/lexi.c:1044
+#, c-format
+msgid "old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"
+msgstr "\"=%c\" 中で古いスタイルの割当ての曖昧な表現. \"= %c\" と仮定します\n"
+
+#: src/output.c:1315
+#, c-format
+msgid "indent: can't create %s\n"
+msgstr "indent: %s が作成できません\n"
+
+#: src/output.c:1354
+#, c-format
+msgid "Can't close output file %s"
+msgstr "出力ファイル %s を閉じられません"
+
+#: src/output.c:1367
+#, c-format
+msgid "Can't preserve modification time on output file %s"
+msgstr "出力ファイル %s の変更時刻を保存できませんでした"
+
+#: src/parse.c:447
+msgid "Unmatched 'else'"
+msgstr "'else' が不一致"
+
+#: src/parse.c:473
+msgid "Stmt nesting error."
+msgstr "stmt ネストエラー."
+
+#: src/parse.c:515
+msgid "Unknown code to parser"
+msgstr "パーサーへの不明なコード"
+
+#: src/parse.c:525
+#, c-format
+msgid "ParseStack [%d]:\n"
+msgstr "ParseStack [%d]:\n"
+
+#: src/parse.c:529
+#, c-format
+msgid "  stack[%d] =>   stack: %d   ind_level: %d\n"
+msgstr "  stack[%d] =>   stack: %d   ind_level: %d\n"
+
+#: src/wildexp.c:126
+msgid "CANNOT FIND '@' FILE!"
+msgstr "'@' ファイルを見つけられません!"
+
+#~ msgid "Ran out of memory"
+#~ msgstr "メモリを使い果たしました"
+
+#~ msgid "Extra %c"
+#~ msgstr "余計な %c"
+
+#~ msgid "Unmatched #else"
+#~ msgstr "#else が一致しません"
+
+#~ msgid "Unmatched #elif"
+#~ msgstr "#elif が一致しません"
+
+#~ msgid "Unmatched #endif"
+#~ msgstr "#endif が一致しません"
+
+#~ msgid "usage: indent file [-o outfile ] [ options ]\n"
+#~ msgstr ""
+#~ "使用法: indent ファイル [-o 出力ファイル ] [ オプション ]\n"
+#~ "\n"
