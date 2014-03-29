@@ -1399,7 +1399,11 @@ however and not very intelligent or flexible yet.
 @kindex --honour-newlines
 @kindex -nhnl
 @kindex --ignore-newlines
-Currently there are two options that allow one to interfere with the
+@kindex -gts
+@kindex --gettext-strings
+@kindex -ngts
+@kindex --gettext-strings
+Currently there are three options that allow one to interfere with the
 algorithm that determines where to break a line.
 
 The @option{-bbo} option causes GNU @command{indent} to prefer to break
@@ -1461,6 +1465,36 @@ The idea behind this option is that lines which are too long, but are already
 broken up, will not be touched by GNU @command{indent}.  Really messy code
 should be run through @command{indent} at least once using the
 @option{--ignore-newlines} option though.
+
+The @option{-gts} option affects how the gettext standard macros @code{_()} and @code{N_()}
+are treated.  The default behavior (or the use of @option{-ngts}) causes indent to 
+treat them as it does other functions, so that a long string is broken like the following
+example.
+
+@example
+@group
+  if (mask)
+    @{
+      warning (_
+               ("This is a long string that stays together."));
+    @}
+@end group
+@end example
+
+With the @option{-gts} option, the underscore is treated as a part of the string, keeping
+it tied to the string, and respecting the fact that gettext is unobtrusively providing
+a localized string.  This only works if @code{_("} is together as a unit at the beginning
+of the string and @code{")} is together as a unit at the end.
+
+@example
+@group
+  if (mask)
+    @{
+      warning 
+        (_("This is a long string that stays together."));
+    @}
+@end group
+@end example
 
 @node Disabling Formatting, Miscellaneous options, Breaking long lines, Indent Program
 @comment  node-name,  next,  previous,  up
@@ -1766,6 +1800,11 @@ Do not disable all formatting of comments.@*
 Use GNU coding style.  This is the default.@*
 @xref{Common styles}.
 
+@item -gts
+@itemx --gettext-strings
+Treat gettext @code{_("...")} and @code{N_("...")} as strings rather than as functions.@*
+@xref{Breaking long lines}.
+
 @item -hnl
 @itemx --honour-newlines
 Prefer to break long lines at the position of newlines in the input.@*
@@ -1885,6 +1924,11 @@ Do not format comments in the first column as normal.@*
 @itemx --dont-format-comments
 Do not format any comments.@*
 @xref{Comments}.
+
+@item -ngts
+@itemx --no-gettext-strings
+Treat gettext @code{_("...")} and @code{N_("...")} as normal functions.  This is the default.@*
+@xref{Breaking long lines}.
 
 @item -nhnl
 @itemx --ignore-newlines

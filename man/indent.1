@@ -185,6 +185,11 @@ Use GNU coding style.  This is the default.
 .br
 See \fB\ COMMON\ STYLES\fR.
 .TP
+.B -gts\fR, \fB--gettext-strings\fR
+Treat gettext \fB_("...")\fR and \fBN_("...")\fR as strings rather than as functions.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
+.TP
 .B -hnl\fR, \fB--honour-newlines\fR
 Prefer to break long lines at the position of newlines in the input.
 .br
@@ -296,6 +301,11 @@ See \fB\ COMMENTS\fR.
 Do not format any comments.
 .br
 See \fB\ COMMENTS\fR.
+.TP
+.B -ngts\fR, \fB--no-gettext-strings\fR
+Treat gettext \fB_("...")\fR and \fBN_("...")\fR as normal functions.  This is the default.
+.br
+See \fB\ BREAKING\ LONG\ LINES\fR.
 .TP
 .B -nhnl\fR, \fB--ignore-newlines\fR
 Do not prefer to break long lines at the position of newlines in the input.
@@ -1590,7 +1600,7 @@ When lines become longer than the specified line length, GNU \fBindent\fR
 tries to break the line at a logical place.  This is new as of version 2.1
 however and not very intelligent or flexible yet.
 
-Currently there are two options that allow one to interfere with the
+Currently there are three options that allow one to interfere with the
 algorithm that determines where to break a line.
 
 The \(oq-bbo\(cq option causes GNU \fBindent\fR to prefer to break
@@ -1659,6 +1669,40 @@ The idea behind this option is that lines which are too long, but are already
 broken up, will not be touched by GNU \fBindent\fR.  Really messy code
 should be run through \fBindent\fR at least once using the
 \(oq--ignore-newlines\(cq option though.
+
+The \(oq-gts\(cq option affects how the gettext standard macros \fB_()\fR and \fBN_()\fR
+are treated.  The default behavior (or the use of \(oq-ngts\(cq) causes indent to 
+treat them as it does other functions, so that a long string is broken like the following
+example.
+
+.in +5
+.nf
+.na
+  if (mask)
+    {
+      warning (_
+               ("This is a long string that stays together."));
+    }
+.in -5
+.ad
+.fi
+
+With the \(oq-gts\(cq option, the underscore is treated as a part of the string, keeping
+it tied to the string, and respecting the fact that gettext is unobtrusively providing
+a localized string.  This only works if \fB_("\fR is together as a unit at the beginning
+of the string and \fB")\fR is together as a unit at the end.
+
+.in +5
+.nf
+.na
+  if (mask)
+    {
+      warning 
+        (_("This is a long string that stays together."));
+    }
+.in -5
+.ad
+.fi
 
 .SH "DISABLING FORMATTING"
 

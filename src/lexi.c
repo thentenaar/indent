@@ -273,8 +273,13 @@ extern codes_ty lexi(void)
 
   /* Scan an alphanumeric token */
     
-   if ((!((buf_ptr[0] == 'L') &&
-          ((buf_ptr[1] == '"') || (buf_ptr[1] == '\''))) &&
+   if ((!((buf_ptr[0] == 'L') && 
+         ((buf_ptr[1] == '"') || (buf_ptr[1] == '\''))) && /* Not a wide string */
+        !(settings.gettext_strings && (buf_ptr[0] == '_') && 
+          (buf_ptr[1] == '(') && (buf_ptr[2] == '"')) &&   /* Not a gettext string */
+        !(settings.gettext_strings && (buf_ptr[0] == 'N') && 
+          (buf_ptr[1] == '_') && (buf_ptr[2] == '(') &&
+          (buf_ptr[3] == '"')) &&                          /* Not a gettext noop string */
         (chartype[0xff & (int) *buf_ptr] == alphanum)) ||
        ((buf_ptr[0] == '.') && isdigit (buf_ptr[1])))
    {
@@ -739,6 +744,40 @@ not_proc:
       code = newline;
       break;
 
+   /* Handle gettext strings. */
+   case '_':
+      if (!settings.gettext_strings || 
+          buf_ptr[0] != '(' || 
+          buf_ptr[1] != '"')
+      {
+         token_end = buf_ptr;
+         code = ident;
+         break;
+      }
+
+      qchar = buf_ptr[1];
+      buf_ptr++;
+      buf_ptr++;
+      goto handle_string;
+
+   /* Handle gettext noop strings. */
+   case 'N':
+      if (!settings.gettext_strings || 
+          buf_ptr[0] != '_' || 
+          buf_ptr[1] != '(' || 
+          buf_ptr[2] != '"')
+      {
+         token_end = buf_ptr;
+         code = ident;
+         break;
+      }
+
+      qchar = buf_ptr[2];
+      buf_ptr++;
+      buf_ptr++;
+      buf_ptr++;
+      goto handle_string;
+
      /* Handle wide strings and chars. */
    case 'L':
       if (buf_ptr[0] != '"' && buf_ptr[0] != '\'')
@@ -811,6 +850,26 @@ not_proc:
          {
             fill_buffer();
          }
+      }
+
+      if (settings.gettext_strings && 
+          (token[0] == '_' || (token[0] == 'N' && token[1] == '_')))
+      {
+        /* In the gettext situation, the string ends with ") */
+        if (*buf_ptr != ')')
+        {
+           WARNING (_("Unterminated string constant"), 0, 0);
+        }
+        else
+        {
+          /* Advance over closing paren.  */
+           buf_ptr++;
+                
+           if (buf_ptr >= buf_end)
+           {
+              fill_buffer();
+           }
+        }
       }
 
       token_end = buf_ptr;

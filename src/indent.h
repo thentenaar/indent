@@ -323,7 +323,8 @@ typedef struct user_options_st
     int brace_indent; /*!< number of spaces to indent braces from the suround if, while, etc. in -bl
                        * (bype_2 == 0) code */
     int expect_output_file;  /*!< Means "-o" was specified. */
-    int pointer_align_right;  /*!< true: "char *a", false: "char* a" */
+    int pointer_align_right; /*!< true: "char *a", false: "char* a" */
+    int gettext_strings;     /*!< true: _("...") is a string, false: it's a function */ 
 } user_options_ty;
 
 extern user_options_ty settings;

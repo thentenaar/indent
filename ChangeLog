@@ -1,4 +1,9 @@
-2014-03-28  gettextize  <bug-gnu-gettext@gnu.org>
+-2014-03-29 Daniel P. Valentine <dpv@world.std.com>
+        * Added option -gts to treat _("...") and N_("...") as strings rather than
+          functions with string arguments. (args.c, indent.h, lexi.c, indent.texi,
+          regression/input/gettext-strings.c)
+
+-2014-03-28  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* m4/gettext.m4: Upgrade to gettext-0.18.3.
 	* m4/iconv.m4: Upgrade to gettext-0.18.3.
@@ -33,7 +38,7 @@
 	* m4/xsize.m4: New file, from gettext-0.18.3.
 	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.18.3.
 
--2014-03-28
+-2014-03-28 Daniel P. Valentine <dpv@world.std.com>
         * Updated programs with FSF's mailing address to have the URL instead. 
           (code_io.h comments.h globs.h indent.c.orig lexi.h libgettext.h utils.c utils.h backup.c backup.h 
            code_io.c comments.c globs.c output.c output.c parse.c parse.h sys.h wildexp.c)

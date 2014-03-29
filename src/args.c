@@ -142,7 +142,7 @@ static int exp_blf  = 0;
 static int exp_bli  = 0;
 static int exp_bls  = 0;
 static int exp_bs   = 0;
-static int exp_c    = 0;/*!< Starting column for comments trailing statements */
+static int exp_c    = 0; /*!< Starting column for comments trailing statements */
 static int exp_cbi  = 0;
 static int exp_cdb  = 0;
 static int exp_cd   = 0; /*!< Starting column for comments trailing declarations */
@@ -162,6 +162,7 @@ static int exp_eei  = 0;
 static int exp_fc1  = 0;
 static int exp_fca  = 0;
 static int exp_gnu  = 0;
+static int exp_gts  = 0;
 static int exp_hnl  = 0;
 static int exp_i    = 0;
 static int exp_il   = 0;
@@ -288,6 +289,7 @@ const pro_ty pro[] =
     {"nlp",     PRO_BOOL,                            true,      OFF, &settings.lineup_to_parens,                 &exp_lp},
     {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, (int *) "-ip0",                             &exp_nip},
     {"nhnl",    PRO_BOOL,                            true,      OFF, &settings.honour_newlines,                  &exp_hnl},
+    {"ngts",    PRO_BOOL,                           false,      OFF, &settings.gettext_strings,                  &exp_gts},
     {"nfca",    PRO_BOOL,                            true,      OFF, &settings.format_comments,                  &exp_fca},
     {"nfc1",    PRO_BOOL,                            true,      OFF, &settings.format_col1_comments,             &exp_fc1},
     {"neei",    PRO_BOOL,                           false,      OFF, &settings.extra_expression_indent,          &exp_eei},
@@ -317,6 +319,7 @@ const pro_ty pro[] =
     {"il",      PRO_INT,             DEFAULT_LABEL_INDENT, ONOFF_NA, &settings.label_offset,                     &exp_il},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
     {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
+    {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
     {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
     {"fca",     PRO_BOOL,                            true,       ON, &settings.format_comments,                  &exp_fca},
     {"fc1",     PRO_BOOL,                            true,       ON, &settings.format_col1_comments,             &exp_fc1},
@@ -408,6 +411,7 @@ const pro_ty pro[] =
     {"nlp",     PRO_BOOL,                            true,      OFF, &settings.lineup_to_parens,                 &exp_lp},
     {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, (int *) "-ip0\0",                           &exp_nip},
     {"nhnl",    PRO_BOOL,                            true,      OFF, &settings.honour_newlines,                  &exp_hnl},
+    {"ngts",    PRO_BOOL,                           false,      OFF, &settings.gettext_strings,                  &exp_gts},
     {"nfca",    PRO_BOOL,                           false,      OFF, &settings.format_comments,                  &exp_fca},
     {"nfc1",    PRO_BOOL,                           false,      OFF, &settings.format_col1_comments,             &exp_fc1},
     {"neei",    PRO_BOOL,                           false,      OFF, &settings.extra_expression_indent,          &exp_eei},
@@ -437,6 +441,7 @@ const pro_ty pro[] =
     {"i",       PRO_INT,                                2, ONOFF_NA, &settings.ind_size,                         &exp_i},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
     {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
+    {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
     /* This is now the default. */
     {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
     {"fca",     PRO_BOOL,                           false,       ON, &settings.format_comments,                  &exp_fca},
@@ -529,6 +534,7 @@ const long_option_conversion_ty option_conversions[] =
     {"no-space-after-casts",                        "ncs"},
     {"no-parameter-indentation",                    "nip"},
     {"no-extra-expression-indentation",             "neei"},
+    {"no-gettext-strings",                          "ngts"},
     {"no-comment-delimiters-on-blank-lines",        "ncdb"},
     {"no-blank-lines-before-block-comments",        "nbbb"},
     {"no-blank-lines-after-procedures",             "nbap"},
@@ -556,6 +562,7 @@ const long_option_conversion_ty option_conversions[] =
     {"honour-newlines",                             "hnl"},
     {"help",                                        "h"},
     {"gnu-style",                                   "gnu"},
+    {"gettext-strings",                             "gts"},
     {"format-first-column-comments",                "fc1"},
     {"format-all-comments",                         "fca"},
     {"extra-expression-indentation",                "eei"},
