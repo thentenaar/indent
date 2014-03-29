@@ -1,3 +1,10 @@
+2014-03-29  Andrew Shadura  <andrew@shadura.me>
+	* Add an option to fix nested comments (-fnc/--fix-nested-comment).
+	  This option which tries to fix nested comments by replacing '/*'
+	  inside comments by a space followed by '*'. By default, this option
+	  is turned off.
+	* Pass -npro to indent when running tests.
+
 2014-03-28  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* m4/gettext.m4: Upgrade to gettext-0.18.3.
