@@ -1,4 +1,4 @@
-/* C code produced by gperf version 3.0.2 */
+/* C code produced by gperf version 3.0.3 */
 /* Command-line: gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf  */
 /* Computed positions: -k'1,3' */
 
@@ -95,6 +95,9 @@ hash_cc (str, len)
 
 #ifdef __GNUC__
 __inline
+#ifdef __GNUC_STDC_INLINE__
+__attribute__ ((__gnu_inline__))
+#endif
 #endif
 templ_ty *
 is_reserved_cc (str, len)

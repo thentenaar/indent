@@ -1,4 +1,4 @@
-README for GNU `indent' 2.2.11.
+README for GNU `indent' 2.2.12.
 
   GNU indent changes the appearance of a C program by inserting or
   deleting whitespace according to a plethora of options.  Some
@@ -7,7 +7,7 @@ README for GNU `indent' 2.2.11.
   distribution.
 
   GNU indent does NOT work for C++, if it does for you then you're
-  just lucky.  Don't ask for support for C++.
+  just lucky.  Don't expect support for C++.
 
   Read the file NEWS for more information, especially to see what's
   different from the last version, and what future versions may do.
@@ -24,7 +24,7 @@ DOCUMENTATION
 
   For complete documentation on the Web, please visit:
 
-     http://indent.isidore-it.eu/beautify.html
+     http://www.gnu.org/software/indent/
 
   GNU uses a language called "texinfo" for its documentation source
   which produces both an on-line, interactive version and a hardcopy
@@ -53,7 +53,7 @@ DOCUMENTATION
      doc/indent.html
 
   This file can also be accessed at the URL 
-        http://indent.isidore-it.eu/indent.html
+        http://www.gnu.org/software/indent/manual/
 
   To create the HTML version from the texinfo version, type:
 
@@ -86,10 +86,10 @@ BUG REPORTS
 SENDING CODE
 
   If you send a patch as part of your bug fix, or send me code for new
-  features, please send them as diffs.  In particular, send me the
+  features, please send them as diffs.  In particular, include the
   result of "diff -c <old_file> <new_file>".
 
-  Because of the regression testing I require of indent, it is
-  extremely unlikely that your code will be installed into indent
+  Because of the regression testing the project requires of indent, 
+  it is extremely unlikely that your code will be installed into indent
   "as-is";  however it may still be helpful, and will likely have
   solved your particular problem.

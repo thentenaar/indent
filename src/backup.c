@@ -34,17 +34,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is subject to the terms of the GNU General Public License as
- * published by the Free Software Foundation.  A copy of this license is
- * included with this software distribution in the file COPYING.  If you
- * do not have a copy, you may obtain a copy by writing to the Free
- * Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details. */
-
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* GNU/Emacs style backups --
  * This behaviour is controlled by two environment variables,
  * VERSION_CONTROL and SIMPLE_BACKUP_SUFFIX.

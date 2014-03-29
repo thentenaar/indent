@@ -35,7 +35,7 @@ AC_PATH_PROG(TEXI2HTML, texi2html, $ac_aux_dir_abs/missing texi2html)
 dnl These are the only lines required to internationalize the package.
 dnl (OK, not quite, the AC_OUTPUT has also some parts.)
 AM_GNU_GETTEXT
-AM_GNU_GETTEXT_VERSION(0.11.5)
+AM_GNU_GETTEXT_VERSION([0.18.3])
 
 AH_TEMPLATE(HAVE_LC_MESSAGES)
 AH_TEMPLATE(ENABLE_NLS)
