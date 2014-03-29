@@ -180,6 +180,11 @@ Do not disable all formatting of comments.
 .br
 See \fB\ COMMENTS\fR.
 .TP
+.B -fnc\fR, \fB--fix-nested-comments\fR
+Fix nested comments.
+.br
+See \fB\ COMMENTS\fR.
+.TP
 .B -gnu\fR, \fB--gnu-style\fR
 Use GNU coding style.  This is the default.
 .br
@@ -930,6 +935,10 @@ the \(oq-lc\(cq option.  If the margin specified does not allow the
 comment to be printed, the margin will be automatically extended for the
 duration of that comment.  The margin is not respected if the comment is
 not being formatted.
+
+If the \(oq-fnc\(cq option is specified, all comments with \(oq/*\(cq
+embedded will have that character sequence replaced by a space followed
+by the character \(oq*\(cq thus eliminating nesting.
 
 If the comment begins a line (i.e., there is no program text to its
 left), it will be indented to the column it was found in unless the

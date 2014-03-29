@@ -59,6 +59,9 @@ RCSTAG_CC ("$Id$");
  * `format_col1_comments'           ("fc1"):  Format comments which
  *     begin in column 1.
  *
+ * `fix_nested_comments'            ("fnc"):  Fix comments which
+ *     have nested opening sequences
+ *
  * `unindent_displace'              ("d"):  The hanging indentation for
  *     comments which do not appear to the right of code.
  *
@@ -189,6 +192,15 @@ extern void print_comment(
 
         /* We have reached the end of the comment, and it's all on
          * this line. */
+
+         if (settings.fix_nested_comments)
+         {
+            if ((*buf_ptr == '*') && (*(buf_ptr - 1) == '/'))
+            {
+               *(e_com - 1) = ' ';
+               *e_com = '*';
+            }
+         }
 
          if ((*buf_ptr == '*') && (*(buf_ptr + 1) == '/'))
          {
