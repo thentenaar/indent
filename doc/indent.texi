@@ -656,6 +656,12 @@ comment to be printed, the margin will be automatically extended for the
 duration of that comment.  The margin is not respected if the comment is
 not being formatted.
 
+@kindex -fnc
+@kindex --fix-nested-comments
+If the @option{-fnc} option is specified, all comments with @samp{/*}
+embedded will have that character sequence replaced by a space followed
+by the character @samp{*} thus eliminating nesting.
+
 @kindex -d@var{n}
 @kindex --line-comments-indentation@var{n}
 If the comment begins a line (i.e., there is no program text to its
@@ -1759,6 +1765,11 @@ Format comments in the first column.@*
 @item -fca
 @itemx --format-all-comments
 Do not disable all formatting of comments.@*
+@xref{Comments}.
+
+@item -fnc
+@itemx --fix-nested-comments
+Fix nested comments.@*
 @xref{Comments}.
 
 @item -gnu
