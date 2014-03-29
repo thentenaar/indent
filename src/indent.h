@@ -273,6 +273,7 @@ typedef struct user_options_st
     int lineup_to_parens;    /*!<  if true, continued code within parens will be lined up to the open paren */
     int honour_newlines;     /*!<  True when positions at which we read a newline in the input file, should get
                               * a high priority to break long lines at. */
+    int fix_nested_comments; /*!<  If nested comments are to be fixed */
     int format_comments; /*!<  If any comments are to be reformatted */
     int format_col1_comments; /*!<  If comments which start in column 1 are to be magically reformatted */
     int extra_expression_indent;     /*!<  True if continuation lines from the expression part of "if(e)",

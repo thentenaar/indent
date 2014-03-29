@@ -417,7 +417,7 @@ echo Testing new comment stuff...Done.
 echo Testing bad code handling....
 
 # This ends in a error from indent but it shouldn't coredump.
-$INDENT input/bug206785.c -o output/bug206785.c 2>output/bug206785.err
+$INDENT -npro input/bug206785.c -o output/bug206785.c 2>output/bug206785.err
 
 if [ $? -ne 2 ]
 then

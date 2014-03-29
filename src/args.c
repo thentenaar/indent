@@ -161,6 +161,7 @@ static int exp_dj   = 0; /*!< Left justify declarations */
 static int exp_eei  = 0;
 static int exp_fc1  = 0;
 static int exp_fca  = 0;
+static int exp_fnc  = 0;
 static int exp_gnu  = 0;
 static int exp_gts  = 0;
 static int exp_hnl  = 0;
@@ -321,6 +322,7 @@ const pro_ty pro[] =
     {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
     {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
     {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
+    {"fnc",     PRO_BOOL,                           false,       ON, &settings.fix_nested_comments,              &exp_fnc},
     {"fca",     PRO_BOOL,                            true,       ON, &settings.format_comments,                  &exp_fca},
     {"fc1",     PRO_BOOL,                            true,       ON, &settings.format_col1_comments,             &exp_fc1},
     {"eei",     PRO_BOOL,                           false,       ON, &settings.extra_expression_indent,          &exp_eei},
@@ -444,6 +446,7 @@ const pro_ty pro[] =
     {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
     /* This is now the default. */
     {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
+    {"fnc",     PRO_BOOL,                           false,       ON, &settings.fix_nested_comments,              &exp_fnc},
     {"fca",     PRO_BOOL,                           false,       ON, &settings.format_comments,                  &exp_fca},
     {"fc1",     PRO_BOOL,                           false,       ON, &settings.format_col1_comments,             &exp_fc1},
     {"eei",     PRO_BOOL,                           false,       ON, &settings.extra_expression_indent,          &exp_eei},
@@ -561,8 +564,9 @@ const long_option_conversion_ty option_conversions[] =
     {"ignore-newlines",                             "nhnl"},
     {"honour-newlines",                             "hnl"},
     {"help",                                        "h"},
-    {"gnu-style",                                   "gnu"},
     {"gettext-strings",                             "gts"},
+    {"gnu-style",                                   "gnu"},
+    {"fix-nested-comments",                         "fnc"},
     {"format-first-column-comments",                "fc1"},
     {"format-all-comments",                         "fca"},
     {"extra-expression-indentation",                "eei"},
