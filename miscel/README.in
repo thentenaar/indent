@@ -1,4 +1,4 @@
-README for GNU `indent' 2.2.12.
+README for GNU `indent' @VERSION@.
 
   GNU indent changes the appearance of a C program by inserting or
   deleting whitespace according to a plethora of options.  Some
