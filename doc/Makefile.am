@@ -34,14 +34,14 @@ html-monolithic: @PACKAGE@.html
 html-split: @PACKAGE@_toc.html
 
 @PACKAGE@.html: version.texi $(@PACKAGE@_TEXINFOS)
-	$(TEXI2HTML) -expandinfo -number -monolithic `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi`
+	$(TEXI2HTML) -expand info -number-sections -monolithic `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi`
 
 @PACKAGE@_toc.html: version.texi $(@PACKAGE@_TEXINFOS)
 	case "$(TEXI2HTML)" in \
 	  *"/missing texi2html") \
-	     $(TEXI2HTML) -expand info -number -nomenu -split section `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi` || exit 0 ;; \
+	     $(TEXI2HTML) -expand info -number-sections -nomenu -split section `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi` || exit 0 ;; \
 	  *) $(RM) @PACKAGE@_*.html ; \
-	     $(TEXI2HTML) -expand info -number -nomenu -split section `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi` ;; \
+	     $(TEXI2HTML) -expand info -number-sections -nomenu -split section `if test -f @PACKAGE@.texi; then echo @PACKAGE@.texi; else echo $(srcdir)/@PACKAGE@.texi; fi` ;; \
 	esac
 
 install-html-monolithic: @PACKAGE@.html
