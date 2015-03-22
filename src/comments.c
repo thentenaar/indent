@@ -866,7 +866,7 @@ begin_line:
             save_length--;
          }
 
-         (void) memcpy (e_com, save_ptr, save_length);
+         (void) memmove (e_com, save_ptr, save_length);
          text_on_line = e_com;
          e_com += save_length;
 
