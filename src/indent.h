@@ -111,7 +111,7 @@ typedef unsigned char BOOLEAN;
 typedef struct file_buffer
 {
   char *name;
-  unsigned long size;
+  size_t size;
   char *data;
 } file_buffer_ty;
 
