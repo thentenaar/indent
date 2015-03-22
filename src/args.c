@@ -65,6 +65,10 @@
 /* Argument scanning and profile reading code.  Default parameters are set
  * here as well. */
 
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE 500    /* strdup(3) */
+#endif
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -179,7 +183,9 @@ static int exp_o    = 0;
 static int exp_orig = 0;
 static int exp_pcs  = 0;
 static int exp_pi   = 0;
+#ifdef PRESERVE_MTIME
 static int exp_pmt  = 0;
+#endif
 static int exp_pro  = 0;
 static int exp_prs  = 0;
 static int exp_psl  = 0;
