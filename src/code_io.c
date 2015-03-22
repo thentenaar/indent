@@ -52,6 +52,8 @@
    #include <unistd.h>
 #endif
 #include <string.h>
+#include <errno.h>
+#include <limits.h>
 
 #ifdef VMS
    #include <file.h>
@@ -248,13 +250,18 @@ extern file_buffer_ty * read_file(
 {
     static file_buffer_ty fileptr = {NULL};
     
+#if defined(__MSDOS__) || defined(VMS)
     /*
      * size is required to be unsigned for MSDOS,
      * in order to read files larger than 32767
      * bytes in a 16-bit world...
      */
   
-    unsigned int size;
+    unsigned int size, size_to_read;
+#else
+    ssize_t size;
+    size_t size_to_read;
+#endif
 
     int          namelen = strlen(filename);
     int          fd      = open(filename, O_RDONLY, 0777);
@@ -291,6 +298,10 @@ extern file_buffer_ty * read_file(
         }
     }
 
+    if (file_stats->st_size > SSIZE_MAX)
+    {
+        fatal(_("File %s is too big to read"), filename);
+    }
     fileptr.size = file_stats->st_size;
     
     if (fileptr.data != 0)
@@ -307,11 +318,26 @@ extern file_buffer_ty * read_file(
                                                                                * newline. */
     }
 
-    size = INDENT_SYS_READ (fd, fileptr.data, fileptr.size);
-    
-    if (size == (unsigned int) -1)
-    {
-        fatal (_("Error reading input file %s"), filename);
+    size_to_read = fileptr.size;
+    while (size_to_read > 0) {
+        size = INDENT_SYS_READ (fd, fileptr.data + fileptr.size - size_to_read,
+                size_to_read);
+        
+        if (size ==
+#if defined(__MSDOS__) || defined(VMS)
+                (unsigned int)
+#endif
+                -1)
+        {
+#if !defined(__MSDOS__) && !defined(VMS)
+            if (errno == EINTR)
+            {
+                continue;
+            }
+#endif
+            fatal (_("Error reading input file %s"), filename);
+        }
+        size_to_read -= size;
     }
     
     if (close (fd) < 0)
