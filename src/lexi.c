@@ -350,6 +350,15 @@ extern codes_ty lexi(void)
          {
             buf_ptr++;
          }
+         else if (*buf_ptr == 'D' || *buf_ptr == 'd')
+         {
+           if (buf_ptr[1] == 'F' || buf_ptr[1] == 'f' ||
+               buf_ptr[1] == 'D' || buf_ptr[1] == 'd' ||
+               buf_ptr[1] == 'L' || buf_ptr[1] == 'l')
+           {
+             buf_ptr+=2;
+           }
+         }
          else
          {
             while (*buf_ptr == 'U' || *buf_ptr == 'u' || *buf_ptr == 'L' || *buf_ptr == 'l')
