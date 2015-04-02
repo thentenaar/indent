@@ -1512,7 +1512,7 @@ formatting for a section of a program, place the disabling control
 comment @code{/* *INDENT-OFF* */} on a line by itself just before that
 section.  Program text scanned after this control comment is output
 precisely as input with no modifications until the corresponding
-enabling comment is scanned on a line by itself.  The disabling control
+enabling comment is scanned on a line by itself.  The enabling control
 comment is @code{/* *INDENT-ON* */}, and any text following the comment
 on the line is also output unformatted.  Formatting begins again with
 the input line following the enabling control comment.
