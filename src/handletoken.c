@@ -1,6 +1,7 @@
 /** \file
  * handletoken.c  GNU indent, processing of tokens returned by the parser.
  *
+ * Copyright (c) 2015 Tim Hentenaar. All rights reserved.<br>
  * Copyright (c) 2013 Łukasz Stelmach.  All rights reserved.<br>
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
@@ -328,6 +329,13 @@ static void handle_token_lparen(
 
     parser_state_tos->paren_depth++;
 
+	/* In the case of nested function pointer declarations, let's ensure
+	 * we output a ' ' between the decl word and the lparen, but NOT
+	 * between the following rparen and lparen.
+	 */
+    if (parser_state_tos->is_func_ptr_decl && !settings.proc_calls_space)
+        parser_state_tos->want_blank = (*(token - 1) != ')' && *(token - 1) != ' ');
+
     if (parser_state_tos->want_blank &&
         (*token != '[') &&
         ( (parser_state_tos->last_token != ident) ||
@@ -343,6 +351,11 @@ static void handle_token_lparen(
     {
         set_buf_break (bb_proc_call, paren_target);
     }
+
+	/* Remember if this looks like a function pointer decl. */
+	if (parser_state_tos->want_blank &&
+	    parser_state_tos->last_token == decl && *(token + 1) == '*')
+	        parser_state_tos->is_func_ptr_decl = true;
 
     if (parser_state_tos->in_decl && !parser_state_tos->block_init)
     {
@@ -944,6 +957,7 @@ static void handle_token_semicolon(
     parser_state_tos->block_init = 0;
     parser_state_tos->block_init_level = 0;
     parser_state_tos->just_saw_decl--;
+    parser_state_tos->is_func_ptr_decl = false;
 
     if (parser_state_tos->in_decl &&
         (s_code == e_code) && !buf_break_used &&
