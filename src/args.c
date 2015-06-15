@@ -205,6 +205,7 @@ static int exp_v    = 0;
 static int exp_version = 0;
 static int exp_par  = 0;
 static int exp_slc  = 0;
+static int exp_as   = 0;
 
 /**
  * The following structure is controlled by command line parameters and
@@ -370,6 +371,7 @@ const pro_ty pro[] =
     {"pal",     PRO_BOOL,                            true,      OFF, &settings.pointer_align_right,              &exp_par},
     {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
+    {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -496,6 +498,7 @@ const pro_ty pro[] =
     {"pal",     PRO_BOOL,                            true,      OFF, &settings.pointer_align_right,              &exp_par},
     {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
+    {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -632,6 +635,7 @@ const long_option_conversion_ty option_conversions[] =
     {"pointer-align-right",                         "par"},
     {"pointer-align-left",                          "pal"},
     {"single-line-conditionals",                    "slc"},
+    {"align-with-spaces",                           "as"},
 
     /* Signify end of structure.  */
     {0,                                             0},
