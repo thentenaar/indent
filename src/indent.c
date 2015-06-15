@@ -1040,6 +1040,7 @@ int main(
     int     argc,
     char ** argv)
 {
+    char *tmp;
     char *profile_pathname = 0;
     BOOLEAN using_stdin = false;
     exit_values_ty exit_status;
@@ -1064,6 +1065,21 @@ int main(
         debug_init();
     }
 #endif
+
+    /* 'size_t', 'wchar_t' and 'ptrdiff_t' are guarenteed to be
+     * available in ANSI C.
+     *
+     * I'm malloc'ing this in the hopes that it will be freed
+     * along with the rest of the user_specials array in
+     * lexi.c (assuming that it actually is.)
+     */
+    tmp = (char *)xmalloc(25);
+    memcpy(tmp, "size_t", 7);
+    addkey(tmp, rw_decl);
+    memcpy(tmp + 7, "wchar_t", 8);
+    addkey(tmp + 7, rw_decl);
+    memcpy(tmp + 15, "ptrdiff_t", 10);
+    addkey(tmp + 15, rw_decl);
 
     init_parser ();
     initialize_backups ();
