@@ -539,6 +539,16 @@ static void handle_token_rparen(
 
     *(e_code++) = token[0];
 
+    /* Something is swallowing spaces after a 2nd rparen, when we allow
+     * single-line conditionals, so make sure we copy it (if there is one).
+     */
+    if (settings.allow_single_line_conditionals && *(token - 1) == ')'
+        && *(token + 1) == ' ' && *(token + 2) != '{'
+        && !parser_state_tos->paren_depth)
+    {
+        *(e_code++) = *(++token);
+    }
+
     /* check for end of if (...), or some such */
 
     if (*sp_sw && (parser_state_tos->p_l_follow == 0))
@@ -555,7 +565,7 @@ static void handle_token_rparen(
         }
 
         *sp_sw = false;
-        *force_nl = true;    /* must force newline after if */
+        *force_nl = !settings.allow_single_line_conditionals;
         parser_state_tos->last_u_d = true;  /* inform lexi that a
                                              * following operator is
                                              * unary */

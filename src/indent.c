@@ -1,7 +1,8 @@
 /** \file
+ * Copyright (c) 2015 Tim Hentenaar. All rights reserved.<br>
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
- * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved. <br>
+ * Copyright (c) 1992, 2002, 2008, 2014, 2015 Free Software Foundation, Inc.  All rights reserved. <br>
  *
  * Copyright (c) 1980 The Regents of the University of California. <br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.
@@ -530,6 +531,12 @@ static exit_values_ty indent_main_loop(
          */
 
         flushed_nl = false;
+
+        /* Don't force a newline after an unbraced if, else, etc. */
+        if (settings.allow_single_line_conditionals &&
+            (parser_state_tos->last_token == rparen ||
+            parser_state_tos->last_token == sp_else))
+            force_nl = false;
 
         if (!search_brace(&type_code, &force_nl, &flushed_nl, &last_else,
                           &is_procname_definition, pbreak_line))
