@@ -4,6 +4,7 @@
 	  with spces up till the target_column.
 	* If -npcs is set, don't add a space between a function pointer's
 	  name and its arglist.
+	* Fix indentation of block comments following braces.
 
 2015-06-13 Tim Hentenaar <tim@hentenaar.com>
     * Fix regression introduced in hg revision 25c27d429590
