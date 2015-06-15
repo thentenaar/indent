@@ -87,7 +87,7 @@ RCSTAG_CC ("$Id$");
      "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
      "-ncdb\0-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0" \
      "-npcs\0-nprs\0-npsl\0-sai\0-saf\0-saw\0-cs\0-nsc\0-nsob\0-nfca\0-cp33\0"\
-     "-nss\0-par\0"
+     "-nss\0-par\0-sar\0"
 
 #define GNU_SETTINGS_STRING  (int *) \
      "-nbad\0-bap\0-bbo\0-hnl\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0-nce\0" \
@@ -207,6 +207,7 @@ static int exp_version = 0;
 static int exp_par  = 0;
 static int exp_slc  = 0;
 static int exp_as   = 0;
+static int exp_sar  = 0;
 
 /**
  * The following structure is controlled by command line parameters and
@@ -373,6 +374,7 @@ const pro_ty pro[] =
     {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
     {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
+    {"sar",     PRO_BOOL,                            false,      ON, &settings.spaces_around_initializers,       &exp_sar},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -500,6 +502,7 @@ const pro_ty pro[] =
     {"par",     PRO_BOOL,                            true,       ON, &settings.pointer_align_right,              &exp_par},
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
     {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
+    {"sar",     PRO_BOOL,                            false,      ON, &settings.spaces_around_initializers,       &exp_sar},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -637,6 +640,7 @@ const long_option_conversion_ty option_conversions[] =
     {"pointer-align-left",                          "pal"},
     {"single-line-conditionals",                    "slc"},
     {"align-with-spaces",                           "as"},
+    {"spaces-around-initializers",                  "sar"},
 
     /* Signify end of structure.  */
     {0,                                             0},

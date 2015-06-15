@@ -1,5 +1,8 @@
 2015-06-15 Tim Hentenaar <tim@hentenaar.com>
 	* Added -par to -kr.
+	* Fixed detection of struct initializer lists as block_init.
+	* Added an option (-sar/--spaces-around-initializers) to add a space
+	  after the lbrace and before the rbrace of struct initializers.
 
 2015-06-14 Tim Hentenaar <tim@hentenaar.com>
 	* Added an option (-as/--align-with-spaces) which if indenting with

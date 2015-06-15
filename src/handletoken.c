@@ -1023,6 +1023,12 @@ static void handle_token_lbrace(
 {
     parser_state_tos->saw_double_colon = false;
 
+    /* If the last token was a binary_op (probably =) then we're
+     * likely starting an initializer or initializer list.
+     */
+    if (parser_state_tos->last_token == binary_op)
+        parser_state_tos->block_init = 1;
+
     if (!parser_state_tos->block_init)
     {
         *force_nl = true;    /* force other stuff on same line as '{' onto
@@ -1132,7 +1138,6 @@ static void handle_token_lbrace(
     if (parser_state_tos->in_decl && parser_state_tos->in_or_st)
     {
         /* This is a structure declaration.  */
-
         if (parser_state_tos->dec_nest >= di_stack_alloc)
         {
             di_stack_alloc *= 2;
@@ -1207,6 +1212,8 @@ static void handle_token_lbrace(
         ++parser_state_tos->paren_depth;
         parser_state_tos->paren_indents[parser_state_tos->p_l_follow -
                                         1] = e_code - s_code;
+        if (settings.spaces_around_initializers)
+            parser_state_tos->want_blank = true;
     }
     else if (parser_state_tos->block_init &&
              (parser_state_tos->block_init_level == 1))
@@ -1246,8 +1253,9 @@ static void handle_token_rbrace(
     parser_state_tos->just_saw_decl = 0;
     parser_state_tos->ind_stmt = false;
     parser_state_tos->in_stmt  = false;
+    parser_state_tos->block_init_level--;
 
-    if ((parser_state_tos->block_init_level-- == 1)
+    if ((parser_state_tos->block_init_level == 0)
         && (s_code != e_code))
     {
         /* Found closing brace of declaration initialisation, with
@@ -1266,6 +1274,13 @@ static void handle_token_rbrace(
             set_buf_break (bb_rbrace, paren_target);
             *(e_code++) = ' ';
         }
+    }
+    else if (parser_state_tos->block_init_level == 1
+             && settings.spaces_around_initializers)
+    {
+             /* Put a space before the '}' */
+            set_buf_break (bb_rbrace, paren_target);
+            *(e_code++) = ' ';
     }
 
     *(e_code++) = '}';
