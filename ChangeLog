@@ -1,3 +1,6 @@
+2015-06-15 Tim Hentenaar <tim@hentenaar.com>
+	* Added -par to -kr.
+
 2015-06-14 Tim Hentenaar <tim@hentenaar.com>
 	* Added an option (-as/--align-with-spaces) which if indenting with
 	  tabs will ident to the current indentation level, and then pad
