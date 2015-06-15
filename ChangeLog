@@ -1,3 +1,8 @@
+2015-06-14 Tim Hentenaar <tim@hentenaar.com>
+	* Added an option (-as/--align-with-spaces) which if indenting with
+	  tabs will ident to the current indentation level, and then pad
+	  with spces up till the target_column.
+
 2015-06-13 Tim Hentenaar <tim@hentenaar.com>
     * Fix regression introduced in hg revision 25c27d429590
 	* Add an option (-slc/--single-line-conditionals) to allow

@@ -1,8 +1,9 @@
 /** \file
+ * Copyright (c) 2015 Tim Hentenaar. All Rights Reserved.<br>
  * Copyright (c) 2002 D.Ingamells
  * Copyright (c) 1999, 2000 Carlo Wood.  All rights reserved. <br>
  * Copyright (c) 1994, 1996, 1997 Joseph Arceneaux.  All rights reserved. <br>
- * Copyright (c) 1992, 2002, 2008 Free Software Foundation, Inc.  All rights reserved. <br>
+ * Copyright (c) 1992, 2002, 2008, 2015 Free Software Foundation, Inc.  All rights reserved. <br>
  *
  * Copyright (c) 1980 The Regents of the University of California. <br>
  * Copyright (c) 1976 Board of Trustees of the University of Illinois. All rights reserved.
@@ -592,31 +593,41 @@ static void set_next_buf_break (
  */
 
 static int pad_output(
-    int currentColumn,
+    int current_column,
     int target_column)
 {
-    if (currentColumn < target_column)
+    int offset = 0;
+    int align_target = target_column;
+
+    if (current_column < target_column)
     {
         if (settings.use_tabs && (settings.tabsize > 1))
         {
-            int offset = settings.tabsize - (currentColumn - 1) % settings.tabsize;
+            if (settings.align_with_spaces)
+            {
+                if (align_target >= parser_state_tos->ind_level)
+	                align_target = parser_state_tos->ind_level;
+	            offset = (align_target - current_column + 1) / settings.tabsize;
+	            align_target = current_column + (offset * settings.tabsize);
+            }
 
-            while (currentColumn + offset <= target_column)
+            offset = settings.tabsize - (current_column - 1) % settings.tabsize;
+            while (current_column + offset <= align_target)
             {
                 putc(TAB, output);
-                currentColumn += offset;
+                current_column += offset;
                 offset = settings.tabsize;
             }
         }
 
-        while (currentColumn < target_column)
+        while (current_column < target_column)
         {
             putc(' ', output);
-            currentColumn++;
+            current_column++;
         }
     }
 
-    return currentColumn;
+    return current_column;
 }
 
 /**

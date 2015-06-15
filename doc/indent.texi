@@ -1214,9 +1214,48 @@ int one(void)
 @end group
 @end example
 
+@kindex -ut
+@kindex --use-tabs
+@kindex -nut
+@kindex --no-tabs
 @node Indentation, Breaking long lines, Declarations, Indent Program
 @comment  node-name,  next,  previous,  up
 @section Indentation
+
+The most basic, and most controversial issues with regard to code
+formatting is precisely how indentation should be acoomplished.
+Fortunately, @command{indent} supports several different styles of
+identation.  The default is to use tabs for indentation, which is
+specified by the @option{-ut} option. Assuming the default tab size of
+8, the code would look like this:
+
+@example
+@group
+int a(int b)
+@{
+        return b;
+|------|
+ 1 tab
+@}
+@end group
+@end example
+
+@noindent
+For those that prefer spaces to tabs, @option{indent} provides the
+@option{-nut} option. The same code would look like this:
+
+@kindex -nut
+@kindex --no-tabs
+@example
+@group
+int a(int b)
+@{
+        return b;
+|------|
+8 spaces
+@}
+@end group
+@end example
 
 @kindex -i@var{n}
 @kindex --indent-level@var{n}
@@ -1226,7 +1265,7 @@ int one(void)
 @kindex --continue-at-parentheses
 @kindex -nlp
 @kindex --dont-line-up-parentheses
-One issue in the formatting of code is how far each line should be
+Another issue in the formatting of code is how far each line should be
 indented from the left margin.  When the beginning of a statement such
 as @code{if} or @code{for} is encountered, the indentation level is
 increased by the value specified by the @option{-i} option.  For example,
@@ -1290,6 +1329,70 @@ if ((((i < 2 &&
 input and output character streams.  These intervals are by default 8
 columns wide, but (as of version 1.2) may be changed by the @option{-ts}
 option.  Tabs are treated as the equivalent number of spaces.
+
+@kindex -as
+@kindex --align-with-spaces
+By default, @command{indent} will use tabs to indent as far as possible,
+and then pad with spaces until the desired position is reached. However,
+with the @option{-as} option, spaces will be used for alignment beyond
+the current indentation level. By default, assuming @option{-lp} is
+enabled, the code would be indented like so (@samp{t} represents tabs,
+@samp{s} represents spaces):
+
+@example
+@group
+unsigned long really_long_proc_name(unsigned long x, unsigned long y,
+                                    int a)
+|------||-------||------||-------|__
+   t        t       t       t     ss
+@{
+        p1 = first_procedure (second_procedure (p2, p3),
+                              third_procedure (p4, p5));
+|------||------||------|_____
+   t       t       t    sssss
+@}
+@end group
+@end example
+
+@noindent
+This is fine, if you assume that whoever is reading the code will honor
+your assumption of 8-space tabs. If the reader was using 4-space tabs,
+it would look like this:
+
+@example
+@group
+unsigned long really_long_proc_name(unsigned long x, unsigned long y,
+                      int a)
+|---||---||---||---|__
+  t    t    t    t  ss
+@{
+        p1 = first_procedure (second_procedure (p2, p3),
+                     third_procedure (p4, p5));
+|---||---||---|______
+  t    t    t  ssssss
+@}
+@end group
+@end example
+
+@noindent
+The @option{-as} option fixes this so that the code will appear consistent
+regardless of what tab size the user users to read the code. This looks
+like:
+
+@example
+@group
+unsigned long really_long_proc_name(unsigned long x, unsigned long y,
+                                    int a)
+____________________________________
+ssssssssssssssssssssssssssssssssssss
+@{
+        p1 = first_procedure (second_procedure (p2, p3),
+                              third_procedure (p4, p5));
+|------|______________________
+   t    ssssssssssssssssssssss
+@}
+@end group
+@end example
 
 @kindex -ip@var{n}
 @kindex --parameter-indentation@var{n}
@@ -1676,6 +1779,11 @@ short option.  It is followed by a cross key alphabetized by long option.
 @c The cross references are all on lines by themselves because this
 @c looks better in both printed output and Info.  4 Feb 1992  --rjc
 @table @samp
+@item -as
+@itemx --align-with-spaces
+If using tabs for indentation, use spaces for alignment.@*
+@xref{Indentation}.
+
 @item -bad
 @itemx --blank-lines-after-declarations
 Force blank lines after the declarations.@*
@@ -2178,6 +2286,7 @@ the corresponding short option.
 \def\leaderfill{\leaders\hbox to 1em{\hss.\hss}\hfill}
 
 {\tt
+\line{ --align-with-spacess \leaderfill               -as\ }
 \line{ --blank-lines-after-commas \leaderfill         -bc\ \ }  
 \line{ --blank-lines-after-declarations \leaderfill   -bad\ } 
 \line{ --blank-lines-after-procedures \leaderfill     -bap\ }  
@@ -2270,6 +2379,7 @@ the corresponding short option.
 
 @ifinfo
 @example
+--align-with-spaces                             -as
 --blank-lines-after-commas                      -bc             
 --blank-lines-after-declarations                -bad            
 --blank-lines-after-procedures                  -bap            
