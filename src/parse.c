@@ -528,9 +528,10 @@ extern exit_values_ty parse (
 
         for (i = 1; i <= parser_state_tos->tos; ++i)
         {
-            printf (_("  stack[%d] =>   stack: %d   ind_level: %d\n"),
-                    (int) i, (int) parser_state_tos->p_stack[i],
-                    (int) parser_state_tos->il[i]);
+            printf (_("  stack[%d] =>  stack: %d [%-10s]  ind_level: %d\n"),
+                    (int)i, (int)parser_state_tos->p_stack[i],
+                    debug_symbol_strings[parser_state_tos->p_stack[i]],
+                    (int)parser_state_tos->il[i]);
         }
 
         printf ("\n");
