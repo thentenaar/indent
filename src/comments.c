@@ -164,7 +164,16 @@ extern void print_comment(
       line_preamble_length = 0;
       visible_preamble = 0;
 
-      start_column = current_column () - 2;
+      /* If this comment is in the save buffer, trust it's start_column. */
+      if ((buf_ptr >= save_com.ptr) && (buf_ptr <= save_com.ptr + save_com.len))
+      {
+          start_column = save_com.start_column;
+      }
+      else
+      {
+          start_column = current_column () - 2;
+      }
+
       found_column = start_column;
       parser_state_tos->box_com = 1;
       parser_state_tos->com_col = found_column;
