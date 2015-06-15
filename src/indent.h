@@ -329,6 +329,7 @@ typedef struct user_options_st
     int gettext_strings;     /*!< true: _("...") is a string, false: it's a function */ 
     int allow_single_line_conditionals; /*!< Don't indent the body of an unbraced if, else, etc. */
     int align_with_spaces; /*!< Align with spaces if indenting with tabs. */
+    int spaces_around_initializers; /*!< Place spaces after { and before } in initializers. */
 } user_options_ty;
 
 extern user_options_ty settings;

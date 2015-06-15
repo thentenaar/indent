@@ -1214,6 +1214,45 @@ int one(void)
 @end group
 @end example
 
+@noindent
+@kindex -sar
+@kindex --spaces-around-initializers
+
+The @option{-sar} option affects how @command{indent} will render initializer
+lists. Without @option{-sar} they are formatted like this:
+
+@example
+@group
+int a[] = @{1, 2, 3, 4@};
+
+struct s @{
+  const char *name;
+  int x;
+@} a[] = @{
+  @{"name", 0@},
+  @{"a", 1@}
+@};
+@end group
+@end example
+
+@noindent
+With @option{-sar} they are formatted like this, with spaces inside the
+braces:
+
+@example
+@group
+int a[] = @{ 1, 2, 3, 4 @};
+
+struct s @{
+  const char *name;
+  int x;
+@} a[] = @{
+  @{ "name", 0 @},
+  @{ "a", 1 @}
+@};
+@end group
+@end example
+
 @kindex -ut
 @kindex --use-tabs
 @kindex -nut
@@ -2211,6 +2250,11 @@ Put a space after each @code{for}.@*
 Put a space after each @code{if}.@*
 @xref{Statements}.
 
+@item -sar
+@itemx --spaces-around-initializers
+Put a space after the @samp{@{} and before the @samp{@}} in initializers.@*
+@xref{Declarations}.
+
 @item -saw
 @itemx --space-after-while
 Put a space after each @code{while}.@*
@@ -2367,6 +2411,7 @@ the corresponding short option.
 \line{ --space-after-procedure-calls \leaderfill   -pcs\ }  
 \line{ --space-after-while \leaderfill             -saw\ }
 \line{ --space-special-semicolon \leaderfill       -ss\ \ } 
+\line{ --spaces-around-initializers \leaderfill    -sar\ \ }
 \line{ --standard-output \leaderfill      -st\ \ } 
 \line{ --start-left-side-of-comments \leaderfill   -sc\ \ }
 \line{ --struct-brace-indentation \leaderfill      -sbi@var{n}}
@@ -2460,6 +2505,7 @@ the corresponding short option.
 --space-after-procedure-calls                   -pcs            
 --space-after-while				-saw
 --space-special-semicolon                       -ss             
+--spaces-around-initializers                    -sar
 --standard-output                               -st             
 --start-left-side-of-comments                   -sc             
 --struct-brace-indentation                      -sbi@var{n}
