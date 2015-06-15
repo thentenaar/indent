@@ -1,5 +1,8 @@
 2015-06-13 Tim Hentenaar <tim@hentenaar.com>
     * Fix regression introduced in hg revision 25c27d429590
+	* Add an option (-slc/--single-line-conditionals) to allow
+	  conditionals and their inner statement to be on the same line if
+	  they're not braced. This should fix GNU bug #42357.
 
 2014-04-07  Andrew Shadura  <andrew@shadura.me>
 	* Don't add extra 'const' keyword to C++ programs (closes Debian bugs

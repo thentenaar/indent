@@ -1,8 +1,9 @@
 /** \file
+ * Copyright (c) 2015 Tim Hentenaar. All rights reserved.<br>
  * Copyright (c) 2013 Łukasz Stelmach.  All rights reserved.<br>
  * Copyright (c) 1999 Carlo Wood.  All rights reserved.<br>
  * Copyright (c) 1994 Joseph Arceneaux.  All rights reserved.<br>
- * Copyright (c) 1992, 2002, 2008, 2014 Free Software Foundation, Inc.  All rights reserved.<br>
+ * Copyright (c) 1992, 2002, 2008, 2014, 2015 Free Software Foundation, Inc.  All rights reserved.<br>
  *
  * Copyright (c) 1985 Sun Microsystems, Inc. <br>
  * Copyright (c) 1980 The Regents of the University of California. <br>
@@ -326,6 +327,7 @@ typedef struct user_options_st
     int expect_output_file;  /*!< Means "-o" was specified. */
     int pointer_align_right; /*!< true: "char *a", false: "char* a" */
     int gettext_strings;     /*!< true: _("...") is a string, false: it's a function */ 
+    int allow_single_line_conditionals; /*!< Don't indent the body of an unbraced if, else, etc. */
 } user_options_ty;
 
 extern user_options_ty settings;
