@@ -418,6 +418,8 @@ typedef struct parser_state
                                    * scanned was a newline */
     int saw_double_colon;         /*!<  set when we see a ::, reset at first semi-
                                    * colon or left brace */
+    int is_func_ptr_decl;         /*!<  set when we see a decl, followed by lparen
+                                   * and '*'. */
     int broken_at_non_nl;         /*!<  true when a line was broken at a place
                                    * where there was no newline in the input file */
     int in_or_st;                 /*!<  Will be true iff there has been a

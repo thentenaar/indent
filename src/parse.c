@@ -136,6 +136,7 @@ extern void reset_parser(void)
     parser_state_tos->dec_nest         = 0;
     parser_state_tos->can_break        = bb_none;
     parser_state_tos->saw_double_colon = false;
+    parser_state_tos->is_func_ptr_decl = false;
 
     parser_state_tos->il[0]            = 0;
     parser_state_tos->cstk[0]          = 0;
