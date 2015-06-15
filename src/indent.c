@@ -162,6 +162,8 @@ static BOOLEAN search_brace(
     BOOLEAN        * is_procname_definition,
     BOOLEAN        * pbreak_line)
 {
+    int cur_token;
+
     while (parser_state_tos->search_brace)
     {
         /* After scanning an if(), while (), etc., it might be necessary to
@@ -178,14 +180,11 @@ static BOOLEAN search_brace(
          * A left brace is moved before any comments in a -br situation.  Otherwise,
          * it comes after comments.
          *
-         * A statement comes after any comments, but in the case of an else that needs
-         * to be on the same line as a preceding left brace, we don't force a new line.
-         * Why the else logic is in here is an interesting question.
-         *
          * At the moment any form feeds before we get to braces or a statement are just
          * dropped.
          */
-        switch (*type_code)
+        cur_token = *type_code;
+        switch (cur_token)
         {
         case newline:
             ++line_no;
@@ -216,29 +215,6 @@ static BOOLEAN search_brace(
                  * To make that work, we'll put the brace up front and let the
                  * process continue to pick up another comment or not.
                  */
-
-                /* Kludge to get my newline back */
-/*                if ((parser_state_tos->last_token == sp_else) &&
-                    (save_com.end > &save_com.ptr[4]) &&
-                    (save_com.end[-2] == '*') &&
-                    (save_com.end[-1] == '/') &&
-                    (save_com.ptr[2] == '/') &&
-                    (save_com.ptr[3] == '*'))
-                {
-                    char *p;
-
-                    for (p = &save_com.ptr[4];
-                         *p != '\n' && p < &save_com.end[-2]; ++p)
-                    {
-                    }
-
-                    if (*p != '\n')
-                    {
-                        *save_com.end++ = ' ';
-                    }
-                }
-*/
-                /* Put the brace at the beginning of the saved buffer */
 
                 save_com.ptr[0] = '{';
                 save_com.len = 1;
@@ -405,29 +381,44 @@ static BOOLEAN search_brace(
 
         if (*type_code != code_eof)
         {
-            int just_saw_nl = false;
+            /* Read the next token */
+            *type_code = lexi();
 
-            if (*type_code == newline)
-            {
-                just_saw_nl = true;
-            }
-
-            *type_code = lexi ();
-
-            /* This appears to dump out a line on repeated newlines or a comment
-             * after a newline.  If we have already collected a comment, it might
-             * dump in the wrong order?  Since all regression tests pass without
-             * it, I'm leaving it commented out.  DPV 2014-03-28
+            /* Dump the line, if we just saw a newline, and:
+             *
+             * 1. The current token is a newline. - AND -
+             * 2. The comment buffer is empty. - AND -
+             * 3. The next token is a newline or comment. - AND -
+             * 4. The previous token was a rbrace.
+             *
+             * This is needed to avoid indent eating newlines between
+             * blocks like so:
+             *
+             * if (...) {
+             *
+             * }
+             *
+             * /comment here/
+             * if (...)
+             *
+             * However, if there's a comment in the comment buffer, and the
+             * next token is a newline, we'll just append a newline to the end
+             * of the comment in the buffer, so that we don't lose it when
+             * the comment is written out.
              */
-            /*
-            if ( ( (*type_code == newline) && (just_saw_nl == true)) ||
-                 ( (*type_code == comment) && parser_state_tos->last_saw_nl &&
-                   (parser_state_tos->last_token != sp_else)))
+            if (cur_token == newline &&
+                (*type_code == newline || *type_code == comment) &&
+                parser_state_tos->last_token == rbrace)
             {
-                dump_line(true, &paren_target, pbreak_line);
-                *flushed_nl = true;
-            }
-            */
+                if (!save_com.len) {
+                    dump_line(true, &paren_target, pbreak_line);
+                    *flushed_nl = true;
+                } else if (*type_code == newline) {
+                    *save_com.end++ = EOL;
+                    save_com.len++;
+                }
+           }
+
             *is_procname_definition = ((parser_state_tos->procname[0] != '\0') &&
                                        parser_state_tos->in_parameter_declaration);
         }
