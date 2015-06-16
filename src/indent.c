@@ -952,9 +952,9 @@ static exit_values_ty indent_multiple_files(void)
  *
  */
 
-
 static exit_values_ty indent_single_file(BOOLEAN using_stdin)
 {
+    int            is_stdin    = false;
     exit_values_ty exit_status = total_success;
     struct stat    file_stats;
 
@@ -964,6 +964,7 @@ static exit_values_ty indent_single_file(BOOLEAN using_stdin)
         in_file_names[0] = "Standard input";
         in_name = in_file_names[0];
         current_input = read_stdin ();
+        is_stdin = true;
     }
     else
     {
@@ -1003,7 +1004,13 @@ static exit_values_ty indent_single_file(BOOLEAN using_stdin)
     {
         close_output(NULL, out_name);
     }
-    
+
+    if (current_input) {
+        if (!is_stdin && current_input->name)
+            xfree(current_input->name);
+        xfree(current_input->data);
+    }
+
     return exit_status;
 }
 
@@ -1069,17 +1076,17 @@ int main(
     /* 'size_t', 'wchar_t' and 'ptrdiff_t' are guarenteed to be
      * available in ANSI C.
      *
-     * I'm malloc'ing this in the hopes that it will be freed
-     * along with the rest of the user_specials array in
-     * lexi.c (assuming that it actually is.)
+     * These pointers will be freed in cleanup_user_specials().
      */
-    tmp = (char *)xmalloc(25);
+    tmp = xmalloc(7);
     memcpy(tmp, "size_t", 7);
     addkey(tmp, rw_decl);
-    memcpy(tmp + 7, "wchar_t", 8);
-    addkey(tmp + 7, rw_decl);
-    memcpy(tmp + 15, "ptrdiff_t", 10);
-    addkey(tmp + 15, rw_decl);
+    tmp = xmalloc(8);
+    memcpy(tmp, "wchar_t", 8);
+    addkey(tmp, rw_decl);
+    tmp = xmalloc(10);
+    memcpy(tmp, "ptrdiff_t", 10);
+    addkey(tmp, rw_decl);
 
     init_parser ();
     initialize_backups ();
@@ -1105,6 +1112,11 @@ int main(
 
         exit_status = indent_all(using_stdin);
     }
-    
-    return (exit_status);
+
+    if (profile_pathname)
+        xfree(profile_pathname);
+    xfree(in_file_names);
+    uninit_parser();
+    cleanup_user_specials();
+    return exit_status;
 }

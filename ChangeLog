@@ -4,6 +4,10 @@
 	  double spaces.
 	* Fix print_comment reading past the end of the buffer when reading
 	 less than a full comment from stdin.
+	* Ensure that there's only one point where exit(3) is used.
+	* Add xfree() to globs.
+	* xfree() common heap-allocated storage.
+	* Fixed some memory leaks in the profile stuff.
 
 2015-06-15 Tim Hentenaar <tim@hentenaar.com>
 	* Added -par to -kr.

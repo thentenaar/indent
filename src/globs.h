@@ -36,6 +36,12 @@ extern char *xrealloc(
    char *ptr, 
    unsigned int size);
 
+extern void xfree(
+    void *ptr);
+
+extern void do_exit(
+    int code);
+
 extern void fatal(
    const char *string, 
    const char *a0);

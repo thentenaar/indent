@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "globs.h"
 
 /**
  *
@@ -40,5 +41,5 @@ extern void DieError(
 
     va_end(ap);
 
-    exit(errval);
+    do_exit(errval);
 }

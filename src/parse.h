@@ -53,6 +53,7 @@ extern int inc_pstack (void);
 extern void parse_lparen_in_decl (void);
 extern exit_values_ty parse (codes_ty tk);
 extern void init_parser (void);
+extern void uninit_parser (void);
 extern void reset_parser (void);
 extern void reduce (void);
 

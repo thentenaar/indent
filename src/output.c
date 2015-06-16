@@ -1325,8 +1325,7 @@ void open_output(
                                           *  (but see the trunc function) */
         if (output == NULL)
         {
-            fprintf (stderr, _("indent: can't create %s\n"), filename);
-            exit (indent_fatal);
+            fatal(_("indent: can't create %s\n"), filename);
         }
     }
 }

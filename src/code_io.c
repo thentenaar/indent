@@ -257,10 +257,10 @@ extern file_buffer_ty * read_file(
      * bytes in a 16-bit world...
      */
   
-    unsigned int size, size_to_read;
+    unsigned int size = 0, size_to_read = 0;
 #else
-    ssize_t size;
-    size_t size_to_read;
+    ssize_t size = 0;
+    size_t size_to_read = 0;
 #endif
 
     int          namelen = strlen(filename);
@@ -335,6 +335,7 @@ extern file_buffer_ty * read_file(
                 continue;
             }
 #endif
+            xfree(fileptr.data);
             fatal (_("Error reading input file %s"), filename);
         }
         size_to_read -= size;
@@ -342,6 +343,7 @@ extern file_buffer_ty * read_file(
     
     if (close (fd) < 0)
     {
+        xfree(fileptr.data);
         fatal (_("Error closing input file %s"), filename);
     }
     
@@ -364,7 +366,7 @@ extern file_buffer_ty * read_file(
         fileptr.name = (char *) xmalloc (namelen + 1);
     }
     
-    (void)strncpy(fileptr.name, filename, namelen);
+    memcpy(fileptr.name, filename, namelen);
     fileptr.name[namelen] = EOS;
 
     if (fileptr.data[fileptr.size - 1] != EOL)
@@ -372,7 +374,7 @@ extern file_buffer_ty * read_file(
         fileptr.data[fileptr.size] = EOL;
         fileptr.size++;
     }
-    
+
     fileptr.data[fileptr.size] = EOS;
 
     return &fileptr;
@@ -432,7 +434,6 @@ file_buffer_ty * read_stdin(void)
     } while (ch != EOF);
 
     stdinptr.name = "Standard Input";
-
     stdinptr.data[stdinptr.size] = EOS;
 
     return &stdinptr;
@@ -532,9 +533,8 @@ void fill_buffer(void)
         
           else if ((unsigned int) (p - current_input->data) < current_input->size)
           {
-             ERROR (_("File %s contains NULL-characters: cannot proceed\n"), current_input->name, 0);
-             exit(1);
-             p++;
+             fatal(_("File %s contains NULL-characters: cannot proceed\n"),
+                   current_input->name);
           }
         
          /* Here for EOF with no terminating newline char. */

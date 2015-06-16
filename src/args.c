@@ -789,6 +789,8 @@ extern int set_option(
     int            option_length = option_prefix (option);
     int            val           = 0;
     BOOLEAN        found         = false;
+    char          *tmp           = NULL;
+    size_t         param_len     = 0;
   
     if (option_length > 0)
     {
@@ -879,19 +881,14 @@ extern int set_option(
                 
             case PRO_SETTINGS:
                 {
-                    char *t;            /* current position */
+                    /* current position */
+                    tmp = (char *)p->p_obj;
                     
-                    t = (char *) p->p_obj;
-                    
-                    do
-                    {
-                       set_option (t, 0, 0, option_source);
+                    do {
+                        set_option (tmp, 0, 0, option_source);
                         /* advance to character following next NUL */
-                        
-                        while (*t++)
-                        {
-                        }
-                    } while (*t);
+                        while (*tmp++);
+                    } while (*tmp);
                 }
                 break;
                 
@@ -900,8 +897,6 @@ extern int set_option(
 
             case PRO_KEY:
                 {
-                    char *str;
-
                     if (*param_start == 0)
                     {
                         if (!(param_start = param))
@@ -914,9 +909,11 @@ extern int set_option(
                         }
                     }
 
-                    str = (char *) xmalloc (strlen (param_start) + 1);
-                    strcpy (str, param_start);
-                    addkey (str, rw_decl);
+                    param_len = strlen(param_start);
+                    tmp = xmalloc(param_len + 1);
+                    memcpy(tmp, param_start, param_len);
+                    tmp[param_len] = '\0';
+                    addkey(tmp, rw_decl);
                 }
                 break;
 
@@ -1267,7 +1264,7 @@ char * set_profile(void)
             }
             else
             {
-               free (fname);
+               xfree (fname);
                fname = NULL;
             }
          }

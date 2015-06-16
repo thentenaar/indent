@@ -88,6 +88,29 @@ extern void init_parser(void)
 }
 
 /**
+ * Free all memory allocated in init_parser().
+ */
+extern void uninit_parser(void)
+{
+    if (!parser_state_tos)
+    {
+        return;
+    }
+
+    xfree(parser_state_tos->p_stack);
+    xfree(parser_state_tos->il);
+    xfree(parser_state_tos->cstk);
+    xfree(parser_state_tos->paren_indents);
+    xfree(parser_state_tos);
+    xfree(save_com.ptr);
+    xfree(combuf);
+    xfree(labbuf);
+    xfree(codebuf);
+    xfree(di_stack);
+    parser_state_tos = NULL;
+}
+
+/**
  *
  */
 

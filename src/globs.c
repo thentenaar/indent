@@ -21,6 +21,7 @@
 #include "sys.h"
 #include "indent.h"
 #include "globs.h"
+#include "parse.h"
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
@@ -44,7 +45,7 @@ extern char * xmalloc (
     if (!val)
     {
         fprintf (stderr, _("indent: Virtual memory exhausted.\n"));
-        exit (system_error);
+        do_exit (system_error);
     }
 
 #if defined (DEBUG)
@@ -76,6 +77,22 @@ extern char *xrealloc (
 }
 
 /**
+ * Free and nullify a pointer allocated with xmalloc().
+ */
+extern void xfree(void *ptr)
+{
+    if (!ptr)
+    {
+#if defined(DEBUG)
+        fprintf(stderr, "indent: Attempting to free a NULL pointer.\n");
+#endif
+        return;
+    }
+
+    free(ptr);
+}
+
+/**
  *
  */
 
@@ -92,6 +109,17 @@ extern void message(
 
     fprintf (stderr, string, a0, a1);
     fprintf (stderr, "\n");
+}
+
+/**
+ * Wrapper around exit to ensure things get
+ * cleaned up.
+ */
+extern void do_exit(int code)
+{
+    uninit_parser();
+    cleanup_user_specials();
+    exit(code);
 }
 
 /**
@@ -117,5 +145,5 @@ extern void fatal (
         perror (0);
     }
 
-    exit (indent_fatal);
+    do_exit (indent_fatal);
 }

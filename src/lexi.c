@@ -1283,3 +1283,16 @@ extern void addkey (
        p->rwcode = val;
     }
 }
+
+extern void cleanup_user_specials(void)
+{
+    if (user_specials)
+    {
+        while (--user_specials_idx > 0)
+        {
+            xfree(user_specials[user_specials_idx].rwd);
+        }
+        xfree(user_specials[0].rwd);
+        xfree(user_specials);
+    }
+}

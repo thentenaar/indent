@@ -103,5 +103,6 @@ extern void addkey(
    rwcodes_ty val);
 
 extern codes_ty lexi(void);
+extern void cleanup_user_specials(void);
 
 #endif /* INDENT_LEXI_H */
