@@ -8,6 +8,8 @@
 	* Add xfree() to globs.
 	* xfree() common heap-allocated storage.
 	* Fixed some memory leaks in the profile stuff.
+	* Be sure to initialize the two automatic storage buffers used in
+	  scan_profile(). This fixes a warnings from valgrind.
 
 2015-06-15 Tim Hentenaar <tim@hentenaar.com>
 	* Added -par to -kr.

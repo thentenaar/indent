@@ -1109,7 +1109,6 @@ static int read_string(
 /**
  * Scan the options in the file f.
  */
-
 static void scan_profile(
    FILE       * f,
    const char * option_source)
@@ -1117,8 +1116,10 @@ static void scan_profile(
     char   b0[BUFSIZ];
     char   b1[BUFSIZ];
     char * current = b0;
-
     int    i = skip_spaces(f, ' ');
+
+    memset(b0, 0, BUFSIZ);
+    memset(b1, 0, BUFSIZ);
     
     while (i != EOF)
     {
