@@ -199,6 +199,10 @@ extern void print_comment(
             CHECK_COM_SIZE;
          } while ((*buf_ptr != '*') && (buf_ptr < buf_end));
 
+         /* Make sure we don't go past the end of the buffer */
+         if (buf_ptr > buf_end)
+             buf_ptr = buf_end;
+
         /* We have reached the end of the comment, and it's all on
          * this line. */
 
