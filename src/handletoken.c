@@ -552,14 +552,14 @@ static void handle_token_rparen(
 
     *(e_code++) = token[0];
 
-    /* Something is swallowing spaces after a 2nd rparen, when we allow
-     * single-line conditionals, so make sure we copy it (if there is one).
+    /* Something is setting want_blank to false whereas we need to emit
+     * a space if we have a single-line conditional, so make sure we
+     * indicate that we want a space before the next identifier.
      */
     if (settings.allow_single_line_conditionals && *(token - 1) == ')'
-        && *(token + 1) == ' ' && *(token + 2) != '{'
-        && !parser_state_tos->paren_depth)
+        && *(token + 2) != '{' && !parser_state_tos->paren_depth)
     {
-        *(e_code++) = *(++token);
+        parser_state_tos->want_blank = true;
     }
 
     /* check for end of if (...), or some such */
