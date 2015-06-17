@@ -679,6 +679,8 @@ two spaces to the left of code.  By default, comments are aligned with
 code, unless they begin in the first column, in which case they are left
 there by default --- to get them aligned with the code, specify @option{-fc1}.
 
+@kindex -ntac
+@kindex --dont-tab-align-comments
 @kindex -c@var{n}
 @kindex --comment-indentation@var{n}
 @kindex -cd@var{n}
@@ -701,7 +703,8 @@ causes @option{-c} to become effective.
 
 If the code to the left of the comment exceeds the beginning column,
 the comment column will be extended to the next tabstop column past
-the end of the code, or in the case of preprocessor directives, to one
+the end of the code, unless the @option{-ntac} option is specified.
+In the case of preprocessor directives,comments are extended to to one
 space past the end of the directive.  This extension lasts only for
 the output of that particular comment.
 
@@ -2178,6 +2181,11 @@ Do not force a space before the semicolon after certain statements.
 Disables @option{-ss}.@*
 @xref{Statements}.
 
+@item -ntac
+@itemx --dont-tab-align-comments
+Do not pad comments out to the nearest tabstop.@*
+@xref{Comments}.
+
 @item -nut
 @itemx --no-tabs
 Use spaces instead of tabs.@*
@@ -2367,6 +2375,7 @@ the corresponding short option.
 \line{ --dont-line-up-parentheses \leaderfill            -nlp\ }  
 \line{ --dont-space-special-semicolon \leaderfill        -nss\ }
 \line{ --dont-star-comments \leaderfill                  -nsc\ }  
+\line{ --dont-tab-align-comments \leaderfill             -ntac\ }
 \line{ --else-endif-column \leaderfill                   -cp@var{n}\ }
 \line{ --format-all-comments \leaderfill                 -fca\ }  
 \line{ --format-first-column-comments \leaderfill        -fc1\ }  
@@ -2461,6 +2470,7 @@ the corresponding short option.
 --dont-left-justify-declarations                -ndj  
 --dont-space-special-semicolon                  -nss
 --dont-star-comments                            -nsc            
+--dont-tab-align-comments                       -ntac
 --else-endif-column                             -cp@var{n}
 --format-all-comments                           -fca            
 --format-first-column-comments                  -fc1            

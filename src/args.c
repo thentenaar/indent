@@ -208,6 +208,7 @@ static int exp_par  = 0;
 static int exp_slc  = 0;
 static int exp_as   = 0;
 static int exp_sar  = 0;
+static int exp_ntac = 0;
 
 /**
  * The following structure is controlled by command line parameters and
@@ -375,6 +376,7 @@ const pro_ty pro[] =
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
     {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
     {"sar",     PRO_BOOL,                            false,      ON, &settings.spaces_around_initializers,       &exp_sar},
+    {"ntac",    PRO_BOOL,                            false,      ON, &settings.dont_tab_align_comments,          &exp_ntac},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -503,6 +505,7 @@ const pro_ty pro[] =
     {"slc",     PRO_BOOL,                            false,      ON, &settings.allow_single_line_conditionals,   &exp_slc},
     {"as",      PRO_BOOL,                            false,      ON, &settings.align_with_spaces,                &exp_as},
     {"sar",     PRO_BOOL,                            false,      ON, &settings.spaces_around_initializers,       &exp_sar},
+    {"ntac",    PRO_BOOL,                            false,      ON, &settings.dont_tab_align_comments,          &exp_ntac},
 
     /* Signify end of structure.  */
     {0,         PRO_IGN,                                0, ONOFF_NA, 0,                                          0}
@@ -641,6 +644,7 @@ const long_option_conversion_ty option_conversions[] =
     {"single-line-conditionals",                    "slc"},
     {"align-with-spaces",                           "as"},
     {"spaces-around-initializers",                  "sar"},
+    {"dont-tab-align-comments",                     "ntac"},
 
     /* Signify end of structure.  */
     {0,                                             0},

@@ -330,6 +330,7 @@ typedef struct user_options_st
     int allow_single_line_conditionals; /*!< Don't indent the body of an unbraced if, else, etc. */
     int align_with_spaces; /*!< Align with spaces if indenting with tabs. */
     int spaces_around_initializers; /*!< Place spaces after { and before } in initializers. */
+    int dont_tab_align_comments; /*!< Don't align comments to the nearest tabstop. */
 } user_options_ty;
 
 extern user_options_ty settings;

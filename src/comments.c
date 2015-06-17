@@ -373,7 +373,7 @@ extern void print_comment(
         /* If the too-long code is a pre-processor command,
            start the comment 1 space afterwards, otherwise
            start at the next tab mark. */
-         if (else_or_endif)
+         if (else_or_endif || settings.dont_tab_align_comments)
          {
             start_column++;
             else_or_endif = false;

@@ -69,7 +69,7 @@ SPECIALS="typedef-bug.c bug-hp.c bug-di.c newlined-parms.c indent.pro.c \
         bad-comment.c unknown-type.c unknown-type-npsl.c bug-npsl.c bug-psl.c do-cdw.c \
         label.c goto-1.c goto-2.c line-count.c decl_block.c pointer-pal.c else-comment-2-br.c else-comment-2-bl.c \
         else-comment-2-br-ce.c preserve-newline-after-right-brace.c gettext-strings.c single-line-conditionals.c \
-        align-with-spaces.c no-space-after-fp-name.c spaces-around-initializers.c"
+        align-with-spaces.c no-space-after-fp-name.c spaces-around-initializers.c dont-tab-align-comments.c"
 
 ARGS="-bad"
 $INDENT -npro $ARGS input/bad-break.c -o output/bad-break.c
@@ -180,6 +180,7 @@ $INDENT -npro -slc input/single-line-conditionals.c -o output/single-line-condit
 $INDENT -npro -br -ut -i8 -l70 -ts8 -as input/align-with-spaces.c -o output/align-with-spaces.c
 $INDENT -npro -npcs input/fp.c -o output/no-space-after-fp-name.c
 $INDENT -npro -sar input/spaces-around-initializers.c -o output/spaces-around-initializers.c
+$INDENT -npro -c0 -ntac input/dont-tab-align-comments.c -o output/dont-tab-align-comments.c
 
 ARGS="-kr -cp0 -l132 -lps -br -psl"
 $INDENT -npro $ARGS input/const.c -o output/const.c
