@@ -32,11 +32,11 @@ RCSTAG_CC ("$Id$");
 
 /** Check the limits of the comment buffer, and expand as neccessary. */
 
-#define CHECK_COM_SIZE \
-        if (e_com >= l_com) \
+#define CHECK_COM_SIZE(X) \
+        if (e_com >= l_com - (X)) \
           { \
-            int nsize = l_com - s_com + 400; \
-            combuf = (char *) xrealloc (combuf, nsize); \
+            size_t nsize = l_com - s_com + 400 + (X); \
+            combuf = xrealloc (combuf, nsize); \
             e_com = combuf + (e_com - s_com) + 1; \
             l_com = combuf + nsize - 5; \
             s_com = combuf + 1; \
@@ -195,8 +195,8 @@ extern void print_comment(
                ++line_no;
             }
 
+            CHECK_COM_SIZE(1);
             *e_com++ = *buf_ptr++;
-            CHECK_COM_SIZE;
          } while ((*buf_ptr != '*') && (buf_ptr < buf_end));
 
          /* Make sure we don't go past the end of the buffer */
@@ -471,7 +471,7 @@ extern void print_comment(
 
       while (!had_eof)
       {
-         CHECK_COM_SIZE;
+         CHECK_COM_SIZE(1);
 
          switch (*buf_ptr)
          {
@@ -510,6 +510,7 @@ extern void print_comment(
                int tab_width = (settings.tabsize - ((column + found_column -
                                                      start_column - 1) % settings.tabsize));
                column += tab_width;
+               CHECK_COM_SIZE(tab_width);
                while (tab_width--)
                {
                   *e_com++ = ' ';
@@ -649,6 +650,7 @@ cplus_exit:
                   }
 
                  /* Now insert the ending delimiter */
+                 CHECK_COM_SIZE(3);
                   *e_com++ = '*';
                   *e_com++ = '/';
                   *e_com = '\0';
@@ -854,8 +856,9 @@ begin_line:
       * user specified -sc.
       */
 
-      if (line_preamble)
+      if (line_preamble && line_preamble_length > 0)
       {
+         CHECK_COM_SIZE(line_preamble_length);
          (void) memcpy (e_com, line_preamble, line_preamble_length);
          e_com += line_preamble_length;
          column = start_column + line_preamble_length;
@@ -879,6 +882,7 @@ begin_line:
             save_length--;
          }
 
+         CHECK_COM_SIZE(save_length);
          (void) memmove (e_com, save_ptr, save_length);
          text_on_line = e_com;
          e_com += save_length;

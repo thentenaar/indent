@@ -432,6 +432,14 @@ then
     echo >> $ERR
 fi
 
+# Heap corruption by writing past the end of combuf
+$INDENT -npro -st > /dev/null 2>&1 < input/combuf-heap-corruption
+if [ $? -ne 0 ]
+then
+    echo "ERROR: heap corruption in comments.c" | tee -a $ERR
+    echo >> $ERR
+fi
+
 # This ends in a error from indent but it shouldn't coredump.
 $INDENT -npro input/bug206785.c -o output/bug206785.c 2>output/bug206785.err
 
