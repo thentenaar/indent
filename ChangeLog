@@ -12,6 +12,8 @@
 	  nearest tabstoo.
 	* Fixed recognition of function pointers with multiple levels of
 	  indirection by the -npcs stuff.
+	* Add an 'install' target to the regression Makefile so that
+	  'make install' doesn't fail.
 
 2015-06-16 Tim Hentenaar <tim@hentenaar.com>
 	* Use want_blank instead of copying a space to e_code to avoid
