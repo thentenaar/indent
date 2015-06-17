@@ -538,6 +538,12 @@ static exit_values_ty indent_main_loop(
             parser_state_tos->last_token == sp_else))
             force_nl = false;
 
+        /* Don't force a newline after '}' in a block initializer */
+        if (parser_state_tos->block_init           &&
+            parser_state_tos->last_token == rbrace &&
+            *token == ',')
+            force_nl = false;
+
         if (!search_brace(&type_code, &force_nl, &flushed_nl, &last_else,
                           &is_procname_definition, pbreak_line))
         {
