@@ -1,6 +1,7 @@
 int (*fp ())();
 
 register void (*GCForward) () asm ("r16");    /* GC Forwarding code */
+char **(*get_string_array) (const char *s1, const char *s2);
 
 main ()
 {

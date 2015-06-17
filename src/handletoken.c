@@ -353,8 +353,10 @@ static void handle_token_lparen(
     }
 
 	/* Remember if this looks like a function pointer decl. */
-	if (parser_state_tos->want_blank &&
-	    parser_state_tos->last_token == decl && *(token + 1) == '*')
+	if (*(token + 1) == '*' &&
+	    parser_state_tos->last_rw == rw_decl &&
+	    (parser_state_tos->last_token == decl ||
+	     parser_state_tos->last_token == unary_op))
 	        parser_state_tos->is_func_ptr_decl = true;
 
     if (parser_state_tos->in_decl && !parser_state_tos->block_init)
