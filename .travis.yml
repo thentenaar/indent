@@ -1,0 +1,36 @@
+# Configuration for Travis CI
+
+env:
+    global:
+        - secure: "WUnUCEF/sFdS3OaPLtofGMdMbtjWZWOqbTygQNiBgMBuZHvtBouyX7CxUEwOfGtNlWZ5Wtv0zsFYc7NEmgy7kqEWsWDWBzsL/A3ALC+xhpdTUDGnLtN34P/a2BjG48JzstIqHX0SCxPO4fJw2BPSObRvxrd3B6ajdEn4QxjkB7g1T500jaIiqrE8M2+mecYdeyhrw6haJ7VutDi1lFWfjtcE0RSGa/RyT3XYOc2ADZqwr0l7VUfb6w/jey+X1Xf73unFOtiMPsc5fJd7NpTg5UNxv4nRU7hlLgRXORp7zvv44QbzzbXzMmncRBcxFBR+s/9IeBJaUi28xtYIFJOn8ppoMZbWu3dISbkp2K2FtnETLGlW3cDs4KB01R+9jIZ049+AqmDi8lm8q9AsrUDVWhkc3TWo8pdeDPdVh3CgCoz4zuCDd2ESoVxVljS6fGUPz7fHZJXuEB4L/rZ3CmJcEyWbgKylNgDfzngsrGQlbhGApC4jmM/Xed+rxKgA71JnwOIyhybyebDnzoqvbCmux0RN6tyZkvFIfEEvyEUurqGszw8XKakaLe8BIDlYpxKzj2z1AqUedc329ZMnsj2SDmVQdX9Lx/bSrbrApX2Qn9kgqCYfly3QYLg1NpncAg97cyy9oHpz1HVzkRhEXyc8RbBqDIdD+ZbiQXSUZp4laXo="
+
+languages: c
+
+branches:
+    only:
+        - master
+
+os:
+    - linux
+
+compilers:
+    - gcc
+
+install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq gettext gperf texinfo texi2html
+
+script:
+    - if [ -z ${COVERITY_SCAN_BRANCH} ] || [ ${COVERITY_SCAN_BRANCH} != 1 ] ; then ./bootstrap && make ; fi
+    - make check
+
+addons:
+    coverity_scan:
+        project:
+            name: "thentenaar/indent"
+            description: "Working copy of GNU indent"
+        notification_email: tim@hentenaar.com
+        build_command_prepend: "./bootstrap"
+        build_command: "make"
+        branch_pattern: covscan
+
