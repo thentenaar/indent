@@ -59,8 +59,6 @@ RCSTAG_H (io, "$Id$");
 #include "indent.h"
 
 
-extern char   * cur_line;
-
 extern char * skip_horiz_space(const char * p);
 
 extern file_buffer_ty *read_file (char *filename, struct stat *);

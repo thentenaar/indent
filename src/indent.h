@@ -338,7 +338,6 @@ extern user_options_ty settings;
 /** True if there is an embedded comment on this code line */
 extern int embedded_comment_on_line;
 
-extern int else_or_endif;
 extern int di_stack_alloc;
 extern int *di_stack;
 
