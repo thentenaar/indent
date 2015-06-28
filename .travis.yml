@@ -21,7 +21,7 @@ install:
     - sudo apt-get install -qq gettext gperf texinfo texi2html
 
 script:
-    - [ -z ${COVERITY_SCAN_BRANCH} ] || [ ${COVERITY_SCAN_BRANCH} != 1 ] && ./bootstrap && make
+    - if [ -z ${COVERITY_SCAN_BRANCH} ] || [ ${COVERITY_SCAN_BRANCH} != 1 ] ; then ./bootstrap && make ; fi
     - make check
 
 addons:
