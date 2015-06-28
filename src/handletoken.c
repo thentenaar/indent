@@ -1013,6 +1013,41 @@ static void handle_token_semicolon(
     }
 }
 
+#define STARTSWITH(what, with_strlit) !strncmp((what), with_strlit, sizeof(with_strlit)-1)
+
+/* Check if next non-space uncommented character is '.'
+ * Input: C string */
+static BOOLEAN dot_is_next(char* from)
+{
+    BOOLEAN in_c_comment = false;
+    BOOLEAN in_cc_comment = false;
+
+    char *p;
+    for (p = from; *p && *(p+1); p++) {
+        if (in_c_comment || in_cc_comment) {
+            if (in_cc_comment && *p == EOL)
+                in_cc_comment = false;
+            if (in_c_comment && STARTSWITH(p, "*/")) {
+                p++;
+                in_c_comment = false;
+            }
+        } else {
+            if (*p == '.')
+                return true;
+            if (STARTSWITH(p, "//")) {
+                p++;
+                in_cc_comment = true;
+            } else if (STARTSWITH(p, "/*")) {
+                p++;
+                in_c_comment = true;
+            } else if (!isspace(*p))
+                return false;
+        }
+    }
+    return false;
+}
+#undef STARTSWITH
+
 /**
  *
  */
@@ -1028,7 +1063,8 @@ static void handle_token_lbrace(
     /* If the last token was a binary_op (probably =) then we're
      * likely starting an initializer or initializer list.
      */
-    if (parser_state_tos->last_token == binary_op)
+    if (parser_state_tos->last_token == binary_op ||
+        (parser_state_tos->last_token == rparen && dot_is_next(buf_ptr)))
         parser_state_tos->block_init = 1;
 
     if (!parser_state_tos->block_init)
