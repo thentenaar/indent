@@ -76,9 +76,29 @@
 RCSTAG_CC ("$GNU$");
 
 /**
+ * Expand a buffer to hold more chars, aligned on a
+ * 1 KB boundary.
+ */
+extern void need_chars(buf_ty * bp, size_t needed)
+{
+    size_t current_size = (size_t)(bp->end - bp->ptr);
+
+    if (current_size + needed >= bp->size)
+    {
+        bp->size = ((current_size + needed) & (size_t)~1023);
+        bp->ptr = xrealloc(bp->ptr, bp->size);
+        if (bp->ptr == NULL)
+        {
+            fatal (_("Ran out of memory"), 0);
+        }
+
+        bp->end = bp->ptr + current_size;
+    }
+}
+
+/**
  *
  */
-
 extern void check_code_size(void)
 {
     if (e_code >= l_code)                               

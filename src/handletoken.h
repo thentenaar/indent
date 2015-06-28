@@ -20,28 +20,5 @@ extern void handle_the_token(
     BOOLEAN        * pbreak_line);
 
 extern void check_code_size(void);
-
-/**
- *
- */
-
-static void INLINE need_chars (
-    buf_ty * bp,
-    int      needed)
-{
-    int current_size = (bp->end - bp->ptr);
-
-    if ((current_size + needed) >= bp->size)
-    {
-        bp->size = ROUND_UP (current_size + needed, 1024);
-        bp->ptr = xrealloc (bp->ptr, bp->size);
-        if (bp->ptr == NULL)
-        {
-            fatal (_("Ran out of memory"), 0);
-        }
-
-        bp->end = bp->ptr + current_size;
-    }
-}
-
+extern void need_chars(buf_ty * bp, size_t needed);
 #endif
