@@ -298,7 +298,7 @@ extern file_buffer_ty * read_file(
         }
     }
 
-    if (file_stats->st_size > SSIZE_MAX)
+    if ((size_t)file_stats->st_size >= SSIZE_MAX)
     {
         fatal(_("File %s is too big to read"), filename);
     }
