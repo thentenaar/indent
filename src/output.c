@@ -77,10 +77,6 @@ RCSTAG_CC ("$Id$");
 static FILE            * output       = NULL;
 static BOOLEAN           inhibited    = 0;
 static buf_break_st_ty * buf_break_list = NULL;
-
-/** Priority mask bits */
-static const int boolean_operator = 1;
-
 buf_break_st_ty * buf_break = NULL;
 
 int             out_lines      = 0;     /*!< used in output.c indent.c */
