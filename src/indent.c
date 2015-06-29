@@ -288,8 +288,8 @@ static BOOLEAN search_brace(
 
                         if (had_eof)
                         {
-                            ERROR (_("EOF encountered in comment"), 0, 0);
-                            return indent_punt;                               /* RETURN */
+                            ERROR(_("EOF encountered in comment"), NULL, NULL);
+                            return indent_punt;
                         }
                     }
 
@@ -351,7 +351,7 @@ static BOOLEAN search_brace(
                 save_com.len++;
                 if (settings.verbose && !*flushed_nl)
                 {
-                    WARNING (_("Line broken"), 0, 0);
+                    WARNING(_("Line broken"), NULL, NULL);
                 }
 
                 *flushed_nl = false;
@@ -561,7 +561,7 @@ static exit_values_ty indent_main_loop(
 
             if (parser_state_tos->tos > 1)      /* check for balanced braces */
             {
-                ERROR (_("Unexpected end of file"), 0, 0);
+                ERROR(_("Unexpected end of file"), NULL, NULL);
                 file_exit_value = indent_error;
             }
 
@@ -595,7 +595,7 @@ static exit_values_ty indent_main_loop(
             {
                 if (settings.verbose && !flushed_nl)
                 {
-                    WARNING (_("Line broken 2"), 0, 0);
+                    WARNING(_("Line broken 2"), NULL, NULL);
                 }
 
                 flushed_nl = false;

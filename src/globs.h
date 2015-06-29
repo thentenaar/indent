@@ -23,21 +23,17 @@ RCSTAG_H (globs, "$Id$");
 
 /* *Warning messages:  indent continues */
 #define WARNING(s, a, b) \
-    message (_("Warning"), s, (unsigned int *)(a), (unsigned int *)(b))
+    message(_("Warning"), s, (char *)(a), (char *)(b))
 
 /** Error messages: indent stops processing the current file. */
 #define ERROR(s, a, b) \
-    message (_("Error"), s, (unsigned int *)(a), (unsigned int *)(b))
+    message(_("Error"), s, (char *)(a), (char *)(b))
 
 extern void *xmalloc(unsigned int size);
 extern void *xrealloc(void *ptr, unsigned int size);
 extern void xfree(void *ptr);
 extern void do_exit(int code);
 extern void fatal(const char *string, const char *a0);
-extern void message(
-   char *kind, 
-   char *string, 
-   unsigned int *a0, 
-   unsigned int *a1);
+extern void message(char *kind, char *string, char *a0, char *a1);
 
 #endif /* INDENT_GLOBS_H */

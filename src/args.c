@@ -1019,7 +1019,7 @@ static int skip_c_comment(
                         
         if (i == EOF)
         {
-            WARNING (_("Profile contains an unterminated comment"), 0, 0);
+            WARNING(_("Profile contains an unterminated comment"), NULL, NULL);
             break;
         }
         /* current char is '*' so skip over it. */
@@ -1057,7 +1057,7 @@ static int skip_comment(
             i = skip_c_comment(f);
             break;
         default:
-            WARNING (_("Profile contains unpalatable characters"), 0, 0);
+            WARNING (_("Profile contains unpalatable characters"), NULL, NULL);
     }
     
     return i;

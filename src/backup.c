@@ -520,7 +520,8 @@ void make_backup(
 
           if (utime (backup_filename, &buf) != 0)
           {
-             WARNING (_("Can't preserve modification time on backup file %s"), backup_filename, 0);
+             WARNING(_("Can't preserve modification time on backup file %s"),
+                     backup_filename, NULL);
           }
        }
 #endif

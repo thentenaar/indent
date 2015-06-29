@@ -487,10 +487,10 @@ static void handle_token_rparen(
    exit_values_ty * file_exit_value,
    BOOLEAN        * pbreak_line)
 {
-            
+    char tmpchar[2];
+
     parser_state_tos->paren_depth--;
     
-#if 1
     /* For declarations, if user wants close of fn decls broken, force that
      * now. 
      */
@@ -510,7 +510,6 @@ static void handle_token_rparen(
         parser_state_tos->paren_indents[parser_state_tos->p_l_follow - 1] = paren_target;
         parser_state_tos->ind_stmt = 0;
     }
-#endif
 
     if (parser_state_tos->
         cast_mask & (1 << parser_state_tos->
@@ -546,8 +545,8 @@ static void handle_token_rparen(
     if (--parser_state_tos->p_l_follow < 0)
     {
         parser_state_tos->p_l_follow = 0;
-        WARNING (_("Extra %c"),
-                 (unsigned long) *((unsigned char *) token), 0);
+        tmpchar[0] = *token; tmpchar[1] = '\0';
+        WARNING(_("Extra %s"), tmpchar, NULL);
     }
 
     /* if the paren starts the line, then indent it */
@@ -1260,6 +1259,8 @@ static void handle_token_rbrace(
     exit_values_ty * file_exit_value,
     BOOLEAN        * pbreak_line)
 {
+    char tmpchar[2];
+
     /* semicolons can be omitted in declarations */
     if (((parser_state_tos->p_stack[parser_state_tos->tos] == decl) &&
          !parser_state_tos->block_init) ||
@@ -1318,8 +1319,9 @@ static void handle_token_rbrace(
         if (--parser_state_tos->p_l_follow < 0)
         {
             parser_state_tos->p_l_follow = 0;
-            WARNING (_("Extra %c"),
-                     (unsigned long) *((unsigned char *) token), 0);
+            tmpchar[0] = *token;
+            tmpchar[1] = '\0';
+            WARNING(_("Extra %s"), tmpchar, NULL);
         }
     }
     else if (parser_state_tos->dec_nest > 0)
@@ -1440,7 +1442,7 @@ static void handle_token_nparen(
         {
             if (settings.verbose)
             {
-                WARNING (_("Line broken"), 0, 0);
+                WARNING(_("Line broken"), NULL, NULL);
             }
             
             dump_line (true, &paren_target, pbreak_line);       /* make sure this starts a line */
@@ -1466,7 +1468,7 @@ static void handle_token_nparen(
             
             if (settings.verbose)
             {
-                WARNING (_("Line broken"), 0, 0);
+                WARNING(_("Line broken"), NULL, NULL);
             }
             
             dump_line (true, &paren_target, pbreak_line);

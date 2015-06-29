@@ -234,9 +234,7 @@ extern codes_ty lexi(void)
    codes_ty        code;                 /* internal code to be returned */
    char            qchar;                /* the delimiter character for a string */
 
-   static int      count = 0;            /* debugging counter */
-
-   count++;
+   char            tmpchar[2];
 
   /* tell world that this token started in column 1 iff the last
    * thing scanned was nl */
@@ -842,7 +840,7 @@ not_proc:
       if (*buf_ptr == EOL || *buf_ptr == 0)
       {
          WARNING ((qchar == '\'' ? _("Unterminated character constant") :
-                   _("Unterminated string constant")), 0, 0);
+                   _("Unterminated string constant")), NULL, NULL);
       }
       else
       {
@@ -861,7 +859,7 @@ not_proc:
         /* In the gettext situation, the string ends with ") */
         if (*buf_ptr != ')')
         {
-           WARNING (_("Unterminated string constant"), 0, 0);
+           WARNING (_("Unterminated string constant"), NULL, NULL);
         }
         else
         {
@@ -1118,9 +1116,10 @@ not_proc:
          * people want to detect and eliminate old style assignments but
          * they don't want indent to silently change the meaning of their
          * code).  */
-                
-         WARNING (_("old style assignment ambiguity in \"=%c\".  Assuming \"= %c\"\n"),
-                  (unsigned long) *((unsigned char *) buf_ptr), (unsigned long) *((unsigned char *) buf_ptr));
+         tmpchar[0] = *buf_ptr;
+         tmpchar[1] = '\0';
+         WARNING (_("old style assignment ambiguity in \"=%s\". "
+                    "Assuming \"= %s\"\n"), tmpchar, tmpchar);
       }
       else
       {

@@ -470,7 +470,7 @@ extern exit_values_ty parse (
 
             if (parser_state_tos->p_stack[parser_state_tos->tos] != ifhead)
             {
-                ERROR (_("Unmatched 'else'"), 0, 0);
+                ERROR(_("Unmatched 'else'"), NULL, NULL);
             }
             else
             {
@@ -496,7 +496,7 @@ extern exit_values_ty parse (
             }
             else
             {
-                ERROR (_("Stmt nesting error."), 0, 0);
+                ERROR(_("Stmt nesting error."), NULL, NULL);
             }
             break;
 

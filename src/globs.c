@@ -1,4 +1,5 @@
 /** \file
+ * Copyright (C) 2015 Tim Hentenaar. All rights reserved.
  * Copyright (c) 1993,1994, Joseph Arceneaux.  All rights reserved.
  *
  * Copyright (C) 1986, 1989, 1992 Free Software Foundation, Inc. All rights
@@ -88,14 +89,14 @@ extern void xfree(void *ptr)
 }
 
 /**
+ * Write a message to stderr.
  *
+ * \param[in] kind   "Warning" or "Error"
+ * \param[in] string Format string
+ * \param[in] a0     First value to format, or NULL.
+ * \param[in] a1     Second value to format, or NULL.
  */
-
-extern void message(
-    char     * kind,
-    char     * string,
-    unsigned * a0,
-    unsigned * a1)
+extern void message(char *kind, char *string, char *a0, char *a1)
 {
     if (kind)
     {
