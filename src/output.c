@@ -588,15 +588,12 @@ ret:
  *
  * History:
  */
-
-static int pad_output(
-    int current_column,
-    int target_column)
+static int pad_output(int cur_col, int target_column)
 {
     int offset = 0;
     int align_target = target_column;
 
-    if (current_column < target_column)
+    if (cur_col < target_column)
     {
         if (settings.use_tabs && (settings.tabsize > 1))
         {
@@ -604,27 +601,27 @@ static int pad_output(
             {
                 if (align_target >= parser_state_tos->ind_level)
 	                align_target = parser_state_tos->ind_level;
-	            offset = (align_target - current_column + 1) / settings.tabsize;
-	            align_target = current_column + (offset * settings.tabsize);
+	            offset = (align_target - cur_col + 1) / settings.tabsize;
+	            align_target = cur_col + (offset * settings.tabsize);
             }
 
-            offset = settings.tabsize - (current_column - 1) % settings.tabsize;
-            while (current_column + offset <= align_target)
+            offset = settings.tabsize - (cur_col - 1) % settings.tabsize;
+            while (cur_col + offset <= align_target)
             {
                 putc(TAB, output);
-                current_column += offset;
+                cur_col += offset;
                 offset = settings.tabsize;
             }
         }
 
-        while (current_column < target_column)
+        while (cur_col < target_column)
         {
             putc(' ', output);
-            current_column++;
+            cur_col++;
         }
     }
 
-    return current_column;
+    return cur_col;
 }
 
 /**
