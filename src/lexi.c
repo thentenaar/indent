@@ -685,14 +685,6 @@ found_keyword:
 
 /* Escape from loop checking for procedure name in if statement above. */
 not_proc:
-
-      if (last_code == decl)
-      {
-        /* if this is a declared variable, then
-           following sign is unary */
-         parser_state_tos->last_u_d = true;     /* will make "int a -1" work */
-      }
-        
       last_code = ident;
         
       if (parser_state_tos->last_token == cpp_operator)
