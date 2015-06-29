@@ -848,11 +848,6 @@ static void dump_line_code(
          target_col = compute_code_target (paren_targ);
       }
 
-      if (paren_level > 0)
-      {
-         target_col += parser_state_tos->paren_indents[parser_state_tos->p_l_follow + paren_level- 1];
-      }
-
      /* If a line ends in an lparen character, the following line should
       * not line up with the parenthesis, but should be indented by the
       * usual amount.  */
