@@ -18,19 +18,26 @@ LIBS = @LIBINTL@ @LIBS@
 
 MAINTAINERCLEANFILES= Makefile.in libgettext.h
 
+AM_CFLAGS=-ansi -pedantic -Wall -Werror -Wredundant-decls -Wshadow
+AM_CFLAGS+=-Wstrict-prototypes -Wmissing-prototypes -Wnested-externs
+AM_CFLAGS+=-Wmissing-declarations -Wcomment -Wbad-function-cast
+AM_CFLAGS+=-Wcast-align -I.
+
 ## Use -g when in maintainer mode
 if MAINTAINER_MODE
-AM_CFLAGS= -g -Wall -I.
-else
-AM_CFLAGS= -I.
+AM_CFLAGS += -g
 endif
 
-
 gperf.c: indent.gperf
-	gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved indent.gperf > gperf.c
+	@gperf -D -c -l -p -t -T -g -j1 -o -K rwd\
+	       -L ANSI-C -N is_reserved indent.gperf > gperf.c
+	@sed -ie 's/index/idx/g' gperf.c
 
 gperf-cc.c: indent-cc.gperf
-	gperf -D -c -l -p -t -T -g -j1 -o -K rwd -N is_reserved_cc -H hash_cc indent-cc.gperf > gperf-cc.c
+	@gperf -D -c -l -p -t -T -g -j1 -o -K rwd\
+	       -L ANSI-C -N is_reserved_cc -H hash_cc\
+	       indent-cc.gperf > gperf-cc.c
+	@sed -ie 's/index/idx/g' gperf-cc.c
 
 if MAINTAINER_MODE
 
