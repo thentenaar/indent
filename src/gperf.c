@@ -37,7 +37,7 @@
 #define MAX_HASH_VALUE 41
 /* maximum key range = 39, duplicates = 0 */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 __inline
 #else
 #ifdef __cplusplus
@@ -90,7 +90,7 @@ hash (register const char *str, register unsigned int len)
   return hval;
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 __inline
 #if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
 __attribute__ ((__gnu_inline__))
