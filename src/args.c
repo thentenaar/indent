@@ -83,33 +83,48 @@
 
 RCSTAG_CC ("$Id$");
 
-#define KR_SETTINGS_STRING (int *) \
+#define KR_SETTINGS_STRING \
      "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
      "-ncdb\0-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i4\0-ip0\0-l75\0-lp\0" \
      "-npcs\0-nprs\0-npsl\0-sai\0-saf\0-saw\0-cs\0-nsc\0-nsob\0-nfca\0-cp33\0"\
      "-nss\0-par\0-sar\0"
 
-#define GNU_SETTINGS_STRING  (int *) \
+#define GNU_SETTINGS_STRING \
      "-nbad\0-bap\0-bbo\0-hnl\0-nbc\0-bl\0-bls\0-ncdb\0-cs\0-nce\0" \
      "-di2\0-ndj\0-nfc1\0-i2\0-ip5\0-lp\0-pcs\0-nprs\0-psl\0-nsc\0-sai\0-saf\0-saw\0-nsob\0" \
      "-bli2\0-cp1\0-nfca\0"
 
-#define ORIG_SETTINGS_STRING (int *) \
+#define ORIG_SETTINGS_STRING \
      "-nbap\0-nbad\0-bbo\0-hnl\0-bc\0-br\0-brs\0-c33\0-cd33\0-cdb\0" \
      "-ce\0-ci4\0-cli0\0-cp33\0-di16\0-fc1\0-fca\0-i4\0-l75\0-lp\0-npcs\0-nprs\0" \
      "-psl\0-sc\0-sai\0-saf\0-saw\0-nsob\0-nss\0-ts8\0"
 
-#define LINUX_SETTINGS_STRING (int *) \
+#define LINUX_SETTINGS_STRING \
      "-nbad\0-bap\0-nbc\0-bbo\0-hnl\0-br\0-brs\0-c33\0-cd33\0" \
      "-ncdb\0-ce\0-ci4\0-cli0\0-d0\0-di1\0-nfc1\0-i8\0-ip0\0-l80\0-lp\0" \
      "-npcs\0-nprs\0-npsl\0-sai\0-saf\0-saw\0-ncs\0-nsc\0-sob\0-nfca\0-cp33\0-ss\0" \
      "-ts8\0-il1\0"
 
+const char *settings_strings[6] = {
+	KR_SETTINGS_STRING,
+	GNU_SETTINGS_STRING,
+	ORIG_SETTINGS_STRING,
+	LINUX_SETTINGS_STRING,
+	"-ip0\0",
+	VERSION
+};
+
+#define KR_SETTINGS_IDX      (void *)0
+#define GNU_SETTINGS_IDX     (void *)1
+#define ORIG_SETTINGS_IDX    (void *)2
+#define LINUX_SETTINGS_IDX   (void *)3
+#define NIP_SETTINGS_IDX     (void *)4
+#define VERSION_SETTINGS_IDX (void *)5
+
 /**
  * Profile types. These identify what kind of switches and arguments 
  * can be passed to indent, and how to process them.
  */
-
 typedef enum
 {
     PRO_BOOL,                     /*!< boolean */
@@ -117,8 +132,7 @@ typedef enum
     PRO_IGN,                      /*!< ignore it */
     PRO_KEY,                      /*!< -T switch */
     PRO_SETTINGS,                 /*!< bundled set of settings */
-    PRO_PRSTRING,                 /*!< Print string and exit */
-    PRO_FUNCTION                  /*!< Call the associated function. */
+    PRO_PRSTRING                  /*!< Print string and exit */
 } profile_ty;
 
 /**
@@ -224,7 +238,7 @@ user_options_ty settings = {0};
 
 typedef struct
 {
-    char       * p_name;        /*!< option name, e.g. "bl", "cli" */
+    const char * p_name;        /*!< option name, e.g. "bl", "cli" */
     profile_ty   p_type;        /*!< profile type */
     int          p_default;     /*!< the default value (if PRO_BOOL or PRO_INT) */
 
@@ -232,13 +246,13 @@ typedef struct
                                  * this switch affects the variable. Not used
                                  * for other p_type's.  */
 
-    int        * p_obj;         /*!< if p_type == PRO_SETTINGS, a (char *) pointing
+    void  *p_obj;               /*!< if p_type == PRO_SETTINGS, a (char *) pointing
                                  *    to a list of the switches to set, separated by
                                  *    NULLs, terminated by 2 NULLs.
                                  * if p_type ==PRO_BOOL or PRO_INT, the address of
                                  *     the variable that gets set by the option.
-                                 * if p_type == PRO_PRSTRING, a (char *) pointing
-                                 *     to the string.
+                                 * if p_type == PRO_PRSTRING, an index into the
+                                 * settings_strings array.
                                  * if p_type == PRO_FUNCTION, a pointer to a
                                  *     function to be called. */
 
@@ -263,7 +277,7 @@ static void usage (void);
 
 const pro_ty pro[] =
 {
-    {"version", PRO_PRSTRING,                           0, ONOFF_NA, (int *) VERSION,                            &exp_version},
+    {"version", PRO_PRSTRING,                           0, ONOFF_NA, VERSION_SETTINGS_IDX,                       &exp_version},
     {"v",       PRO_BOOL,                           false,       ON, &settings.verbose,                          &exp_v},
     {"ut",      PRO_BOOL,                            true,       ON, &settings.use_tabs,                         &exp_ut},
     {"ts",      PRO_INT,                                8, ONOFF_NA, &settings.tabsize,                          &exp_ts},
@@ -300,7 +314,7 @@ const pro_ty pro[] =
     {"npcs",    PRO_BOOL,                           false,      OFF, &settings.proc_calls_space,                 &exp_pcs},
     {"nlps",    PRO_BOOL,                           false,      OFF, &settings.leave_preproc_space,              &exp_lps},
     {"nlp",     PRO_BOOL,                            true,      OFF, &settings.lineup_to_parens,                 &exp_lp},
-    {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, (int *) "-ip0",                             &exp_nip},
+    {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, NIP_SETTINGS_IDX,                           &exp_nip},
     {"nhnl",    PRO_BOOL,                            true,      OFF, &settings.honour_newlines,                  &exp_hnl},
     {"ngts",    PRO_BOOL,                           false,      OFF, &settings.gettext_strings,                  &exp_gts},
     {"nfca",    PRO_BOOL,                            true,      OFF, &settings.format_comments,                  &exp_fca},
@@ -321,19 +335,19 @@ const pro_ty pro[] =
     {"nbadp",   PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations_at_proctop,  &exp_badp},
     {"nbad",    PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations,    &exp_bad},
     {"nbacc",   PRO_BOOL,                           false,      OFF, &settings.blanklines_around_conditional_compilation, &exp_bacc},
-    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_STRING,                      &exp_linux},
+    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_IDX,                         &exp_linux},
     {"lps",     PRO_BOOL,                           false,       ON, &settings.leave_preproc_space,              &exp_lps},
     {"lp",      PRO_BOOL,                            true,       ON, &settings.lineup_to_parens,                 &exp_lp},
     {"lc",      PRO_INT,     DEFAULT_RIGHT_COMMENT_MARGIN, ONOFF_NA, &settings.comment_max_col,                  &exp_lc},
     {"l",       PRO_INT,             DEFAULT_RIGHT_MARGIN, ONOFF_NA, &settings.max_col,                          &exp_l},
-    {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_STRING,                         &exp_kr},
+    {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_IDX,                            &exp_kr},
     {"ip",      PRO_INT,                                4, ONOFF_NA, &settings.indent_parameters,                &exp_ip},
     {"i",       PRO_INT,                                4, ONOFF_NA, &settings.ind_size,                         &exp_i},
     {"il",      PRO_INT,             DEFAULT_LABEL_INDENT, ONOFF_NA, &settings.label_offset,                     &exp_il},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
-    {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
+    {"h",       PRO_BOOL,                               0, ONOFF_NA, NULL,                                       NULL},
     {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
-    {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
+    {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_IDX,                           &exp_gnu},
     {"fnc",     PRO_BOOL,                           false,       ON, &settings.fix_nested_comments,              &exp_fnc},
     {"fca",     PRO_BOOL,                            true,       ON, &settings.format_comments,                  &exp_fca},
     {"fc1",     PRO_BOOL,                            true,       ON, &settings.format_col1_comments,             &exp_fc1},
@@ -390,7 +404,7 @@ const pro_ty pro[] =
 
 const pro_ty pro[] =
 {
-    {"version", PRO_PRSTRING,                           0, ONOFF_NA, (int *) VERSION,                            &exp_version},
+    {"version", PRO_PRSTRING,                           0, ONOFF_NA, VERSION_SETTINGS_IDX,                       &exp_version},
     {"v",       PRO_BOOL,                           false,       ON, &settings.verbose,                          &exp_v},
     {"ut",      PRO_BOOL,                            true,       ON, &settings.use_tabs,                         &exp_ut},
     {"ts",      PRO_INT,                                8, ONOFF_NA, &settings.tabsize,                          &exp_ts},
@@ -409,7 +423,7 @@ const pro_ty pro[] =
 #endif
     {"pi",      PRO_INT,                               -1, ONOFF_NA, &settings.paren_indent,                     &exp_pi},
     {"pcs",     PRO_BOOL,                            true,       ON, &settings.proc_calls_space,                 &exp_pcs},
-    {"orig",    PRO_SETTINGS,                           0, ONOFF_NA, ORIG_SETTINGS_STRING,                       &exp_orig},
+    {"orig",    PRO_SETTINGS,                           0, ONOFF_NA, ORIG_SETTINGS_IDX,                          &exp_orig},
     {"o",       PRO_BOOL,                           false,       ON, &settings.expect_output_file,               &exp_o},
     {"nv",      PRO_BOOL,                           false,      OFF, &settings.verbose,                          &exp_v},
     {"nut",     PRO_BOOL,                            true,      OFF, &settings.use_tabs,                         &exp_ut},
@@ -428,7 +442,7 @@ const pro_ty pro[] =
     {"npcs",    PRO_BOOL,                            true,      OFF, &settings.proc_calls_space,                 &exp_pcs},
     {"nlps",    PRO_BOOL,                           false,      OFF, &settings.leave_preproc_space,              &exp_lps},
     {"nlp",     PRO_BOOL,                            true,      OFF, &settings.lineup_to_parens,                 &exp_lp},
-    {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, (int *) "-ip0\0",                           &exp_nip},
+    {"nip",     PRO_SETTINGS,                           0, ONOFF_NA, NIP_SETTINGS_IDX,                           &exp_nip},
     {"nhnl",    PRO_BOOL,                            true,      OFF, &settings.honour_newlines,                  &exp_hnl},
     {"ngts",    PRO_BOOL,                           false,      OFF, &settings.gettext_strings,                  &exp_gts},
     {"nfca",    PRO_BOOL,                           false,      OFF, &settings.format_comments,                  &exp_fca},
@@ -449,20 +463,20 @@ const pro_ty pro[] =
     {"nbadp",   PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations_at_proctop,  &exp_badp},
     {"nbad",    PRO_BOOL,                           false,      OFF, &settings.blanklines_after_declarations,    &exp_bad},
     {"nbacc",   PRO_BOOL,                           false,      OFF, &settings.blanklines_around_conditional_compilation, &exp_bacc},
-    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_STRING,                      &exp_linux},
+    {"linux",   PRO_SETTINGS,                           0, ONOFF_NA, LINUX_SETTINGS_IDX,                         &exp_linux},
     {"lps",     PRO_BOOL,                           false,       ON, &settings.leave_preproc_space,              &exp_lps},
     {"lp",      PRO_BOOL,                            true,       ON, &settings.lineup_to_parens,                 &exp_lp},
     {"lc",      PRO_INT,     DEFAULT_RIGHT_COMMENT_MARGIN, ONOFF_NA, &settings.comment_max_col,                  &exp_lc},
     {"l",       PRO_INT,             DEFAULT_RIGHT_MARGIN, ONOFF_NA, &settings.max_col,                          &exp_l},
-    {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_STRING,                         &exp_kr},
+    {"kr",      PRO_SETTINGS,                           0, ONOFF_NA, KR_SETTINGS_IDX,                            &exp_kr},
     {"il",      PRO_INT,             DEFAULT_LABEL_INDENT, ONOFF_NA, &settings.label_offset,                     &exp_il},
     {"ip",      PRO_INT,                                5, ONOFF_NA, &settings.indent_parameters,                &exp_ip},
     {"i",       PRO_INT,                                2, ONOFF_NA, &settings.ind_size,                         &exp_i},
     {"hnl",     PRO_BOOL,                            true,       ON, &settings.honour_newlines,                  &exp_hnl},
-    {"h",       PRO_FUNCTION,                           0, ONOFF_NA, (int *) usage,                              &exp_version},
+    {"h",       PRO_BOOL,                               0, ONOFF_NA, NULL,                                       NULL},
     {"gts",     PRO_BOOL,                           false,       ON, &settings.gettext_strings,                  &exp_gts},
     /* This is now the default. */
-    {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_STRING,                        &exp_gnu},
+    {"gnu",     PRO_SETTINGS,                           0, ONOFF_NA, GNU_SETTINGS_IDX,                           &exp_gnu},
     {"fnc",     PRO_BOOL,                           false,       ON, &settings.fix_nested_comments,              &exp_fnc},
     {"fca",     PRO_BOOL,                           false,       ON, &settings.format_comments,                  &exp_fca},
     {"fc1",     PRO_BOOL,                           false,       ON, &settings.format_col1_comments,             &exp_fc1},
@@ -515,8 +529,8 @@ const pro_ty pro[] =
 
 typedef struct long_option_conversion
 {
-    char *long_name;
-    char *short_name;
+    const char *long_name;
+    const char *short_name;
 } long_option_conversion_ty;
 
 const long_option_conversion_ty option_conversions[] =
@@ -694,10 +708,11 @@ void set_defaults(void)
 
     for (p = pro; p->p_name; p++)
     {
-       if (((p->p_type == PRO_BOOL) && (p->p_special == ON)) || 
-           (p->p_type == PRO_INT))
+       if (p->p_obj && (
+          ((p->p_type == PRO_BOOL) && (p->p_special == ON)) ||
+           (p->p_type == PRO_INT)))
         {
-            *p->p_obj = p->p_default;
+            *(int *)p->p_obj = p->p_default;
         }
     }
 }
@@ -727,27 +742,24 @@ static void arg_missing(
                                                                     option);
 }
 
+/*!< Strings which can prefix an option, longest first. */
+static const char *option_prefixes[4] = {
+    "--",
+    "-",
+    "+",
+    0
+};
+
 /**
  * Examine the given argument and return the length of the prefix if the prefix
  * is one of "--", "-", or "+". If no such prefix is present return 0.
  */
-
-static int option_prefix(
-    const char * arg)
+static size_t option_prefix(const char *arg)
 {
-   static char *option_prefixes[] =
-         {
-            "--",
-            "-",
-            "+",
-            0
-         }; /*!< Strings which can prefix an option, longest first. */
-
-
-    char       ** prefixes    = option_prefixes;
-    char        * this_prefix = *prefixes;
+    const char ** prefixes    = option_prefixes;
+    const char  * this_prefix = *prefixes;
     const char  * argp        = arg;
-    int           ret         = 0;
+    size_t        ret         = 0;
 
     do
     {
@@ -762,10 +774,9 @@ static int option_prefix(
       
         if (*this_prefix == '\0')
         {
-            ret = this_prefix - *prefixes;
+            ret = (size_t)(this_prefix - *prefixes);
             break;
         }
-      
     } while (*++prefixes);
 
     return ret;
@@ -790,12 +801,13 @@ extern int set_option(
 {
     const pro_ty * p             = pro;
     const char   * param_start   = NULL;
-    int            option_length = option_prefix (option);
+    size_t         option_length = option_prefix(option);
     int            val           = 0;
     BOOLEAN        found         = false;
     char          *tmp           = NULL;
+    const char    *ctmp          = NULL;
     size_t         param_len     = 0;
-  
+
     if (option_length > 0)
     {
         if ((option_length == 1) && (*option == '-'))
@@ -851,12 +863,15 @@ extern int set_option(
     {
         DieError(invocation_error, _("%s: unknown option \"%s\"\n"), option_source, option - 1);
     }
+    else if (strlen(p->p_name) == 1 && *(p->p_name) == 'h')
+    {
+        usage();
+    }
     else
     {
         /* If the parameter has been explicitly specified, we don't
          * want a group of bundled settings to override the explicit
          * setting.  */
-        
         if (settings.verbose)
         {
             fprintf (stderr, _("option: %s\n"), p->p_name);
@@ -871,68 +886,54 @@ extern int set_option(
             
             switch (p->p_type)
             {
-                
             case PRO_PRSTRING:
                 /* This is not really an error, but zero exit values are
                    returned only when code has been successfully formatted. */
-                printf (_("GNU indent %s\n"), (char *) p->p_obj);
+                printf(_("GNU indent %s\n"),
+                       settings_strings[(size_t)p->p_obj]);
                 exit (invocation_error);
                 break;
-                
-            case PRO_FUNCTION:
-                ((void (*)(void)) p->p_obj)();
-                break;
-                
             case PRO_SETTINGS:
-                {
-                    /* current position */
-                    tmp = (char *)p->p_obj;
-                    
-                    do {
-                        set_option (tmp, 0, 0, option_source);
-                        /* advance to character following next NUL */
-                        while (*tmp++);
-                    } while (*tmp);
-                }
+                /* current position */
+                ctmp = settings_strings[(size_t)p->p_obj];
+                do {
+                    set_option(ctmp, 0, 0, option_source);
+                    /* advance to character following next NUL */
+                    while (*ctmp++);
+                } while (*ctmp);
                 break;
-                
             case PRO_IGN:
                 break;
-
             case PRO_KEY:
+                if (*param_start == 0)
                 {
-                    if (*param_start == 0)
+                    if (!(param_start = param))
                     {
-                        if (!(param_start = param))
-                        {
-                           arg_missing(option, option_source);
-                        }
-                        else
-                        {
-                            val = 1;
-                        }
+                       arg_missing(option, option_source);
                     }
-
-                    param_len = strlen(param_start);
-                    tmp = xmalloc(param_len + 1);
-                    memcpy(tmp, param_start, param_len);
-                    tmp[param_len] = '\0';
-                    addkey(tmp, rw_decl);
+                    else
+                    {
+                        val = 1;
+                    }
                 }
-                break;
 
+                param_len = strlen(param_start);
+                tmp = xmalloc(param_len + 1);
+                memcpy(tmp, param_start, param_len);
+                tmp[param_len] = '\0';
+                addkey(tmp, rw_decl);
+                break;
             case PRO_BOOL:
                 if (p->p_special == OFF)
                 {
-                    *p->p_obj = false;
+                    *(int *)p->p_obj = false;
                 }
                 else
                 {
-                    *p->p_obj = true;
+                    *(int *)p->p_obj = true;
                 }
             
                 break;
-
             case PRO_INT:
                 if (*param_start == '\0')
                 {
@@ -950,7 +951,7 @@ extern int set_option(
 
                 if (isdigit (*param_start) || ((*param_start == '-') && isdigit (*(param_start + 1))))
                 {
-                    *p->p_obj = atoi (param_start);
+                    *(int *)p->p_obj = atoi(param_start);
                 }
                 else
                 {
@@ -960,7 +961,6 @@ extern int set_option(
                 }
                 
                 break;
-
             default:
                 DieError(invocation_error,
                          _("set_option: internal error: p_type %d\n"),
@@ -1101,12 +1101,11 @@ static int read_string(
             (i != '/')  &&
             (p < buff + BUFSIZ))
     {
-        *(p++) = i;
-        i = getc (f);
+        *(p++) = (char)i;
+        i = getc(f);
     }
 
     *p = EOS;
-    
     return i;
 }
 
