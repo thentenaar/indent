@@ -82,12 +82,6 @@
    extern int debug;
 #endif
 
-#ifdef __GNUC__
-   #define INLINE __inline__
-#else
-   #define INLINE
-#endif
-
 #ifdef VMS
    #define ONE_DOT_PER_FILENAME 1
    #define PROFILE_FORMAT "%s%s"
