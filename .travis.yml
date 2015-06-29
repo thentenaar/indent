@@ -9,6 +9,7 @@ languages: c
 branches:
     only:
         - master
+        - covscan
 
 os:
     - linux
