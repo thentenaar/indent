@@ -36,22 +36,20 @@ RCSTAG_CC ("$Id$");
  * size_t, but not all systems have size_t, so I hope "unsigned" will work.
  * It works for GNU style machines, where it is 32 bits, and works on
  * MS-DOS.  */
-
-extern char * xmalloc (
-   unsigned size)
+extern void *xmalloc (unsigned int size)
 {
-    char *val = (char *) calloc (1, size);
+    void *val = calloc(1, size);
 
     if (!val)
     {
-        fprintf (stderr, _("indent: Virtual memory exhausted.\n"));
-        do_exit (system_error);
+        fprintf(stderr, _("indent: Virtual memory exhausted.\n"));
+        do_exit(system_error);
     }
 
 #if defined (DEBUG)
     /* Fill it with garbage to detect code which depends on stuff being
        zero-filled.  */
-    memset (val, 'x', size);
+    memset(val, 'x', size);
 #endif
 
     return val;
@@ -60,17 +58,14 @@ extern char * xmalloc (
 /**
  * Like realloc but get error if no storage available. 
  */
-
-extern char *xrealloc (
-   char *ptr,
-   unsigned size)
+extern void *xrealloc(void *ptr, unsigned int size)
 {
-    char *val = (char *) realloc (ptr, size);
+    void *val = realloc(ptr, size);
 
     if (!val)
     {
-        fprintf (stderr, _("indent: Virtual memory exhausted.\n"));
-        exit (system_error);
+        fprintf(stderr, _("indent: Virtual memory exhausted.\n"));
+        do_exit(system_error);
     }
 
     return val;

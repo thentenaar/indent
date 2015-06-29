@@ -29,23 +29,11 @@ RCSTAG_H (globs, "$Id$");
 #define ERROR(s, a, b) \
     message (_("Error"), s, (unsigned int *)(a), (unsigned int *)(b))
 
-extern char *xmalloc(
-   unsigned int size);
-
-extern char *xrealloc(
-   char *ptr, 
-   unsigned int size);
-
-extern void xfree(
-    void *ptr);
-
-extern void do_exit(
-    int code);
-
-extern void fatal(
-   const char *string, 
-   const char *a0);
-
+extern void *xmalloc(unsigned int size);
+extern void *xrealloc(void *ptr, unsigned int size);
+extern void xfree(void *ptr);
+extern void do_exit(int code);
+extern void fatal(const char *string, const char *a0);
 extern void message(
    char *kind, 
    char *string, 
