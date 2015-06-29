@@ -2105,11 +2105,11 @@ static void handle_token_preesc(
             parser_state_ty *second = parser_state_tos->next;
 
             parser_state_tos->next = second->next;
-            free (second->p_stack);
-            free (second->il);
-            free (second->cstk);
-            free (second->paren_indents);
-            free (second);
+            xfree(second->p_stack);
+            xfree(second->il);
+            xfree(second->cstk);
+            xfree(second->paren_indents);
+            xfree(second);
         }
         else
         {

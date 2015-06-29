@@ -461,7 +461,7 @@ void set_buf_break (
                 buf_break_st_ty *obb = bb;
 
                 bb = bb->prev;
-                free (obb);
+                xfree(obb);
             }
 
             buf_break->prev = NULL;
@@ -483,7 +483,7 @@ void clear_buf_break_list (
         buf_break_st_ty *obb = bb;
 
         bb = bb->prev;
-        free (obb);
+        xfree(obb);
     }
 
     buf_break = buf_break_list = NULL;
@@ -544,7 +544,7 @@ static void set_next_buf_break (
             }
         }
 
-        free (buf_break);
+        xfree(buf_break);
 
         /* Set buf_break to first break in the list */
 
@@ -573,7 +573,7 @@ static void set_next_buf_break (
                     buf_break_st_ty *obb = bb;
 
                     bb = bb->prev;
-                    free (obb);
+                    xfree(obb);
                 }
                 bb = buf_break;
                 buf_break->prev = NULL;

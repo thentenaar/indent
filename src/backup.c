@@ -309,7 +309,7 @@ static int max_version (
         strncpy (dirname, pathname, (dirlen));
         dirname[dirlen] = '\0';
         version = highest_version (filename, dirname);
-        free (dirname);
+        xfree(dirname);
     }
     else
     {
@@ -525,6 +525,6 @@ void make_backup(
        }
 #endif
 
-       free (backup_filename);
+       xfree(backup_filename);
     }
 }
