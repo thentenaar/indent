@@ -210,10 +210,10 @@ static void process_texi(
          FILE *in2;
          char *p = strchr (buf, '\n');
 
-         if (p)
+         if (!p) continue;
          *p = 0;
+
          in2 = fopen (buf + 9, "r");
-         if (p)
          *p = '\n';
          if (in2)
          {
@@ -223,17 +223,25 @@ static void process_texi(
       }
       else if (strncmp (buf, "@set ", 5) == 0)
       {
-         char *p = strchr (buf, '\n');
-
-         if (p)
+         char *p = strchr(buf, '\n');
+         if (!p) continue;
          *p = 0;
-         if (!strncmp (buf + 5, "UPDATED ", 8))
-         strcpy (value_updated, buf + 13);
-         if (!strncmp (buf + 5, "EDITION ", 8))
-         strcpy (value_edition, buf + 13);
-         if (!strncmp (buf + 5, "VERSION ", 8))
-         strcpy (value_version, buf + 13);
-         if (p)
+
+         if (!strncmp(buf + 5, "UPDATED ", 8)) {
+             memset(value_updated, 0, sizeof(value_updated));
+             strncpy(value_updated, buf + 13, sizeof(value_updated) - 1);
+         }
+
+         if (!strncmp(buf + 5, "EDITION ", 8)) {
+             memset(value_updated, 0, sizeof(value_updated));
+             strncpy(value_edition, buf + 13, sizeof(value_edition) - 1);
+         }
+
+         if (!strncmp(buf + 5, "VERSION ", 8)) {
+             memset(value_updated, 0, sizeof(value_updated));
+             strncpy(value_version, buf + 13, sizeof(value_version) - 1);
+         }
+
          *p = '\n';
       }
       if (strncmp (buf, "@c !BEGIN ", 10) == 0)
@@ -241,16 +249,15 @@ static void process_texi(
          char *p = buf + 10;
          size_t len = strlen (p);
 
-         if (nr == 256)
-         exit (-1);
-         vars[nr] = (char *) malloc (len + 1);
-         replacement[nr] = (char *) malloc (131072);
+         if (nr == 256) exit (-1);
+         vars[nr] = malloc (len + 1);
+         replacement[nr] = malloc (131072);
          start_line[nr] = line_no + 1;
          strcpy (vars[nr], p);
-         if ((p = strchr (vars[nr], '\n')))
-         *p = 0;
-         if ((p = strchr (vars[nr], ' ')))
-         *p = 0;
+         p = strchr(vars[nr], '\n');
+         if (p) *p = 0;
+         p = strchr(vars[nr], ' ' );
+         if (p) *p = 0;
          in_block = 1;
       }
       else if (strncmp (buf, "@c !END", 7) == 0)
@@ -263,7 +270,7 @@ static void process_texi(
             --len;
          }
          in_block = 0;
-         replacement[nr] = (char *) realloc (replacement[nr], len + 1);
+         replacement[nr] = realloc (replacement[nr], len + 1);
          ++nr;
       }
       else if (in_block)
@@ -279,9 +286,7 @@ static void process_texi(
    }
 }
 
-int main(
-   int argc,
-   char *argv[])
+int main(int argc, char *argv[])
 {
    FILE *in;
    char buf[1024];
@@ -323,15 +328,15 @@ int main(
                   *what = 0;
                   p += strlen (vars[i]) + 1;
                   line_no = start_line[i];
-                  for (q = replacement[i]; *q; ++q)
+
+                  for (q = replacement[i]; q && *q; ++q)
                   {
                      if (*q != '@')
                      {
                         int was_at_start_of_input_line = at_start_of_input_line;
 
                         at_start_of_input_line = (*q == '\n');
-                        if (at_start_of_input_line)
-                        ++line_no;
+                        if (at_start_of_input_line) ++line_no;
                         if (ignore)
                         {
                            continue;
@@ -408,11 +413,8 @@ int main(
                                || !strncmp (q, "@end direntry", 13))
                            {
                               --ignore;
-                              if (!(q = strchr (q, '\n')))
-                              {
-                                 break;
-                              }
-
+                              q = strchr(q, '\n');
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -421,10 +423,8 @@ int main(
                                     || !strncmp (q, "@direntry\n", 10))
                            {
                               ++ignore;
-                              if (!(q = strchr (q, '\n')))
-                              {
-                                 break;
-                              }
+                              q = strchr(q, '\n');
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -448,6 +448,7 @@ int main(
                               indentation += 5;
                               printf (".nf\n.na\n");
                               q = strchr (q, '\n');
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -462,10 +463,7 @@ int main(
                               indentation -= 5;
                               printf (".ad\n.fi\n");
                               q = strchr (q, '\n');
-                              if (!q)
-                              {
-                                 break;
-                              }
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -483,11 +481,7 @@ int main(
                                  indentation = 0;
                               }
                               q = strchr (q, '\n');
-                              if (!q)
-                              {
-                                 break;
-                              }
-
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -508,10 +502,7 @@ int main(
                               putchar ('\n');
                               printf (".ad\n.fi\n");
                               q = strchr (q, '\n');
-                              if (!q)
-                              {
-                                 break;
-                              }
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -546,6 +537,7 @@ int main(
                            {
                               in_table = 1;
                               q = strchr (q, '\n');
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -554,10 +546,7 @@ int main(
                               disabled = 0;
                               in_table = 0;
                               q = strchr (q, '\n');
-                              if (!q)
-                              {
-                                 break;
-                              }
+                              if (!q) break;
                               ++line_no;
                               continue;
                            }
@@ -589,7 +578,8 @@ int main(
                               }
                               in_item = 1;
                               q = strchr (q, ' ');
-                              start_bold ();
+                              if (!q) break;
+                              start_bold();
                               continue;
                            }
                         }
@@ -774,11 +764,8 @@ int main(
                                  }
                               }
                               q = q2;
+                              if (!q) break;
                               ++line_no;
-                              if (!q)
-                              {
-                                 break;
-                              }
                               continue;
                            }
                         }
