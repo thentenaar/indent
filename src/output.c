@@ -545,17 +545,15 @@ static void set_next_buf_break (
         }
 
         xfree(buf_break);
+        if (!bb) goto ret;
 
         /* Set buf_break to first break in the list */
-
         buf_break = bb;
 
         /* GDB_HOOK_buf_break */
-
         buf_break->prev = NULL;
 
         /* Find a better break of the existing breaks */
-
         for (bb = buf_break; bb; bb = bb->next)
         {
             if (bb->col > settings.max_col)
@@ -580,6 +578,9 @@ static void set_next_buf_break (
             }
         }
     }
+
+ret:
+	return;
 }
 
 /**
@@ -1363,7 +1364,7 @@ extern void close_output(
         else
         {
 #ifdef PRESERVE_MTIME
-            if (file_stats != NULL)
+            if (file_stats != NULL && filename)
             {
                 struct utimbuf buf;
 
