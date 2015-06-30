@@ -57,4 +57,8 @@ extern void uninit_parser (void);
 extern void reset_parser (void);
 extern void reduce (void);
 
+#ifdef DEBUG
+extern void debug_init(void);
+#endif
+
 #endif /* INDENT_PARSE_H */
