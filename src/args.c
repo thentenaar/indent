@@ -229,7 +229,7 @@ static int exp_ntac = 0;
  * their meaning is explained in indent.h.  
  */
 
-user_options_ty settings = {0};
+user_options_ty settings;
 
 /* N.B.: because of the way the table here is scanned, options whose names
  * are substrings of other options must occur later; that is, with -lp vs -l,

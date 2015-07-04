@@ -1071,6 +1071,9 @@ int main(
     wildexp(&argc, &argv);
 #endif /* defined (_WIN32) && !defined (__CYGWIN__) */
 
+	/* Initialize settings */
+	memset(&settings, 0, sizeof(settings));
+
 #ifdef DEBUG
     if (debug)
     {

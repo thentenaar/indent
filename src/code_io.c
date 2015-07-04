@@ -248,7 +248,7 @@ extern file_buffer_ty * read_file(
     char        * filename,
     struct stat * file_stats)
 {
-    static file_buffer_ty fileptr = {NULL};
+    static file_buffer_ty fileptr = {NULL, 0, NULL};
     
 #if defined(__MSDOS__) || defined(VMS)
     /*
@@ -263,7 +263,7 @@ extern file_buffer_ty * read_file(
     size_t size_to_read = 0;
 #endif
 
-    int          namelen = strlen(filename);
+    unsigned int namelen = strlen(filename);
     int          fd      = open(filename, O_RDONLY, 0777);
 
     if (fd < 0)
@@ -307,13 +307,13 @@ extern file_buffer_ty * read_file(
     if (fileptr.data != 0)
     {
         fileptr.data = xrealloc(fileptr.data,
-                                 (unsigned) file_stats->st_size + 2); /* add 1 for '\0' and 1 for
+                                 (unsigned)file_stats->st_size + 2); /* add 1 for '\0' and 1 for
                                                                                 * potential final added
                                                                                 * newline. */
     }
     else
     {
-        fileptr.data = xmalloc((unsigned) file_stats->st_size + 2); /* add 1 for '\0' and 1 for
+        fileptr.data = xmalloc((unsigned)file_stats->st_size + 2); /* add 1 for '\0' and 1 for
                                                                                * potential final added
                                                                                * newline. */
     }
@@ -341,7 +341,7 @@ extern file_buffer_ty * read_file(
         size_to_read -= size;
     }
     
-    if (close (fd) < 0)
+    if (close(fd) < 0)
     {
         xfree(fileptr.data);
         fatal (_("Error closing input file %s"), filename);
@@ -352,14 +352,14 @@ extern file_buffer_ty * read_file(
      * then the DOS `read' changes them into '\n'.  Thus, the size of the
      * file on disc is larger than what is read into memory.  Thanks, Bill. */
     
-    if (size < fileptr.size)
+    if ((size_t)size < fileptr.size)
     {
         fileptr.size = size;
     }
 
     if (fileptr.name != NULL)
     {
-        fileptr.name = xrealloc(fileptr.name, (unsigned) namelen + 1);
+        fileptr.name = xrealloc(fileptr.name, (unsigned)namelen + 1);
     }
     else
     {
@@ -394,7 +394,7 @@ extern file_buffer_ty * read_file(
 
 file_buffer_ty * read_stdin(void)
 {
-    static file_buffer_ty stdinptr = {NULL};
+    static file_buffer_ty stdinptr = {NULL, 0, NULL};
 
     unsigned int          size = 15 * BUFSIZ;
     int                   ch = EOF;

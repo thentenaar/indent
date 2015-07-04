@@ -252,7 +252,7 @@ static int highest_version (
     else
     {
        int             this_version;
-       int             file_name_length = strlen(filename);
+       unsigned int    file_name_length = strlen(filename);
 
        highestVersion = 0;
 
