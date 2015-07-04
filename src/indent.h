@@ -402,7 +402,8 @@ typedef struct parser_state
     int                   sizeof_mask; /*!<  indicates which close parens close off
                                         * sizeof''s */
     int                   block_init;  /*!<  set to 1 if inside a block initialization
-                                        * set to 2 if inside an enum declaration */
+                                        * set to 2 if inside an enum declaration
+                                        * and 3 for C99 compound literals. */
     int block_init_level;         /*!<  The level of brace nesting in an
                                    * initialization (0 in an enum decl) */
     int last_nl;                  /*!<  this is true if the last thing scanned was

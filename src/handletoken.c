@@ -487,7 +487,7 @@ static void handle_token_rparen(
    exit_values_ty * file_exit_value,
    BOOLEAN        * pbreak_line)
 {
-    char tmpchar[2];
+    char tmpchar[2], *tmp;
 
     parser_state_tos->paren_depth--;
     
@@ -527,6 +527,12 @@ static void handle_token_rparen(
             parser_state_tos->want_blank = false;
             parser_state_tos->can_break = bb_cast;
         }
+
+        /* Check for a C99 compound literal */
+        tmp = token + 1;
+        while (isspace(*tmp)) tmp++;
+        if (*tmp == '{')
+            parser_state_tos->block_init = 3;
     }
     else if (parser_state_tos->in_decl &&
              !parser_state_tos->block_init &&
