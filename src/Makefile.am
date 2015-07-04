@@ -19,8 +19,8 @@ LIBS = @LIBINTL@ @LIBS@
 MAINTAINERCLEANFILES= Makefile.in libgettext.h
 
 # Only pass -ansi and -pedantic via CC otherwise clang compains
-CCLD := $(CC)
-CC := $(CC) -ansi -pedantic
+CC += -ansi -pedantic
+CCLD = $(filter-out -ansi,$(CC))
 AM_CFLAGS  = -Wall -W -Werror -Wredundant-decls -Wshadow -Wstrict-prototypes
 AM_CFLAGS += -Wmissing-prototypes -Wnested-externs -Wmissing-declarations
 AM_CFLAGS += -Wcomment -Wbad-function-cast -Wcast-align
