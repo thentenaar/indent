@@ -1,3 +1,12 @@
+2015-07-04 Tim Hentenaar <tim@hentenaar.com>
+	* handletoken.c: Detect C99 compound literals.
+	* Makefile.am: Add -Wextra to AM_CFLAGS.
+
+2015-06-30 Tim Hentenaar <tim@hentenaar.com>
+	* Tighten-up the CFLAGS with additional warning flags.
+	* Ensure indent builds with clang.
+	* Fix various compiler warnings.
+
 2015-06-17 Tim Hentenaar <tim@hentenaar.com>
 	* comments.c: CHECK_COM_SIZE: Use unsigned type for size
 	* comments.c: CHECK_COM_SIZE: Add a parameter for the expected size
