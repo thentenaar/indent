@@ -1,7 +1,9 @@
 2015-07-04 Tim Hentenaar <tim@hentenaar.com>
 	* handletoken.c: Detect C99 compound literals.
 	* Makefile.am: Add -Wextra to AM_CFLAGS.
-
+	* output.c: For -as, if we're in an if/for/while statement, and
+	  we're breaking the line somewhere within the parenthesized
+	  expression, use the same indent level as the parent statement.
 2015-06-30 Tim Hentenaar <tim@hentenaar.com>
 	* Tighten-up the CFLAGS with additional warning flags.
 	* Ensure indent builds with clang.
@@ -51,7 +53,7 @@
 	* Fix indentation of block comments following braces.
 
 2015-06-13 Tim Hentenaar <tim@hentenaar.com>
-    * Fix regression introduced in hg revision 25c27d429590
+	* Fix regression introduced in hg revision 25c27d429590
 	* Add an option (-slc/--single-line-conditionals) to allow
 	  conditionals and their inner statement to be on the same line if
 	  they're not braced. This should fix GNU bug #42357.

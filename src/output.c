@@ -592,6 +592,7 @@ static int pad_output(int cur_col, int target_column)
 {
     int offset = 0;
     int align_target = target_column;
+    int tos = parser_state_tos->tos;
 
     if (cur_col < target_column)
     {
@@ -600,9 +601,30 @@ static int pad_output(int cur_col, int target_column)
             if (settings.align_with_spaces)
             {
                 if (align_target >= parser_state_tos->ind_level)
-	                align_target = parser_state_tos->ind_level;
-	            offset = (align_target - cur_col + 1) / settings.tabsize;
-	            align_target = cur_col + (offset * settings.tabsize);
+                    align_target = parser_state_tos->ind_level;
+
+                /* If we're within an if/for/while, only use tabs
+                 * to indent to the same level as the parent
+                 * statement.
+                 */
+                if (parser_state_tos->last_rw == rw_sp_paren &&
+                    parser_state_tos->p_stack[tos] == stmt   &&
+                    *s_code && tos > 0)
+                {
+                    do {
+                        if (parser_state_tos->p_stack[tos] == ifstmt ||
+                            parser_state_tos->p_stack[tos] == forstmt ||
+                            parser_state_tos->p_stack[tos] == whilestmt)
+                            break;
+                    } while (--tos);
+                    if (tos) align_target = parser_state_tos->il[tos];
+                } else if (parser_state_tos->p_stack[tos] == ifstmt ||
+                           parser_state_tos->p_stack[tos] == forstmt ||
+                           parser_state_tos->p_stack[tos] == whilestmt)
+                    align_target = parser_state_tos->il[tos];
+
+                offset = (align_target - cur_col + 1) / settings.tabsize;
+                align_target = cur_col + (offset * settings.tabsize);
             }
 
             offset = settings.tabsize - (cur_col - 1) % settings.tabsize;
