@@ -194,7 +194,7 @@ static char * simple_backup_name (
 {
     char *backup_name;
 
-    backup_name = xmalloc (strlen (pathname) + strlen (simple_backup_suffix) + 2);
+    backup_name = xmalloc(strlen (pathname) + strlen (simple_backup_suffix) + 2);
     sprintf (backup_name, "%s%s", pathname, simple_backup_suffix);
     return backup_name;
 }
@@ -305,7 +305,7 @@ static int max_version (
         char *dirname;
 
         filename = p + 1;
-        dirname = xmalloc (dirlen + 1);
+        dirname = xmalloc(dirlen + 1);
         strncpy (dirname, pathname, (dirlen));
         dirname[dirlen] = '\0';
         version = highest_version (filename, dirname);
@@ -354,7 +354,7 @@ static char * generate_backup_filename (
           else
           {
              last_numbered_version++;
-             backup_name = xmalloc (strlen (pathname) + 16);
+             backup_name = xmalloc(strlen (pathname) + 16);
 
              if (backup_name)
              {

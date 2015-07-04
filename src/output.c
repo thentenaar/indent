@@ -328,7 +328,7 @@ void set_buf_break (
 
     /* Store the position of `e_code' as the place to break this line. */
 
-    bb = (buf_break_st_ty *) xmalloc (sizeof (buf_break_st_ty));
+    bb = xmalloc(sizeof(buf_break_st_ty));
     bb->offset = e_code - s_code;
     bb->level = level;
     bb->target_col = target_col;

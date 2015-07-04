@@ -868,10 +868,9 @@ static exit_values_ty process_args (
                     if (input_files > max_input_files)
                     {
                         max_input_files = 2 * max_input_files;
-                        in_file_names =
-                                (char **) xrealloc ((char *) in_file_names,
-                                                    (max_input_files *
-                                                     sizeof (char *)));
+                        in_file_names = xrealloc(in_file_names,
+                                                 (max_input_files *
+                                                  sizeof(char *)));
                     }
                 }
 
@@ -1099,7 +1098,7 @@ int main(
     exit_status = total_success;
 
     input_files = 0;
-    in_file_names = (char **) xmalloc(max_input_files * sizeof (char *));
+    in_file_names = xmalloc(max_input_files * sizeof(char *));
 
     set_defaults();
 

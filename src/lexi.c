@@ -1259,14 +1259,15 @@ extern void addkey (
     {
        if (user_specials == 0)
        {
-          user_specials = (templ_ty *) xmalloc (5 * sizeof (templ_ty));
+          user_specials = xmalloc(5 * sizeof(templ_ty));
           user_specials_max = 5;
           user_specials_idx = 0;
        }
        else if (user_specials_idx == user_specials_max)
        {
           user_specials_max += 5;
-          user_specials = (templ_ty *) xrealloc ((char *) user_specials, user_specials_max * sizeof (templ_ty));
+          user_specials = xrealloc(user_specials,
+                                   user_specials_max * sizeof(templ_ty));
        }
        else
        {

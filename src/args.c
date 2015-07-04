@@ -1248,7 +1248,7 @@ char * set_profile(void)
          scan_profile (f, INDENT_PROFILE);
          (void) fclose (f);
 
-         fname = xmalloc (len);
+         fname = xmalloc(len);
          strcpy(fname, "./");
          (void) strcat (fname, INDENT_PROFILE);
       }
@@ -1258,7 +1258,7 @@ char * set_profile(void)
     
          if (homedir)
          {
-            fname = xmalloc (strlen (homedir) + strlen(PROFILE_FORMAT) + sizeof (prof));
+            fname = xmalloc(strlen (homedir) + strlen(PROFILE_FORMAT) + sizeof (prof));
             sprintf (fname, PROFILE_FORMAT, homedir, prof);
                 
             if ((f = fopen (fname, "r")) != NULL)

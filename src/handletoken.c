@@ -104,7 +104,7 @@ extern void check_code_size(void)
     if (e_code >= l_code)                               
     {                                                   
         int nsize = l_code - s_code + 400;               
-        codebuf   = (char *) xrealloc (codebuf, nsize);  
+        codebuf   = xrealloc(codebuf, nsize);  
         e_code    = codebuf + (e_code - s_code) + 1; 
         l_code    = codebuf + nsize - 5; 
         s_code    = codebuf + 1; 
@@ -120,7 +120,7 @@ static void check_lab_size(void)
     if (e_lab >= l_lab)
     {
         int nsize  = l_lab - s_lab + 400;               
-        labbuf = (char *) xrealloc (labbuf, nsize); 
+        labbuf = xrealloc(labbuf, nsize); 
         e_lab  = labbuf + (e_lab - s_lab) + 1;        
         l_lab  = labbuf + nsize - 5;                
         s_lab  = labbuf + 1;                        
@@ -342,9 +342,8 @@ static void handle_token_lparen(
     {
         parser_state_tos->paren_indents_size *= 2;
         parser_state_tos->paren_indents =
-                (short *) xrealloc ((char *) parser_state_tos->paren_indents,
-                                    parser_state_tos->paren_indents_size *
-                                    sizeof (short));
+                xrealloc(parser_state_tos->paren_indents,
+                         parser_state_tos->paren_indents_size * sizeof(short));
     }
 
     parser_state_tos->paren_depth++;
@@ -1168,9 +1167,8 @@ static void handle_token_lbrace(
         if (parser_state_tos->dec_nest >= di_stack_alloc)
         {
             di_stack_alloc *= 2;
-            di_stack =
-                    (int *) xrealloc ((char *) di_stack,
-                                      di_stack_alloc * sizeof (*di_stack));
+            di_stack = xrealloc(di_stack,
+                                di_stack_alloc * sizeof(*di_stack));
         }
 
         di_stack[parser_state_tos->dec_nest++] = *dec_ind;
@@ -1230,10 +1228,9 @@ static void handle_token_lbrace(
         {
             parser_state_tos->paren_indents_size *= 2;
             parser_state_tos->paren_indents =
-                    (short *) xrealloc ((char *) parser_state_tos->
-                                        paren_indents,
-                                        parser_state_tos->paren_indents_size *
-                                        sizeof (short));
+                    xrealloc(parser_state_tos->paren_indents,
+                             parser_state_tos->paren_indents_size *
+                             sizeof(short));
         }
 
         ++parser_state_tos->paren_depth;
@@ -2006,45 +2003,30 @@ static void handle_token_preesc(
 
             parser_state_ty *new;
 
-            new = (parser_state_ty *)
-                    xmalloc (sizeof (parser_state_ty));
-            (void) memcpy (new, parser_state_tos,
-                           sizeof (parser_state_ty));
+            new = xmalloc(sizeof(parser_state_ty));
+            memcpy(new, parser_state_tos, sizeof(parser_state_ty));
 
             /* We need to copy the dynamically allocated arrays in the
              * struct parser_state too.  */
 
-            new->p_stack =
-                    (codes_ty *) xmalloc (parser_state_tos->p_stack_size *
-                                          sizeof (codes_ty));
+            new->p_stack = xmalloc(parser_state_tos->p_stack_size *
+                                   sizeof(codes_ty));
+            memcpy(new->p_stack, parser_state_tos->p_stack,
+                   (parser_state_tos->p_stack_size * sizeof(codes_ty)));
 
-            (void) memcpy (new->p_stack, parser_state_tos->p_stack,
-                           (parser_state_tos->p_stack_size *
-                            sizeof (codes_ty)));
+            new->il = xmalloc(parser_state_tos->p_stack_size *
+                              sizeof (int));
+            memcpy(new->il, parser_state_tos->il,
+                   parser_state_tos->p_stack_size * sizeof(int));
 
-            new->il =
-                    (int *) xmalloc (parser_state_tos->p_stack_size *
-                                     sizeof (int));
+            new->cstk = xmalloc(parser_state_tos->p_stack_size * sizeof(int));
+            memcpy(new->cstk, parser_state_tos->cstk,
+                   parser_state_tos->p_stack_size * sizeof(int));
 
-            (void) memcpy (new->il, parser_state_tos->il,
-                           parser_state_tos->p_stack_size *
-                           sizeof (int));
-
-            new->cstk =
-                    (int *) xmalloc (parser_state_tos->p_stack_size *
-                                     sizeof (int));
-
-            (void) memcpy (new->cstk, parser_state_tos->cstk,
-                           parser_state_tos->p_stack_size *
-                           sizeof (int));
-
-            new->paren_indents =
-                    (short *) xmalloc (parser_state_tos->paren_indents_size *
-                                       sizeof (short));
-            (void) memcpy (new->paren_indents,
-                           parser_state_tos->paren_indents,
-                           (parser_state_tos->paren_indents_size *
-                            sizeof (short)));
+            new->paren_indents = xmalloc(parser_state_tos->paren_indents_size *
+                                         sizeof (short));
+            memcpy(new->paren_indents,parser_state_tos->paren_indents,
+                   (parser_state_tos->paren_indents_size * sizeof(short)));
 
             new->next = parser_state_tos;
             parser_state_tos = new;

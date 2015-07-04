@@ -62,29 +62,28 @@ parser_state_ty *parser_state_tos = NULL;
 
 extern void init_parser(void)
 {
-    parser_state_tos = (parser_state_ty *) xmalloc (sizeof (parser_state_ty));
+    parser_state_tos = xmalloc(sizeof (parser_state_ty));
 
     /* GDB_HOOK_parser_state_tos */
     parser_state_tos->p_stack_size  = INITIAL_STACK_SIZE;
-    parser_state_tos->p_stack       = (codes_ty *) xmalloc (INITIAL_STACK_SIZE * sizeof (codes_ty));
-    parser_state_tos->il            = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
-    parser_state_tos->cstk          = (int *) xmalloc (INITIAL_STACK_SIZE * sizeof (int));
+    parser_state_tos->p_stack       = xmalloc(INITIAL_STACK_SIZE * sizeof (codes_ty));
+    parser_state_tos->il            = xmalloc(INITIAL_STACK_SIZE * sizeof (int));
+    parser_state_tos->cstk          = xmalloc(INITIAL_STACK_SIZE * sizeof (int));
     parser_state_tos->paren_indents_size = 8;
-    parser_state_tos->paren_indents = (short *) xmalloc (parser_state_tos->paren_indents_size * sizeof (short));
+    parser_state_tos->paren_indents = xmalloc(parser_state_tos->paren_indents_size * sizeof (short));
 
     /* Although these are supposed to grow if we reach the end,
      * I can find no place in the code which does this. */
-
-    combuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
-    labbuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
-    codebuf = (char *) xmalloc (INITIAL_BUFFER_SIZE);
+    combuf = xmalloc(INITIAL_BUFFER_SIZE);
+    labbuf = xmalloc(INITIAL_BUFFER_SIZE);
+    codebuf = xmalloc(INITIAL_BUFFER_SIZE);
 
     save_com.size = INITIAL_BUFFER_SIZE;
-    save_com.end = save_com.ptr = xmalloc (save_com.size);
+    save_com.end = save_com.ptr = xmalloc(save_com.size);
     save_com.len = save_com.column = 0;
 
     di_stack_alloc = 2;
-    di_stack = (int *) xmalloc (di_stack_alloc * sizeof (*di_stack));
+    di_stack = xmalloc(di_stack_alloc * sizeof (*di_stack));
 }
 
 /**
@@ -204,12 +203,14 @@ extern int inc_pstack(void)
     {
         parser_state_tos->p_stack_size *= 2;
         parser_state_tos->p_stack =
-                (codes_ty *) xrealloc ((char *) parser_state_tos->p_stack,
-                                       parser_state_tos->p_stack_size * sizeof (codes_ty));
+                xrealloc(parser_state_tos->p_stack,
+                         parser_state_tos->p_stack_size * sizeof(codes_ty));
         parser_state_tos->il =
-                (int *) xrealloc ((char *) parser_state_tos->il, parser_state_tos->p_stack_size * sizeof (int));
+                xrealloc(parser_state_tos->il,
+                          parser_state_tos->p_stack_size * sizeof(int));
         parser_state_tos->cstk =
-                (int *) xrealloc ((char *) parser_state_tos->cstk, parser_state_tos->p_stack_size * sizeof (int));
+                xrealloc(parser_state_tos->cstk,
+                         parser_state_tos->p_stack_size * sizeof(int));
     }
 
     parser_state_tos->cstk[parser_state_tos->tos] = parser_state_tos->cstk[parser_state_tos->tos - 1];
@@ -231,7 +232,7 @@ extern void debug_init(void)
 {
     int size = ((int) number_of_codes) * sizeof (char *);
 
-    debug_symbol_strings = (char **) xmalloc (size);
+    debug_symbol_strings = xmalloc (size);
 
     debug_symbol_strings[code_eof]      = "code_eof";
     debug_symbol_strings[newline]       = "newline";
